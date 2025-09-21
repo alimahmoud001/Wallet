@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -585,4 +585,55 @@
                 recoveryPhraseSection.classList.remove('hidden');
                 
                 // إعادة زر الإنشاء إلى حالته الأصلية
-                createWalle
+                createWalletBtn.innerHTML = '<i class="fas fa-plus"></i> إنشاء المحفظة';
+            } else {
+                showNotification('حدث خطأ أثناء إنشاء المحفظة');
+                createWalletBtn.innerHTML = '<i class="fas fa-plus"></i> إنشاء المحفظة';
+            }
+        });
+
+        recoveryPhraseConfirm.addEventListener('click', async () => {
+            // جلب بيانات المحفظة
+            const data = await fetchWalletData(walletData.address);
+            walletData.balance = data.balance;
+            walletData.assets = data.assets;
+            
+            // تحديث واجهة المحفظة
+            document.querySelector('.balance-amount').textContent = `$${walletData.balance.toFixed(2)}`;
+            renderAssets(walletData.assets);
+            
+            // إظهار قسم المحفظة وإخفاء قسم عبارة الاسترجاع
+            recoveryPhraseSection.classList.add('hidden');
+            walletSection.classList.remove('hidden');
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            // إعادة تعيين بيانات المحفظة
+            walletData = {
+                address: '',
+                privateKey: '',
+                balance: 0,
+                assets: []
+            };
+            
+            // إعادة تعيين حقل عبارة الاسترجاع
+            recoveryPhraseInput.value = '';
+            
+            // إظهار قسم المصادقة وإخفاء قسم المحفظة
+            walletSection.classList.add('hidden');
+            authSection.classList.remove('hidden');
+        });
+
+        // أحداث التبويبات
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // في تطبيق حقيقي، سيتم تغيير المحتوى بناءً على التبويب النشط
+                showNotification(`تم التبديل إلى تبويب ${tab.textContent}`);
+            });
+        });
+    </script>
+</body>
+</html>
