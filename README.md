@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -283,13 +284,13 @@
             color: var(--text-primary);
         }
 
-        /* شاشة الاستيراد */
-        .import-container {
+        /* شاشة كلمة المرور */
+        .password-container {
             max-width: 500px;
             margin: 0 auto;
         }
 
-        .import-form {
+        .password-form {
             background: var(--bg-card);
             border-radius: 16px;
             padding: var(--spacing-xl);
@@ -306,6 +307,119 @@
             font-weight: 600;
             margin-bottom: var(--spacing-sm);
             color: var(--text-primary);
+        }
+
+        .password-input-container {
+            position: relative;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: var(--spacing-md);
+            padding-left: 50px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: var(--font-md);
+            transition: border-color var(--transition-fast);
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(22, 82, 240, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: var(--font-md);
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-color);
+        }
+
+        .password-strength {
+            margin-top: var(--spacing-sm);
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all var(--transition-normal);
+            border-radius: 2px;
+        }
+
+        .password-strength-bar.weak {
+            width: 25%;
+            background: var(--error-color);
+        }
+
+        .password-strength-bar.fair {
+            width: 50%;
+            background: var(--warning-color);
+        }
+
+        .password-strength-bar.good {
+            width: 75%;
+            background: var(--secondary-color);
+        }
+
+        .password-strength-bar.strong {
+            width: 100%;
+            background: var(--success-color);
+        }
+
+        .password-requirements {
+            margin-top: var(--spacing-sm);
+            font-size: var(--font-sm);
+            color: var(--text-muted);
+        }
+
+        .password-requirements ul {
+            list-style: none;
+            margin-top: var(--spacing-xs);
+        }
+
+        .password-requirements li {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .password-requirements li.valid {
+            color: var(--success-color);
+        }
+
+        .password-requirements li.invalid {
+            color: var(--error-color);
+        }
+
+        /* شاشة الاستيراد */
+        .import-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .import-form {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
         }
 
         #mnemonicInput {
@@ -630,7 +744,7 @@
         /* الإجراءات السريعة */
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: var(--spacing-md);
             margin-bottom: var(--spacing-xl);
         }
@@ -680,6 +794,11 @@
 
         .action-icon.swap {
             background: linear-gradient(135deg, var(--secondary-color), #00f0cc);
+            color: white;
+        }
+
+        .action-icon.buy {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
         }
 
@@ -970,7 +1089,7 @@
         }
 
         .amount-input select {
-            width: 80px;
+            width: 120px;
         }
 
         /* خيارات الغاز */
@@ -1215,58 +1334,45 @@
             border-right: 4px solid var(--primary-color);
         }
 
-        /* كاميرا QR */
-        .camera-modal {
-            z-index: 2000;
+        /* نافذة ماسح QR */
+        .qr-scanner-container {
+            text-align: center;
         }
 
-        .camera-container {
+        .scanner-video {
             width: 100%;
-            max-width: 500px;
-            background: var(--bg-modal);
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .camera-video {
-            width: 100%;
-            height: 300px;
-            background: #000;
-            display: block;
-        }
-
-        .camera-controls {
-            padding: var(--spacing-md);
-            display: flex;
-            justify-content: center;
-            gap: var(--spacing-md);
-        }
-
-        /* اختيار الشبكة */
-        .network-selector {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
+            max-width: 300px;
+            height: 200px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
             margin-bottom: var(--spacing-md);
         }
 
-        .network-selector select {
-            flex: 1;
+        .scanner-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: center;
+            margin-bottom: var(--spacing-md);
         }
 
-        .network-info {
+        .scanner-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: var(--spacing-sm) var(--spacing-md);
+            cursor: pointer;
+            transition: background-color var(--transition-fast);
             font-size: var(--font-sm);
-            color: var(--text-secondary);
-            margin-bottom: var(--spacing-lg);
         }
 
-        /* حماية بكلمة المرور */
-        .password-form {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: var(--spacing-xl);
-            margin-bottom: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
+        .scanner-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .scanner-btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
         }
 
         /* التصميم المتجاوب */
@@ -1397,38 +1503,8 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- شاشة كلمة المرور -->
-        <div id="passwordScreen" class="screen">
-            <div class="welcome-container">
-                <div class="logo-section">
-                    <div class="logo">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h1>SafeWallet</h1>
-                    <p class="tagline">أدخل كلمة المرور للوصول إلى محفظتك</p>
-                </div>
-                
-                <div class="password-form">
-                    <div class="form-group">
-                        <label for="passwordInput">كلمة المرور</label>
-                        <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور">
-                    </div>
-                    
-                    <button id="unlockWalletBtn" class="btn btn-primary btn-full">
-                        <i class="fas fa-unlock"></i>
-                        فتح المحفظة
-                    </button>
-                </div>
-                
-                <div class="security-note">
-                    <i class="fas fa-lock"></i>
-                    <span>بياناتك مشفرة ومحمية بكلمة المرور</span>
-                </div>
-            </div>
-        </div>
-
         <!-- شاشة الترحيب -->
-        <div id="welcomeScreen" class="screen">
+        <div id="welcomeScreen" class="screen active">
             <div class="welcome-container">
                 <div class="logo-section">
                     <div class="logo">
@@ -1456,6 +1532,81 @@
             </div>
         </div>
 
+        <!-- شاشة كلمة المرور -->
+        <div id="passwordScreen" class="screen">
+            <div class="password-container">
+                <div class="screen-header">
+                    <button id="backToWelcomeFromPasswordBtn" class="back-btn">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <h2>تعيين كلمة المرور</h2>
+                </div>
+                
+                <div class="password-form">
+                    <div class="form-section">
+                        <label for="passwordInput">كلمة المرور</label>
+                        <div class="password-input-container">
+                            <input type="password" id="passwordInput" class="password-input" placeholder="أدخل كلمة مرور قوية">
+                            <button type="button" id="togglePassword" class="password-toggle">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength">
+                            <div id="passwordStrengthBar" class="password-strength-bar"></div>
+                        </div>
+                        <div class="password-requirements">
+                            <p>متطلبات كلمة المرور:</p>
+                            <ul>
+                                <li id="lengthReq" class="invalid">
+                                    <i class="fas fa-times"></i>
+                                    <span>8 أحرف على الأقل</span>
+                                </li>
+                                <li id="uppercaseReq" class="invalid">
+                                    <i class="fas fa-times"></i>
+                                    <span>حرف كبير واحد على الأقل</span>
+                                </li>
+                                <li id="lowercaseReq" class="invalid">
+                                    <i class="fas fa-times"></i>
+                                    <span>حرف صغير واحد على الأقل</span>
+                                </li>
+                                <li id="numberReq" class="invalid">
+                                    <i class="fas fa-times"></i>
+                                    <span>رقم واحد على الأقل</span>
+                                </li>
+                                <li id="specialReq" class="invalid">
+                                    <i class="fas fa-times"></i>
+                                    <span>رمز خاص واحد على الأقل</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <label for="confirmPasswordInput">تأكيد كلمة المرور</label>
+                        <div class="password-input-container">
+                            <input type="password" id="confirmPasswordInput" class="password-input" placeholder="أعد إدخال كلمة المرور">
+                            <button type="button" id="toggleConfirmPassword" class="password-toggle">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button id="setPasswordBtn" class="btn btn-primary btn-full" disabled>
+                        <i class="fas fa-lock"></i>
+                        تعيين كلمة المرور
+                    </button>
+                </div>
+                
+                <div class="security-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>مهم جداً:</strong><br>
+                        احفظ كلمة المرور في مكان آمن. لا يمكن استرداد المحفظة بدونها.
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- شاشة استيراد المحفظة -->
         <div id="importScreen" class="screen">
             <div class="import-container">
@@ -1473,15 +1624,6 @@
                         <div class="input-hint">
                             <i class="fas fa-info-circle"></i>
                             <span>أدخل الكلمات مفصولة بمسافات</span>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <label for="importPassword">كلمة المرور</label>
-                        <input type="password" id="importPassword" placeholder="اختر كلمة مرور قوية">
-                        <div class="input-hint">
-                            <i class="fas fa-info-circle"></i>
-                            <span>كلمة المرور تستخدم لتشفير بيانات محفظتك</span>
                         </div>
                     </div>
                     
@@ -1509,17 +1651,6 @@
                         <i class="fas fa-arrow-right"></i>
                     </button>
                     <h2>إنشاء محفظة جديدة</h2>
-                </div>
-                
-                <div class="password-form">
-                    <div class="form-section">
-                        <label for="createPassword">كلمة المرور</label>
-                        <input type="password" id="createPassword" placeholder="اختر كلمة مرور قوية">
-                        <div class="input-hint">
-                            <i class="fas fa-info-circle"></i>
-                            <span>كلمة المرور تستخدم لتشفير بيانات محفظتك</span>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="wallet-info-card">
@@ -1552,9 +1683,9 @@
                     </div>
                 </div>
                 
-                <button id="continueToWalletBtn" class="btn btn-primary btn-full">
+                <button id="continueToPasswordBtn" class="btn btn-primary btn-full">
                     <i class="fas fa-arrow-left"></i>
-                    متابعة إلى المحفظة
+                    تعيين كلمة المرور
                 </button>
             </div>
         </div>
@@ -1580,21 +1711,6 @@
                     </div>
                 </div>
 
-                <!-- اختيار الشبكة -->
-                <div class="network-selector">
-                    <label for="networkSelect">الشبكة:</label>
-                    <select id="networkSelect">
-                        <option value="ethereum">Ethereum</option>
-                        <option value="bsc">Binance Smart Chain</option>
-                        <option value="polygon">Polygon</option>
-                        <option value="avalanche">Avalanche</option>
-                        <option value="arbitrum">Arbitrum</option>
-                    </select>
-                </div>
-                <div class="network-info" id="networkInfo">
-                    الشبكة: Ethereum - الرمز: ETH
-                </div>
-
                 <!-- قسم الرصيد -->
                 <div class="balance-section">
                     <div class="balance-card">
@@ -1606,9 +1722,9 @@
                         </div>
                         <div class="balance-amount">
                             <span id="totalBalance">0.00</span>
-                            <span class="currency" id="balanceCurrency">ETH</span>
+                            <span class="currency">USD</span>
                         </div>
-                        <div class="balance-usd" id="balanceUSD">$0.00 USD</div>
+                        <div class="balance-usd" id="balanceDetails">جاري التحميل...</div>
                     </div>
                 </div>
 
@@ -1632,15 +1748,21 @@
                         </div>
                         <span>تبديل</span>
                     </div>
+                    <div id="buyBtn" class="action-btn">
+                        <div class="action-icon buy">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <span>شراء</span>
+                    </div>
                 </div>
 
                 <!-- قسم الأصول -->
                 <div class="assets-section">
                     <div class="section-header">
                         <h4>الأصول</h4>
-                        <button class="add-btn" id="addTokenBtn">
+                        <button class="add-btn">
                             <i class="fas fa-plus"></i>
-                            إضافة رمز
+                            إضافة
                         </button>
                     </div>
                     <div class="assets-list" id="assetsList">
@@ -1655,9 +1777,9 @@
                 <div class="transactions-section">
                     <div class="section-header">
                         <h4>المعاملات الأخيرة</h4>
-                        <button class="view-all-btn" id="viewAllTransactions">عرض الكل</button>
+                        <button class="view-all-btn">عرض الكل</button>
                     </div>
-                    <div class="transactions-list" id="transactionsList">
+                    <div class="transactions-list">
                         <div class="no-transactions">
                             <i class="fas fa-receipt"></i>
                             <span>لا توجد معاملات بعد</span>
@@ -1682,9 +1804,17 @@
             <div class="modal-body">
                 <form id="sendForm">
                     <div class="form-group">
+                        <label>الشبكة</label>
+                        <select id="networkSelect">
+                            <option value="ethereum">Ethereum</option>
+                            <option value="bsc">Binance Smart Chain</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
                         <label>إلى</label>
                         <div class="input-with-scan">
-                            <input type="text" id="sendToAddress" placeholder="عنوان المحفظة">
+                            <input type="text" id="recipientAddress" placeholder="عنوان المحفظة أو ENS">
                             <button type="button" id="scanAddressBtn" class="scan-btn">
                                 <i class="fas fa-qrcode"></i>
                             </button>
@@ -1692,20 +1822,13 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>الأصل</label>
-                        <select id="sendAsset">
-                            <option value="native">ETH - Ethereum</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
                         <label>المبلغ</label>
                         <div class="amount-input">
                             <input type="number" id="sendAmount" placeholder="0.00" step="0.0001">
-                            <span id="sendAssetSymbol">ETH</span>
-                        </div>
-                        <div class="input-hint">
-                            <span>الرصيد المتاح: <span id="availableBalance">0.00</span> <span id="availableSymbol">ETH</span></span>
+                            <select id="assetSelect">
+                                <option value="ETH">ETH</option>
+                                <option value="USDT">USDT</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -1716,7 +1839,7 @@
                                 <span>بطيء</span>
                                 <span class="gas-price">~5 دقائق</span>
                             </div>
-                            <div class="gas-option active" data-speed="normal">
+                            <div class="gas-option active" data-speed="standard">
                                 <span>عادي</span>
                                 <span class="gas-price">~2 دقيقة</span>
                             </div>
@@ -1725,11 +1848,6 @@
                                 <span class="gas-price">~30 ثانية</span>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>رسوم المعاملة</label>
-                        <div id="transactionFee">~ 0.0012 ETH</div>
                     </div>
                     
                     <button type="submit" class="btn btn-primary btn-full">
@@ -1752,6 +1870,14 @@
             </div>
             <div class="modal-body">
                 <div class="receive-content">
+                    <div class="form-group">
+                        <label>الشبكة</label>
+                        <select id="receiveNetworkSelect">
+                            <option value="ethereum">Ethereum</option>
+                            <option value="bsc">Binance Smart Chain</option>
+                        </select>
+                    </div>
+                    
                     <div class="qr-section">
                         <div class="qr-code">
                             <canvas id="qrCanvas"></canvas>
@@ -1771,64 +1897,37 @@
                     
                     <div class="receive-warning">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <span id="receiveWarning">أرسل فقط أصول Ethereum (ETH) إلى هذا العنوان</span>
+                        <span id="receiveWarningText">أرسل فقط أصول Ethereum (ETH) إلى هذا العنوان</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- نافذة التبديل -->
-    <div id="swapModal" class="modal">
+    <!-- نافذة ماسح QR -->
+    <div id="qrScannerModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>تبديل الأصول</h3>
-                <button id="closeSwapModal" class="close-btn">
+                <h3>مسح رمز QR</h3>
+                <button id="closeQrScannerModal" class="close-btn">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="swapForm">
-                    <div class="form-group">
-                        <label>من</label>
-                        <select id="swapFrom">
-                            <option value="ETH">ETH - Ethereum</option>
-                        </select>
-                        <div class="amount-input">
-                            <input type="number" id="swapFromAmount" placeholder="0.00" step="0.0001">
-                            <span>ETH</span>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group" style="text-align: center;">
-                        <button type="button" id="swapDirectionBtn" class="btn btn-secondary" style="width: auto; padding: 8px;">
-                            <i class="fas fa-exchange-alt"></i>
+                <div class="qr-scanner-container">
+                    <video id="scannerVideo" class="scanner-video" autoplay></video>
+                    <div class="scanner-controls">
+                        <button id="startScanBtn" class="scanner-btn">
+                            <i class="fas fa-play"></i>
+                            بدء المسح
+                        </button>
+                        <button id="stopScanBtn" class="scanner-btn" disabled>
+                            <i class="fas fa-stop"></i>
+                            إيقاف المسح
                         </button>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>إلى</label>
-                        <select id="swapTo">
-                            <option value="USDT">USDT - Tether</option>
-                            <option value="DAI">DAI - Dai Stablecoin</option>
-                            <option value="UNI">UNI - Uniswap</option>
-                        </select>
-                        <div class="amount-input">
-                            <input type="number" id="swapToAmount" placeholder="0.00" step="0.0001" readonly>
-                            <span id="swapToSymbol">USDT</span>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>سعر الصرف</label>
-                        <div id="exchangeRate">1 ETH = 0.00 USDT</div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-full">
-                        <i class="fas fa-exchange-alt"></i>
-                        تبديل
-                    </button>
-                </form>
+                    <p>وجه الكاميرا نحو رمز QR</p>
+                </div>
             </div>
         </div>
     </div>
@@ -1885,31 +1984,6 @@
         </div>
     </div>
 
-    <!-- نافذة كاميرا QR -->
-    <div id="cameraModal" class="modal camera-modal">
-        <div class="modal-content camera-container">
-            <div class="modal-header">
-                <h3>مسح رمز الاستجابة السريعة</h3>
-                <button id="closeCameraModal" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <video id="cameraVideo" class="camera-video" autoplay playsinline></video>
-                <div class="camera-controls">
-                    <button id="switchCameraBtn" class="btn btn-secondary">
-                        <i class="fas fa-sync-alt"></i>
-                        تبديل الكاميرا
-                    </button>
-                    <button id="closeCameraBtn" class="btn btn-primary">
-                        <i class="fas fa-times"></i>
-                        إغلاق
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- شاشة التحميل -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-content">
@@ -1921,100 +1995,144 @@
     <!-- حاوي رسائل التنبيه -->
     <div id="toastContainer" class="toast-container"></div>
 
+    <!-- المكتبات الخارجية -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
+
     <script>
         // متغيرات عامة
         let currentWallet = null;
-        let provider = null;
-        let currentBalance = '0.00';
-        let ethPriceUSD = 0;
-        let currentNetwork = 'ethereum';
-        let tokens = [];
-        let stream = null;
-        let isCameraActive = false;
+        let providers = {};
+        let currentBalance = 0;
+        let cryptoPrices = {};
+        let userPassword = null;
+        let qrScanner = null;
 
         // إعدادات الشبكات
-        const networks = {
+        const NETWORKS = {
             ethereum: {
                 name: 'Ethereum',
+                chainId: 1,
+                rpcUrl: 'https://cloudflare-eth.com',
                 symbol: 'ETH',
-                rpcUrl: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-                explorer: 'https://etherscan.io',
-                chainId: 1
+                explorer: 'https://etherscan.io'
             },
             bsc: {
                 name: 'Binance Smart Chain',
+                chainId: 56,
+                rpcUrl: 'https://bsc-dataseed1.bnbchain.org',
                 symbol: 'BNB',
-                rpcUrl: 'https://bsc-dataseed.binance.org/',
-                explorer: 'https://bscscan.com',
-                chainId: 56
-            },
-            polygon: {
-                name: 'Polygon',
-                symbol: 'MATIC',
-                rpcUrl: 'https://polygon-rpc.com',
-                explorer: 'https://polygonscan.com',
-                chainId: 137
-            },
-            avalanche: {
-                name: 'Avalanche',
-                symbol: 'AVAX',
-                rpcUrl: 'https://api.avax.network/ext/bc/C/rpc',
-                explorer: 'https://snowtrace.io',
-                chainId: 43114
-            },
-            arbitrum: {
-                name: 'Arbitrum',
-                symbol: 'ETH',
-                rpcUrl: 'https://arb1.arbitrum.io/rpc',
-                explorer: 'https://arbiscan.io',
-                chainId: 42161
+                explorer: 'https://bscscan.com'
             }
         };
 
-        // تهيئة المزود
-        async function initProvider() {
+        // عناوين العقود
+        const TOKEN_CONTRACTS = {
+            ethereum: {
+                USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+            },
+            bsc: {
+                USDT: '0x55d398326f99059fF775485246999027B3197955'
+            }
+        };
+
+        // تهيئة المزودين
+        async function initProviders() {
             try {
-                const network = networks[currentNetwork];
-                provider = new ethers.providers.JsonRpcProvider(network.rpcUrl);
-                console.log(`Provider initialized for ${network.name}`);
+                for (const [network, config] of Object.entries(NETWORKS)) {
+                    providers[network] = new ethers.providers.JsonRpcProvider(config.rpcUrl);
+                }
+                console.log('Providers initialized successfully');
                 return true;
             } catch (error) {
-                console.error('Failed to initialize provider:', error);
+                console.error('Failed to initialize providers:', error);
                 return false;
             }
         }
 
-        // تغيير الشبكة
-        async function changeNetwork(networkKey) {
+        // تشفير البيانات
+        function encryptData(data, password) {
+            return CryptoJS.AES.encrypt(JSON.stringify(data), password).toString();
+        }
+
+        // فك تشفير البيانات
+        function decryptData(encryptedData, password) {
             try {
-                showLoading(`جاري التبديل إلى ${networks[networkKey].name}...`);
-                currentNetwork = networkKey;
-                await initProvider();
-                await updateNetworkInfo();
-                await updateBalance();
-                await loadTokens();
-                hideLoading();
-                showToast(`تم التبديل إلى ${networks[networkKey].name}`, 'success');
+                const bytes = CryptoJS.AES.decrypt(encryptedData, password);
+                return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
             } catch (error) {
-                hideLoading();
-                console.error('Error changing network:', error);
-                showToast('حدث خطأ أثناء تغيير الشبكة', 'error');
+                throw new Error('كلمة مرور خاطئة');
             }
         }
 
-        // تحديث معلومات الشبكة
-        async function updateNetworkInfo() {
-            const network = networks[currentNetwork];
-            document.getElementById('networkInfo').textContent = `الشبكة: ${network.name} - الرمز: ${network.symbol}`;
-            document.getElementById('balanceCurrency').textContent = network.symbol;
-            document.getElementById('receiveWarning').textContent = `أرسل فقط أصول ${network.name} (${network.symbol}) إلى هذا العنوان`;
+        // التحقق من قوة كلمة المرور
+        function checkPasswordStrength(password) {
+            let score = 0;
+            const requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /\d/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+
+            Object.values(requirements).forEach(req => {
+                if (req) score++;
+            });
+
+            let strength = 'weak';
+            if (score >= 5) strength = 'strong';
+            else if (score >= 4) strength = 'good';
+            else if (score >= 3) strength = 'fair';
+
+            return { score, requirements, strength };
+        }
+
+        // تحديث مؤشر قوة كلمة المرور
+        function updatePasswordStrength(password) {
+            const { requirements, strength } = checkPasswordStrength(password);
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            
+            strengthBar.className = `password-strength-bar ${strength}`;
+
+            // تحديث متطلبات كلمة المرور
+            Object.entries(requirements).forEach(([req, met]) => {
+                const element = document.getElementById(`${req}Req`);
+                if (element) {
+                    element.className = met ? 'valid' : 'invalid';
+                    const icon = element.querySelector('i');
+                    icon.className = met ? 'fas fa-check' : 'fas fa-times';
+                }
+            });
+
+            return Object.values(requirements).every(req => req);
+        }
+
+        // جلب أسعار العملات المشفرة
+        async function fetchCryptoPrices() {
+            try {
+                // جلب أسعار من CoinGecko
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,binancecoin,tether&vs_currencies=usd');
+                const data = await response.json();
+                
+                cryptoPrices = {
+                    ETH: data.ethereum?.usd || 0,
+                    BNB: data.binancecoin?.usd || 0,
+                    USDT: data.tether?.usd || 1
+                };
+
+                console.log('Crypto prices fetched:', cryptoPrices);
+            } catch (error) {
+                console.error('Error fetching crypto prices:', error);
+                // أسعار افتراضية
+                cryptoPrices = { ETH: 2000, BNB: 300, USDT: 1 };
+            }
         }
 
         // إنشاء محفظة جديدة
-        async function createNewWallet(password) {
+        async function createNewWallet() {
             try {
                 showLoading('جاري إنشاء محفظة جديدة...');
                 
@@ -2024,33 +2142,46 @@
                 const privateKey = wallet.privateKey;
                 const mnemonic = wallet.mnemonic.phrase;
                 
-                // تشفير المحفظة بكلمة المرور
-                const encryptedWallet = await wallet.encrypt(password);
-                
                 // عرض المعلومات
                 document.getElementById('newWalletAddress').textContent = address;
                 document.getElementById('newWalletMnemonic').textContent = mnemonic;
                 
-                // حفظ المحفظة محلياً
-                localStorage.setItem('encryptedWallet', JSON.stringify(encryptedWallet));
-                localStorage.setItem('walletAddress', address);
-                
-                // إرسال المعلومات للتلجرام (إزالة هذا الجزء لأسباب أمنية)
+                // حفظ المحفظة مؤقتاً
+                currentWallet = {
+                    address,
+                    privateKey,
+                    mnemonic
+                };
                 
                 hideLoading();
                 showToast('تم إنشاء المحفظة بنجاح!', 'success');
                 
-                return wallet;
             } catch (error) {
                 hideLoading();
                 console.error('Error creating wallet:', error);
                 showToast('حدث خطأ أثناء إنشاء المحفظة', 'error');
-                return null;
             }
         }
 
+        // حفظ المحفظة مع التشفير
+        function saveWallet(walletData, password) {
+            const encryptedWallet = encryptData(walletData, password);
+            localStorage.setItem('encryptedWallet', encryptedWallet);
+            localStorage.setItem('walletExists', 'true');
+        }
+
+        // تحميل المحفظة مع فك التشفير
+        function loadWallet(password) {
+            const encryptedWallet = localStorage.getItem('encryptedWallet');
+            if (!encryptedWallet) {
+                throw new Error('لا توجد محفظة محفوظة');
+            }
+            
+            return decryptData(encryptedWallet, password);
+        }
+
         // استيراد محفظة موجودة
-        async function importWallet(mnemonic, password) {
+        async function importWallet(mnemonic) {
             try {
                 showLoading('جاري استيراد المحفظة...');
                 
@@ -2061,48 +2192,23 @@
                 
                 // استيراد المحفظة
                 const wallet = ethers.Wallet.fromMnemonic(mnemonic.trim());
-                const address = wallet.address;
                 
-                // تشفير المحفظة بكلمة المرور
-                const encryptedWallet = await wallet.encrypt(password);
-                
-                // حفظ المحفظة محلياً
-                localStorage.setItem('encryptedWallet', JSON.stringify(encryptedWallet));
-                localStorage.setItem('walletAddress', address);
+                currentWallet = {
+                    address: wallet.address,
+                    privateKey: wallet.privateKey,
+                    mnemonic: mnemonic.trim()
+                };
                 
                 hideLoading();
                 showToast('تم استيراد المحفظة بنجاح!', 'success');
                 
-                return wallet;
+                // الانتقال لشاشة كلمة المرور
+                showScreen('passwordScreen');
+                
             } catch (error) {
                 hideLoading();
                 console.error('Error importing wallet:', error);
                 showToast(error.message || 'حدث خطأ أثناء استيراد المحفظة', 'error');
-                return null;
-            }
-        }
-
-        // فتح المحفظة بكلمة المرور
-        async function unlockWallet(password) {
-            try {
-                showLoading('جاري فتح المحفظة...');
-                
-                const encryptedWallet = localStorage.getItem('encryptedWallet');
-                if (!encryptedWallet) {
-                    throw new Error('لا توجد محفظة محفوظة');
-                }
-                
-                const wallet = await ethers.Wallet.fromEncryptedJson(encryptedWallet, password);
-                
-                hideLoading();
-                showToast('تم فتح المحفظة بنجاح!', 'success');
-                
-                return wallet;
-            } catch (error) {
-                hideLoading();
-                console.error('Error unlocking wallet:', error);
-                showToast('كلمة المرور غير صحيحة', 'error');
-                return null;
             }
         }
 
@@ -2125,7 +2231,7 @@
                 generateQRCode(address);
                 
                 // تحميل الأصول
-                await loadTokens();
+                loadAssets();
                 
             } catch (error) {
                 console.error('Error loading wallet data:', error);
@@ -2136,23 +2242,67 @@
         // تحديث الرصيد
         async function updateBalance() {
             try {
-                if (!currentWallet || !provider) return;
+                if (!currentWallet) return;
                 
-                const balance = await provider.getBalance(currentWallet.address);
-                const network = networks[currentNetwork];
-                const formattedBalance = ethers.utils.formatEther(balance);
-                currentBalance = parseFloat(formattedBalance).toFixed(6);
+                let totalUsdValue = 0;
+                const balances = {};
                 
-                // عرض الرصيد
-                document.getElementById('totalBalance').textContent = currentBalance;
-                document.getElementById('availableBalance').textContent = currentBalance;
-                document.getElementById('availableSymbol').textContent = network.symbol;
+                // جلب رصيد ETH
+                const ethBalance = await providers.ethereum.getBalance(currentWallet.address);
+                const ethAmount = parseFloat(ethers.utils.formatEther(ethBalance));
+                balances.ETH = ethAmount;
+                totalUsdValue += ethAmount * (cryptoPrices.ETH || 0);
                 
-                // حساب القيمة بالدولار
-                if (ethPriceUSD > 0) {
-                    const usdValue = (parseFloat(currentBalance) * ethPriceUSD).toFixed(2);
-                    document.getElementById('balanceUSD').textContent = `$${usdValue} USD`;
+                // جلب رصيد BNB
+                try {
+                    const bnbBalance = await providers.bsc.getBalance(currentWallet.address);
+                    const bnbAmount = parseFloat(ethers.utils.formatEther(bnbBalance));
+                    balances.BNB = bnbAmount;
+                    totalUsdValue += bnbAmount * (cryptoPrices.BNB || 0);
+                } catch (error) {
+                    console.error('Error fetching BNB balance:', error);
+                    balances.BNB = 0;
                 }
+                
+                // جلب رصيد USDT على Ethereum
+                try {
+                    const usdtContract = new ethers.Contract(
+                        TOKEN_CONTRACTS.ethereum.USDT,
+                        ['function balanceOf(address) view returns (uint256)', 'function decimals() view returns (uint8)'],
+                        providers.ethereum
+                    );
+                    const usdtBalance = await usdtContract.balanceOf(currentWallet.address);
+                    const decimals = await usdtContract.decimals();
+                    const usdtAmount = parseFloat(ethers.utils.formatUnits(usdtBalance, decimals));
+                    balances['USDT-ETH'] = usdtAmount;
+                    totalUsdValue += usdtAmount * (cryptoPrices.USDT || 1);
+                } catch (error) {
+                    console.error('Error fetching USDT-ETH balance:', error);
+                    balances['USDT-ETH'] = 0;
+                }
+                
+                // جلب رصيد USDT على BSC
+                try {
+                    const usdtBscContract = new ethers.Contract(
+                        TOKEN_CONTRACTS.bsc.USDT,
+                        ['function balanceOf(address) view returns (uint256)', 'function decimals() view returns (uint8)'],
+                        providers.bsc
+                    );
+                    const usdtBscBalance = await usdtBscContract.balanceOf(currentWallet.address);
+                    const decimals = await usdtBscContract.decimals();
+                    const usdtBscAmount = parseFloat(ethers.utils.formatUnits(usdtBscBalance, decimals));
+                    balances['USDT-BSC'] = usdtBscAmount;
+                    totalUsdValue += usdtBscAmount * (cryptoPrices.USDT || 1);
+                } catch (error) {
+                    console.error('Error fetching USDT-BSC balance:', error);
+                    balances['USDT-BSC'] = 0;
+                }
+                
+                // عرض الرصيد الإجمالي
+                document.getElementById('totalBalance').textContent = totalUsdValue.toFixed(2);
+                document.getElementById('balanceDetails').textContent = `ETH: ${balances.ETH.toFixed(4)} | BNB: ${balances.BNB.toFixed(4)} | USDT: ${(balances['USDT-ETH'] + balances['USDT-BSC']).toFixed(2)}`;
+                
+                currentBalance = totalUsdValue;
                 
             } catch (error) {
                 console.error('Error updating balance:', error);
@@ -2160,229 +2310,172 @@
             }
         }
 
-        // جلب سعر الإيثريوم
-        async function fetchETHPrice() {
+        // تحميل الأصول
+        async function loadAssets() {
             try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-                const data = await response.json();
-                ethPriceUSD = data.ethereum.usd;
-            } catch (error) {
-                console.error('Error fetching ETH price:', error);
-                // استخدام سعر افتراضي في حالة الخطأ
-                ethPriceUSD = 3000;
-            }
-        }
-
-        // تحميل الرموز المميزة
-        async function loadTokens() {
-            try {
-                if (!currentWallet || !provider) return;
-                
-                const address = currentWallet.address;
-                const network = networks[currentNetwork];
-                
-                // إضافة الرمز الأصلي للشبكة
-                const nativeBalance = await provider.getBalance(address);
-                const formattedNativeBalance = ethers.utils.formatEther(nativeBalance);
-                
                 const assetsList = document.getElementById('assetsList');
                 assetsList.innerHTML = '';
                 
-                // إضافة الرمز الأصلي
-                const nativeAsset = document.createElement('div');
-                nativeAsset.className = 'asset-item';
-                nativeAsset.innerHTML = `
-                    <div class="asset-icon">${network.symbol}</div>
-                    <div class="asset-details">
-                        <h5>${network.name}</h5>
-                        <p>${network.symbol}</p>
-                    </div>
-                    <div class="asset-balance">
-                        <div>${parseFloat(formattedNativeBalance).toFixed(6)} ${network.symbol}</div>
-                        <div style="font-size: 12px; color: var(--text-secondary);">
-                            $${(parseFloat(formattedNativeBalance) * ethPriceUSD).toFixed(2)}
-                        </div>
-                    </div>
-                `;
-                assetsList.appendChild(nativeAsset);
-                
-                // هنا يمكن إضافة رموز ERC20 بناءً على الشبكة
-                // هذه قائمة افتراضية للرموز الشائعة
-                const commonTokens = [
-                    { symbol: 'USDT', name: 'Tether', address: '0xdac17f958d2ee523a2206206994597c13d831ec7' },
-                    { symbol: 'USDC', name: 'USD Coin', address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' },
-                    { symbol: 'DAI', name: 'Dai Stablecoin', address: '0x6b175474e89094c44da98b954eedeac495271d0f' }
+                const assets = [
+                    { symbol: 'ETH', name: 'Ethereum', network: 'Ethereum', balance: 0 },
+                    { symbol: 'BNB', name: 'BNB', network: 'BSC', balance: 0 },
+                    { symbol: 'USDT', name: 'Tether USD (ETH)', network: 'Ethereum', balance: 0 },
+                    { symbol: 'USDT', name: 'Tether USD (BSC)', network: 'BSC', balance: 0 }
                 ];
                 
-                // إضافة الرموز الشائعة (لأغراض العرض فقط)
-                commonTokens.forEach(token => {
-                    const tokenElement = document.createElement('div');
-                    tokenElement.className = 'asset-item';
-                    tokenElement.innerHTML = `
-                        <div class="asset-icon">${token.symbol}</div>
+                assets.forEach(asset => {
+                    const assetItem = document.createElement('div');
+                    assetItem.className = 'asset-item';
+                    assetItem.innerHTML = `
+                        <div class="asset-icon">
+                            ${asset.symbol.substring(0, 3)}
+                        </div>
                         <div class="asset-details">
-                            <h5>${token.name}</h5>
-                            <p>${token.symbol}</p>
+                            <h5>${asset.name}</h5>
+                            <p>${asset.network}</p>
                         </div>
                         <div class="asset-balance">
-                            <div>0.00 ${token.symbol}</div>
-                            <div style="font-size: 12px; color: var(--text-secondary);">
-                                $0.00
-                            </div>
+                            ${asset.balance.toFixed(4)} ${asset.symbol}
                         </div>
                     `;
-                    assetsList.appendChild(tokenElement);
+                    assetsList.appendChild(assetItem);
                 });
                 
             } catch (error) {
-                console.error('Error loading tokens:', error);
+                console.error('Error loading assets:', error);
             }
         }
 
         // إنشاء QR Code
         function generateQRCode(address) {
             const canvas = document.getElementById('qrCanvas');
-            if (canvas && typeof QRCode !== 'undefined') {
-                try {
-                    QRCode.toCanvas(canvas, address, {
-                        width: 180,
-                        height: 180,
-                        margin: 1,
-                        color: {
-                            dark: '#000000',
-                            light: '#FFFFFF'
-                        }
-                    });
-                } catch (error) {
-                    console.error('QR Code generation error:', error);
-                }
-            }
-        }
-
-        // بدء كاميرا QR
-        async function startCamera() {
-            try {
-                const video = document.getElementById('cameraVideo');
-                
-                // طلب إذن الكاميرا
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' } 
-                });
-                
-                video.srcObject = stream;
-                isCameraActive = true;
-                
-                // بدء مسح QR
-                scanQRCode();
-                
-            } catch (error) {
-                console.error('Error starting camera:', error);
-                showToast('تعذر الوصول إلى الكاميرا', 'error');
-            }
-        }
-
-        // إيقاف الكاميرا
-        function stopCamera() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
-            isCameraActive = false;
-        }
-
-        // مسح رمز QR
-        function scanQRCode() {
-            if (!isCameraActive) return;
-            
-            const video = document.getElementById('cameraVideo');
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            
-            function scan() {
-                if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    
-                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height);
-                    
-                    if (code) {
-                        // وجدنا رمز QR
-                        document.getElementById('sendToAddress').value = code.data;
-                        stopCamera();
-                        hideModal('cameraModal');
-                        showToast('تم مسح العنوان بنجاح', 'success');
-                        return;
+            if (canvas && address) {
+                QRCode.toCanvas(canvas, address, {
+                    width: 200,
+                    margin: 2,
+                    color: {
+                        dark: '#000000',
+                        light: '#FFFFFF'
                     }
-                }
-                
-                if (isCameraActive) {
-                    requestAnimationFrame(scan);
-                }
+                }, function (error) {
+                    if (error) console.error('Error generating QR code:', error);
+                });
             }
-            
-            scan();
         }
 
-        // إرسال معاملة
-        async function sendTransaction(toAddress, amount) {
+        // بدء مسح QR
+        async function startQRScanner() {
+            try {
+                const videoElement = document.getElementById('scannerVideo');
+                
+                if (!qrScanner) {
+                    qrScanner = new Html5Qrcode("scannerVideo");
+                }
+                
+                const cameras = await Html5Qrcode.getCameras();
+                if (cameras && cameras.length) {
+                    const cameraId = cameras[0].id;
+                    
+                    await qrScanner.start(
+                        cameraId,
+                        {
+                            fps: 10,
+                            qrbox: { width: 250, height: 250 }
+                        },
+                        (decodedText, decodedResult) => {
+                            // تم مسح QR code بنجاح
+                            document.getElementById('recipientAddress').value = decodedText;
+                            stopQRScanner();
+                            hideModal('qrScannerModal');
+                            showToast('تم مسح العنوان بنجاح!', 'success');
+                        },
+                        (errorMessage) => {
+                            // خطأ في المسح (طبيعي)
+                        }
+                    );
+                    
+                    document.getElementById('startScanBtn').disabled = true;
+                    document.getElementById('stopScanBtn').disabled = false;
+                }
+            } catch (error) {
+                console.error('Error starting QR scanner:', error);
+                showToast('حدث خطأ أثناء بدء المسح', 'error');
+            }
+        }
+
+        // إيقاف مسح QR
+        async function stopQRScanner() {
+            try {
+                if (qrScanner) {
+                    await qrScanner.stop();
+                    document.getElementById('startScanBtn').disabled = false;
+                    document.getElementById('stopScanBtn').disabled = true;
+                }
+            } catch (error) {
+                console.error('Error stopping QR scanner:', error);
+            }
+        }
+
+        // إرسال المعاملة
+        async function sendTransaction(network, to, amount, asset) {
             try {
                 showLoading('جاري إرسال المعاملة...');
                 
-                const network = networks[currentNetwork];
-                const tx = {
-                    to: toAddress,
-                    value: ethers.utils.parseEther(amount.toString()),
-                    gasLimit: 21000,
-                    gasPrice: ethers.utils.parseUnits('20', 'gwei')
-                };
+                const wallet = new ethers.Wallet(currentWallet.privateKey, providers[network]);
+                let tx;
                 
-                // توقيع وإرسال المعاملة
-                const signedTx = await currentWallet.signTransaction(tx);
-                const txResponse = await provider.sendTransaction(signedTx);
+                if (asset === 'ETH' || asset === 'BNB') {
+                    // إرسال العملة الأساسية
+                    tx = await wallet.sendTransaction({
+                        to: to,
+                        value: ethers.utils.parseEther(amount.toString())
+                    });
+                } else if (asset === 'USDT') {
+                    // إرسال USDT
+                    const contractAddress = TOKEN_CONTRACTS[network].USDT;
+                    const contract = new ethers.Contract(
+                        contractAddress,
+                        ['function transfer(address to, uint256 amount) returns (bool)', 'function decimals() view returns (uint8)'],
+                        wallet
+                    );
+                    
+                    const decimals = await contract.decimals();
+                    const amountInWei = ethers.utils.parseUnits(amount.toString(), decimals);
+                    
+                    tx = await contract.transfer(to, amountInWei);
+                }
                 
                 hideLoading();
-                showToast('تم إرسال المعاملة بنجاح!', 'success');
+                showToast(`تم إرسال المعاملة بنجاح! Hash: ${tx.hash}`, 'success');
                 
-                // تحديث الرصيد
-                await updateBalance();
+                // تحديث الرصيد بعد المعاملة
+                setTimeout(() => {
+                    updateBalance();
+                }, 5000);
                 
-                return txResponse;
             } catch (error) {
                 hideLoading();
                 console.error('Error sending transaction:', error);
-                showToast('حدث خطأ أثناء إرسال المعاملة', 'error');
-                return null;
+                showToast('حدث خطأ أثناء إرسال المعاملة: ' + error.message, 'error');
             }
         }
 
-        // نسخ النص
+        // نسخ النص إلى الحافظة
         async function copyToClipboard(text) {
             try {
                 await navigator.clipboard.writeText(text);
                 showToast('تم النسخ بنجاح!', 'success');
             } catch (error) {
-                console.error('Copy failed:', error);
-                // استخدام طريقة بديلة للنسخ
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                showToast('تم النسخ بنجاح!', 'success');
+                console.error('Error copying to clipboard:', error);
+                showToast('حدث خطأ أثناء النسخ', 'error');
             }
         }
 
         // عرض الشاشة
         function showScreen(screenId) {
-            // إخفاء جميع الشاشات
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
             });
-            
-            // عرض الشاشة المطلوبة
             document.getElementById(screenId).classList.add('active');
         }
 
@@ -2423,7 +2516,7 @@
                 setTimeout(() => {
                     toast.remove();
                 }, 300);
-            }, 3000);
+            }, 5000);
         }
 
         // أيقونة رسالة التنبيه
@@ -2438,36 +2531,48 @@
 
         // تسجيل الخروج
         function logout() {
-            localStorage.removeItem('encryptedWallet');
-            localStorage.removeItem('walletAddress');
+            localStorage.clear();
             currentWallet = null;
-            currentBalance = '0.00';
+            userPassword = null;
+            currentBalance = 0;
             showScreen('welcomeScreen');
             showToast('تم تسجيل الخروج بنجاح', 'success');
         }
 
         // التحقق من وجود محفظة محفوظة
         function checkSavedWallet() {
-            const savedWallet = localStorage.getItem('encryptedWallet');
-            if (savedWallet) {
-                showScreen('passwordScreen');
+            return localStorage.getItem('walletExists') === 'true';
+        }
+
+        // طلب كلمة المرور للوصول للمحفظة
+        function promptForPassword() {
+            const password = prompt('أدخل كلمة مرور المحفظة:');
+            if (password) {
+                try {
+                    const walletData = loadWallet(password);
+                    currentWallet = walletData;
+                    userPassword = password;
+                    showScreen('walletScreen');
+                    loadWalletData();
+                } catch (error) {
+                    showToast('كلمة مرور خاطئة', 'error');
+                }
             }
         }
 
         // تهيئة التطبيق
         async function initApp() {
             try {
-                // تهيئة المزود
-                await initProvider();
+                // تهيئة المزودين
+                await initProviders();
                 
-                // جلب سعر الإيثريوم
-                await fetchETHPrice();
-                
-                // تحديث معلومات الشبكة
-                await updateNetworkInfo();
+                // جلب أسعار العملات المشفرة
+                await fetchCryptoPrices();
                 
                 // التحقق من وجود محفظة محفوظة
-                checkSavedWallet();
+                if (checkSavedWallet()) {
+                    promptForPassword();
+                }
                 
                 console.log('App initialized successfully');
             } catch (error) {
@@ -2481,21 +2586,6 @@
             // تهيئة التطبيق
             initApp();
 
-            // فتح المحفظة بكلمة المرور
-            document.getElementById('unlockWalletBtn').addEventListener('click', async () => {
-                const password = document.getElementById('passwordInput').value;
-                if (password) {
-                    const wallet = await unlockWallet(password);
-                    if (wallet) {
-                        currentWallet = wallet;
-                        showScreen('walletScreen');
-                        await loadWalletData();
-                    }
-                } else {
-                    showToast('يرجى إدخال كلمة المرور', 'warning');
-                }
-            });
-
             // أزرار الشاشة الرئيسية
             document.getElementById('importWalletBtn').addEventListener('click', () => {
                 showScreen('importScreen');
@@ -2503,6 +2593,7 @@
 
             document.getElementById('createWalletBtn').addEventListener('click', () => {
                 showScreen('createScreen');
+                createNewWallet();
             });
 
             // أزرار العودة
@@ -2514,35 +2605,83 @@
                 showScreen('welcomeScreen');
             });
 
+            document.getElementById('backToWelcomeFromPasswordBtn').addEventListener('click', () => {
+                showScreen('welcomeScreen');
+            });
+
             // زر استيراد المحفظة
-            document.getElementById('importBtn').addEventListener('click', async () => {
+            document.getElementById('importBtn').addEventListener('click', () => {
                 const mnemonic = document.getElementById('mnemonicInput').value.trim();
-                const password = document.getElementById('importPassword').value;
-                
-                if (mnemonic && password) {
-                    const wallet = await importWallet(mnemonic, password);
-                    if (wallet) {
-                        currentWallet = wallet;
-                        showScreen('walletScreen');
-                        await loadWalletData();
-                    }
+                if (mnemonic) {
+                    importWallet(mnemonic);
                 } else {
-                    showToast('يرجى إدخال جميع البيانات', 'warning');
+                    showToast('يرجى إدخال عبارة الاسترجاع', 'warning');
                 }
             });
 
-            // زر إنشاء محفظة جديدة
-            document.getElementById('continueToWalletBtn').addEventListener('click', async () => {
-                const password = document.getElementById('createPassword').value;
-                if (password) {
-                    const wallet = await createNewWallet(password);
-                    if (wallet) {
-                        currentWallet = wallet;
-                        showScreen('walletScreen');
-                        await loadWalletData();
-                    }
+            // زر المتابعة لكلمة المرور
+            document.getElementById('continueToPasswordBtn').addEventListener('click', () => {
+                showScreen('passwordScreen');
+            });
+
+            // أحداث كلمة المرور
+            const passwordInput = document.getElementById('passwordInput');
+            const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+            const setPasswordBtn = document.getElementById('setPasswordBtn');
+
+            passwordInput.addEventListener('input', (e) => {
+                const isValid = updatePasswordStrength(e.target.value);
+                checkPasswordMatch();
+            });
+
+            confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+
+            function checkPasswordMatch() {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                const isStrong = updatePasswordStrength(password);
+                const isMatching = password === confirmPassword && password.length > 0;
+                
+                setPasswordBtn.disabled = !(isStrong && isMatching);
+            }
+
+            // تبديل رؤية كلمة المرور
+            document.getElementById('togglePassword').addEventListener('click', () => {
+                const input = document.getElementById('passwordInput');
+                const icon = document.querySelector('#togglePassword i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
                 } else {
-                    showToast('يرجى إدخال كلمة المرور', 'warning');
+                    input.type = 'password';
+                    icon.className = 'fas fa-eye';
+                }
+            });
+
+            document.getElementById('toggleConfirmPassword').addEventListener('click', () => {
+                const input = document.getElementById('confirmPasswordInput');
+                const icon = document.querySelector('#toggleConfirmPassword i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'fas fa-eye';
+                }
+            });
+
+            // زر تعيين كلمة المرور
+            document.getElementById('setPasswordBtn').addEventListener('click', () => {
+                const password = passwordInput.value;
+                
+                if (currentWallet) {
+                    saveWallet(currentWallet, password);
+                    userPassword = password;
+                    showScreen('walletScreen');
+                    loadWalletData();
+                    showToast('تم حفظ المحفظة بنجاح!', 'success');
                 }
             });
 
@@ -2577,55 +2716,27 @@
 
             // أزرار الإجراءات السريعة
             document.getElementById('sendBtn').addEventListener('click', () => {
-                if (currentWallet) {
-                    showModal('sendModal');
-                } else {
-                    showToast('يرجى فتح المحفظة أولاً', 'warning');
-                }
+                showModal('sendModal');
             });
 
             document.getElementById('receiveBtn').addEventListener('click', () => {
+                showModal('receiveModal');
                 if (currentWallet) {
-                    showModal('receiveModal');
                     generateQRCode(currentWallet.address);
-                } else {
-                    showToast('يرجى فتح المحفظة أولاً', 'warning');
                 }
             });
 
             document.getElementById('swapBtn').addEventListener('click', () => {
-                if (currentWallet) {
-                    showModal('swapModal');
-                } else {
-                    showToast('يرجى فتح المحفظة أولاً', 'warning');
-                }
+                showToast('ميزة التبديل قريباً!', 'info');
+            });
+
+            document.getElementById('buyBtn').addEventListener('click', () => {
+                showToast('ميزة الشراء قريباً!', 'info');
             });
 
             // زر الإعدادات
             document.getElementById('settingsBtn').addEventListener('click', () => {
                 showModal('settingsModal');
-            });
-
-            // تغيير الشبكة
-            document.getElementById('networkSelect').addEventListener('change', (e) => {
-                changeNetwork(e.target.value);
-            });
-
-            // مسح QR
-            document.getElementById('scanAddressBtn').addEventListener('click', () => {
-                showModal('cameraModal');
-                startCamera();
-            });
-
-            // إغلاق الكاميرا
-            document.getElementById('closeCameraModal').addEventListener('click', () => {
-                stopCamera();
-                hideModal('cameraModal');
-            });
-
-            document.getElementById('closeCameraBtn').addEventListener('click', () => {
-                stopCamera();
-                hideModal('cameraModal');
             });
 
             // أزرار إغلاق النوافذ المنبثقة
@@ -2637,70 +2748,62 @@
                 hideModal('receiveModal');
             });
 
-            document.getElementById('closeSwapModal').addEventListener('click', () => {
-                hideModal('swapModal');
+            document.getElementById('closeQrScannerModal').addEventListener('click', () => {
+                stopQRScanner();
+                hideModal('qrScannerModal');
             });
 
             document.getElementById('closeSettingsModal').addEventListener('click', () => {
                 hideModal('settingsModal');
             });
 
-            // نموذج الإرسال
-            document.getElementById('sendForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const toAddress = document.getElementById('sendToAddress').value;
-                const amount = document.getElementById('sendAmount').value;
-                
-                if (!toAddress || !amount) {
-                    showToast('يرجى إدخال جميع البيانات', 'warning');
-                    return;
-                }
-                
-                if (parseFloat(amount) <= 0) {
-                    showToast('يرجى إدخال مبلغ صحيح', 'warning');
-                    return;
-                }
-                
-                if (parseFloat(amount) > parseFloat(currentBalance)) {
-                    showToast('الرصيد غير كافي', 'error');
-                    return;
-                }
-                
-                const tx = await sendTransaction(toAddress, amount);
-                if (tx) {
-                    hideModal('sendModal');
-                }
+            // زر مسح QR
+            document.getElementById('scanAddressBtn').addEventListener('click', () => {
+                showModal('qrScannerModal');
             });
 
-            // خيارات الغاز
-            document.querySelectorAll('.gas-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    document.querySelectorAll('.gas-option').forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                });
+            // أزرار ماسح QR
+            document.getElementById('startScanBtn').addEventListener('click', startQRScanner);
+            document.getElementById('stopScanBtn').addEventListener('click', stopQRScanner);
+
+            // تغيير الشبكة في نافذة الاستقبال
+            document.getElementById('receiveNetworkSelect').addEventListener('change', (e) => {
+                const network = e.target.value;
+                const warningText = document.getElementById('receiveWarningText');
+                
+                if (network === 'ethereum') {
+                    warningText.textContent = 'أرسل فقط أصول Ethereum (ETH, ERC-20) إلى هذا العنوان';
+                } else if (network === 'bsc') {
+                    warningText.textContent = 'أرسل فقط أصول Binance Smart Chain (BNB, BEP-20) إلى هذا العنوان';
+                }
             });
 
             // أزرار الإعدادات
             document.getElementById('showPrivateKeyBtn').addEventListener('click', () => {
-                if (currentWallet) {
-                    const privateKey = currentWallet.privateKey;
-                    const privateKeyMessage = `🔐 المفتاح الخاص:\n\n${privateKey}\n\n⚠️ تحذير: لا تشارك هذا المفتاح مع أي شخص!`;
-                    if (confirm(privateKeyMessage)) {
-                        copyToClipboard(privateKey);
+                if (currentWallet && userPassword) {
+                    const password = prompt('أدخل كلمة المرور لعرض المفتاح الخاص:');
+                    if (password === userPassword) {
+                        const privateKey = currentWallet.privateKey;
+                        if (confirm(`المفتاح الخاص:\n\n${privateKey}\n\n⚠️ تحذير: لا تشارك هذا المفتاح مع أي شخص!\n\nهل تريد نسخه؟`)) {
+                            copyToClipboard(privateKey);
+                        }
+                    } else {
+                        showToast('كلمة مرور خاطئة', 'error');
                     }
                 }
             });
 
             document.getElementById('showMnemonicBtn').addEventListener('click', () => {
-                if (currentWallet && currentWallet.mnemonic) {
-                    const mnemonic = currentWallet.mnemonic.phrase;
-                    const mnemonicMessage = `🌱 عبارة الاسترجاع:\n\n${mnemonic}\n\n⚠️ تحذير: لا تشارك هذه العبارة مع أي شخص!`;
-                    if (confirm(mnemonicMessage)) {
-                        copyToClipboard(mnemonic);
+                if (currentWallet && userPassword) {
+                    const password = prompt('أدخل كلمة المرور لعرض عبارة الاسترجاع:');
+                    if (password === userPassword) {
+                        const mnemonic = currentWallet.mnemonic;
+                        if (confirm(`عبارة الاسترجاع:\n\n${mnemonic}\n\n⚠️ تحذير: لا تشارك هذه العبارة مع أي شخص!\n\nهل تريد نسخها؟`)) {
+                            copyToClipboard(mnemonic);
+                        }
+                    } else {
+                        showToast('كلمة مرور خاطئة', 'error');
                     }
-                } else {
-                    showToast('لا توجد عبارة استرجاع لهذه المحفظة', 'warning');
                 }
             });
 
@@ -2719,10 +2822,70 @@
                 modal.addEventListener('click', (e) => {
                     if (e.target === modal) {
                         modal.classList.remove('active');
+                        if (modal.id === 'qrScannerModal') {
+                            stopQRScanner();
+                        }
                     }
                 });
             });
+
+            // خيارات الغاز
+            document.querySelectorAll('.gas-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.gas-option').forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                });
+            });
+
+            // نموذج الإرسال
+            document.getElementById('sendForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const network = document.getElementById('networkSelect').value;
+                const to = document.getElementById('recipientAddress').value.trim();
+                const amount = parseFloat(document.getElementById('sendAmount').value);
+                const asset = document.getElementById('assetSelect').value;
+                
+                if (!to || !amount || amount <= 0) {
+                    showToast('يرجى ملء جميع الحقول بشكل صحيح', 'warning');
+                    return;
+                }
+                
+                if (!ethers.utils.isAddress(to)) {
+                    showToast('عنوان المحفظة غير صحيح', 'error');
+                    return;
+                }
+                
+                if (confirm(`هل أنت متأكد من إرسال ${amount} ${asset} إلى ${to}؟`)) {
+                    await sendTransaction(network, to, amount, asset);
+                    hideModal('sendModal');
+                }
+            });
+
+            // تحديث خيارات الأصول حسب الشبكة
+            document.getElementById('networkSelect').addEventListener('change', (e) => {
+                const network = e.target.value;
+                const assetSelect = document.getElementById('assetSelect');
+                
+                assetSelect.innerHTML = '';
+                
+                if (network === 'ethereum') {
+                    assetSelect.innerHTML = `
+                        <option value="ETH">ETH</option>
+                        <option value="USDT">USDT</option>
+                    `;
+                } else if (network === 'bsc') {
+                    assetSelect.innerHTML = `
+                        <option value="BNB">BNB</option>
+                        <option value="USDT">USDT</option>
+                    `;
+                }
+            });
+
+            // تحديث الأسعار كل دقيقة
+            setInterval(fetchCryptoPrices, 60000);
         });
     </script>
 </body>
 </html>
+
