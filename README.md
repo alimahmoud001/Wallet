@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE htm
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -590,8 +590,8 @@
         </div>
     </div>
 
-    <!-- تحميل مكتبة ethers.js -->
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    <!-- تحميل مكتبة ethers.js من CDN مختلف -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
     <script>
         // قائمة كلمات BIP39 الإنجليزية الرسمية
@@ -849,6 +849,16 @@
             logPanel: document.getElementById('logPanel')
         };
 
+        // التحقق من تحميل ethers.js
+        function checkEthersLoaded() {
+            if (typeof ethers === 'undefined') {
+                updateStatus('❌ فشل في تحميل مكتبة ethers.js. يرجى التحقق من اتصال الإنترنت.', 'danger');
+                addLogEntry('❌ فشل في تحميل مكتبة ethers.js', 'error');
+                return false;
+            }
+            return true;
+        }
+
         // وظائف توليد العبارات العشوائية
         function getSecureRandomInt(max) {
             const array = new Uint32Array(1);
@@ -868,7 +878,7 @@
         // وظائف المحفظة
         async function mnemonicToAddress(mnemonic) {
             try {
-                if (typeof ethers === 'undefined') {
+                if (!checkEthersLoaded()) {
                     throw new Error('مكتبة ethers.js غير محملة');
                 }
                 
@@ -887,6 +897,10 @@
 
         async function checkWalletBalance(address) {
             try {
+                if (!checkEthersLoaded()) {
+                    return null;
+                }
+                
                 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
                 const balance = await provider.getBalance(address);
                 const balanceEth = ethers.utils.formatEther(balance);
@@ -899,6 +913,10 @@
 
         async function getTransactionCount(address) {
             try {
+                if (!checkEthersLoaded()) {
+                    return null;
+                }
+                
                 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
                 const transactionCount = await provider.getTransactionCount(address);
                 return transactionCount;
@@ -1032,6 +1050,12 @@
         // الوظيفة الرئيسية للبحث
         async function searchForActiveWallets() {
             try {
+                if (!checkEthersLoaded()) {
+                    stats.errors++;
+                    updateStats();
+                    return;
+                }
+
                 // توليد عبارة عشوائية
                 const mnemonic = generateRandomBIP39Phrase();
                 stats.totalGenerated++;
@@ -1096,6 +1120,10 @@
             }
             
             try {
+                if (!checkEthersLoaded()) {
+                    return;
+                }
+
                 updateStatus('جاري فحص العبارة...', 'info');
                 addLogEntry(`🔍 جاري فحص العبارة يدويًا: ${mnemonic}`);
                 
@@ -1186,6 +1214,10 @@
         async function startSearch() {
             if (isRunning) return;
             
+            if (!checkEthersLoaded()) {
+                return;
+            }
+            
             isRunning = true;
             elements.startBtn.disabled = true;
             elements.stopBtn.disabled = false;
@@ -1256,9 +1288,16 @@
         elements.clearLogsBtn.addEventListener('click', clearLogs);
         elements.testManualBtn.addEventListener('click', testManualMnemonic);
 
+        // التحقق من تحميل ethers.js عند بدء التطبيق
+        document.addEventListener('DOMContentLoaded', function() {
+            if (checkEthersLoaded()) {
+                updateStatus('✅ تم تحميل مكتبة ethers.js بنجاح. جاهز للبدء...', 'success');
+                addLogEntry('✅ تم تحميل مكتبة ethers.js بنجاح', 'success');
+            }
+        });
+
         // تحديث الإحصائيات عند بدء التطبيق
         updateStats();
-        updateStatus('جاهز للبدء...', 'info');
     </script>
 </body>
 </html>
