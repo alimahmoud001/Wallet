@@ -986,6 +986,13 @@
                 updateStatus(`جاري فحص العبارة رقم ${stats.totalGenerated}...`, 'info');
                 addLogEntry(`تم توليد عبارة جديدة: ${mnemonic.substring(0, 30)}...`);
                 
+                if (!ethers.utils.HDNode.isValidMnemonic(mnemonic)) {
+                    stats.errors++;
+                    addLogEntry(`❌ عبارة BIP39 غير صالحة (فشل التحقق من المجموع الاختباري): ${mnemonic.substring(0, 30)}...`, 'error');
+                    updateStats();
+                    return;
+                }
+
                 const address = await mnemonicToAddress(mnemonic);
                 if (!address) {
                     stats.errors++;
