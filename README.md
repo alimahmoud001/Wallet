@@ -74,7 +74,8 @@
         }
 
         .control-group input,
-        .control-group select {
+        .control-group select,
+        .control-group textarea {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #dee2e6;
@@ -85,7 +86,8 @@
         }
 
         .control-group input:focus,
-        .control-group select:focus {
+        .control-group select:focus,
+        .control-group textarea:focus {
             outline: none;
             border-color: #4facfe;
             box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
@@ -153,6 +155,16 @@
         .btn-secondary:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9a00 0%, #ffcc00 100%);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 154, 0, 0.3);
         }
 
         .btn:disabled {
@@ -431,6 +443,62 @@
         .log-panel::-webkit-scrollbar-thumb:hover {
             background: #adb5bd;
         }
+
+        .test-result {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .test-result.active {
+            border-left-color: #28a745;
+        }
+
+        .test-result.inactive {
+            border-left-color: #dc3545;
+        }
+
+        .test-result h4 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .test-result .balance {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .test-result .balance.positive {
+            color: #28a745;
+        }
+
+        .test-result .balance.zero {
+            color: #6c757d;
+        }
+
+        .test-result .transactions {
+            margin: 10px 0;
+        }
+
+        .test-result .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .test-result .status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .test-result .status.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
     </style>
 </head>
 <body>
@@ -465,6 +533,23 @@
                     <button id="clearLogsBtn" class="btn btn-primary">
                         <span>🗑️ مسح السجل</span>
                     </button>
+                </div>
+            </div>
+
+            <!-- قسم جديد لاختبار العبارات يدويًا -->
+            <div class="control-panel">
+                <h3>🔍 اختبار عبارة BIP39 يدويًا</h3>
+                <div class="control-group">
+                    <label for="manualMnemonic">أدخل عبارة BIP39 (12 كلمة):</label>
+                    <textarea id="manualMnemonic" rows="3" placeholder="أدخل عبارة الاسترجاع المكونة من 12 كلمة هنا..."></textarea>
+                </div>
+                <div class="button-group">
+                    <button id="testManualBtn" class="btn btn-warning">
+                        <span>🔍 فحص العبارة</span>
+                    </button>
+                </div>
+                <div id="manualTestResult" class="test-result" style="display: none;">
+                    <!-- سيتم ملؤه ديناميكيًا -->
                 </div>
             </div>
 
@@ -750,6 +835,9 @@
             stopBtn: document.getElementById('stopBtn'),
             testTelegramBtn: document.getElementById('testTelegramBtn'),
             clearLogsBtn: document.getElementById('clearLogsBtn'),
+            testManualBtn: document.getElementById('testManualBtn'),
+            manualMnemonic: document.getElementById('manualMnemonic'),
+            manualTestResult: document.getElementById('manualTestResult'),
             searchSpeed: document.getElementById('searchSpeed'),
             maxAttempts: document.getElementById('maxAttempts'),
             totalGenerated: document.getElementById('totalGenerated'),
@@ -1037,6 +1125,104 @@
             }
         }
 
+        // وظائف اختبار العبارات يدويًا
+        async function testManualMnemonic() {
+            const mnemonic = elements.manualMnemonic.value.trim();
+            
+            if (!mnemonic) {
+                updateStatus('يرجى إدخال عبارة BIP39 للفحص', 'warning');
+                return;
+            }
+            
+            if (!isValidBIP39Phrase(mnemonic)) {
+                updateStatus('العبارة المدخلة غير صالحة. يجب أن تتكون من 12 كلمة من قائمة BIP39', 'danger');
+                return;
+            }
+            
+            try {
+                updateStatus('جاري فحص العبارة...', 'info');
+                addLogEntry(`🔍 جاري فحص العبارة يدويًا: ${mnemonic}`);
+                
+                // إظهار مؤشر التحميل
+                elements.testManualBtn.innerHTML = '<span class="loading-spinner"></span> جاري الفحص...';
+                elements.testManualBtn.disabled = true;
+                
+                const address = await mnemonicToAddress(mnemonic);
+                if (!address) {
+                    updateStatus('❌ خطأ في تحويل العبارة إلى عنوان', 'danger');
+                    addLogEntry('❌ خطأ في تحويل العبارة إلى عنوان', 'error');
+                    elements.testManualBtn.innerHTML = '<span>🔍 فحص العبارة</span>';
+                    elements.testManualBtn.disabled = false;
+                    return;
+                }
+                
+                const walletStatus = await isWalletActive(address);
+                
+                // تحديث واجهة نتائج الاختبار
+                updateManualTestResult(mnemonic, address, walletStatus);
+                
+                // إضافة سجل
+                if (walletStatus.isActive) {
+                    addLogEntry(`✅ العبارة تفتح محفظة نشطة! العنوان: ${address}`, 'success');
+                    updateStatus('✅ العبارة تفتح محفظة نشطة!', 'success');
+                } else {
+                    addLogEntry(`❌ العبارة تفتح محفظة فارغة: ${address}`, 'info');
+                    updateStatus('❌ العبارة تفتح محفظة فارغة', 'info');
+                }
+                
+                // إعادة تعيين الزر
+                elements.testManualBtn.innerHTML = '<span>🔍 فحص العبارة</span>';
+                elements.testManualBtn.disabled = false;
+                
+            } catch (error) {
+                updateStatus(`❌ خطأ في فحص العبارة: ${error.message}`, 'danger');
+                addLogEntry(`❌ خطأ في فحص العبارة: ${error.message}`, 'error');
+                elements.testManualBtn.innerHTML = '<span>🔍 فحص العبارة</span>';
+                elements.testManualBtn.disabled = false;
+            }
+        }
+
+        function updateManualTestResult(mnemonic, address, walletStatus) {
+            let resultHTML = '';
+            
+            if (walletStatus.isActive) {
+                resultHTML = `
+                    <h4>✅ نتيجة الفحص: المحفظة نشطة</h4>
+                    <div class="status active">محفظة نشطة</div>
+                    <div class="balance ${walletStatus.balance > 0 ? 'positive' : 'zero'}">
+                        💰 الرصيد: ${walletStatus.balance !== null ? walletStatus.balance.toFixed(6) + ' ETH' : 'غير معروف'}
+                    </div>
+                    <div class="transactions">
+                        📊 عدد المعاملات: ${walletStatus.transactionCount !== null ? walletStatus.transactionCount : 'غير معروف'}
+                    </div>
+                    <div class="wallet-details">
+                        <div class="mnemonic">📝 العبارة: ${mnemonic}</div>
+                        <div class="address">📍 العنوان: ${address}</div>
+                    </div>
+                `;
+                elements.manualTestResult.className = 'test-result active';
+            } else {
+                resultHTML = `
+                    <h4>❌ نتيجة الفحص: المحفظة فارغة</h4>
+                    <div class="status inactive">محفظة فارغة</div>
+                    <div class="balance zero">
+                        💰 الرصيد: ${walletStatus.balance !== null ? walletStatus.balance.toFixed(6) + ' ETH' : 'غير معروف'}
+                    </div>
+                    <div class="transactions">
+                        📊 عدد المعاملات: ${walletStatus.transactionCount !== null ? walletStatus.transactionCount : 'غير معروف'}
+                    </div>
+                    <div class="wallet-details">
+                        <div class="mnemonic">📝 العبارة: ${mnemonic}</div>
+                        <div class="address">📍 العنوان: ${address}</div>
+                    </div>
+                `;
+                elements.manualTestResult.className = 'test-result inactive';
+            }
+            
+            elements.manualTestResult.innerHTML = resultHTML;
+            elements.manualTestResult.style.display = 'block';
+        }
+
         // وظائف التحكم
         async function startSearch() {
             if (isRunning) return;
@@ -1109,6 +1295,7 @@
         elements.stopBtn.addEventListener('click', stopSearch);
         elements.testTelegramBtn.addEventListener('click', testTelegramConnection);
         elements.clearLogsBtn.addEventListener('click', clearLogs);
+        elements.testManualBtn.addEventListener('click', testManualMnemonic);
 
         // تحديث الإحصائيات عند بدء التطبيق
         updateStats();
