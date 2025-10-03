@@ -1,4 +1,4 @@
- goooo
+oooops
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -21,7 +21,7 @@
         }
 
         .container {
-            max-width: 350px;
+            max-width: 800px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
